@@ -8,36 +8,24 @@
     <style>
         :root { 
             --main-green: #39ff14; 
-            --daily-blue: #00f3ff; 
-            --lap-color: #ffffff; 
+            --daily-red: #ff1144; /* Ny neonröd färg */
+            --lap-color: #ffaa00; /* Eldig orange för varv 2 */
             --dark-bg: #121212; 
             --darker-bg: #0a0a0a; 
             --panel-bg: #1e1e1e; 
         }
-        body { 
-            background-color: var(--dark-bg); 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center; 
-        }
+        body { background-color: var(--dark-bg); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 400px; }
-        
         .screen { display: none; animation: fadeIn 0.3s ease; }
         .active-screen { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .icon { vertical-align: middle; font-size: 20px; }
         
-        /* HEADER */
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .header-title { color: var(--main-green); font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
         .icon-btn { font-size: 28px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; }
         .icon-btn:hover { color: #fff; }
         
-        /* KORT (Cards) */
         .card { background-color: var(--panel-bg); padding: 25px; border-radius: 20px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
@@ -45,12 +33,10 @@
         .input-field:focus { border-color: var(--main-green); }
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.6; }
         
-        /* KNAPPAR */
         .primary-btn { width: 100%; background-color: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.1s; }
         .primary-btn:active { transform: scale(0.98); }
         .danger-btn { width: 100%; background: rgba(255, 69, 0, 0.1); color: #ff4500; border: 1px solid rgba(255, 69, 0, 0.3); padding: 15px; font-size: 14px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; display: flex; justify-content: center; gap: 8px; }
         
-        /* DASHBOARD & SVG RINGAR */
         .dashboard-content { text-align: center; }
         .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; }
         .ring-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
@@ -58,26 +44,24 @@
         .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease; filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.5)); }
         .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         
-        .total-count { font-size: 38px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(57, 255, 20, 0.3); }
-        .goal-count { color: #888; font-size: 11px; letter-spacing: 1px; }
+        .total-count { font-size: 42px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255, 17, 68, 0.3); } /* Anpassad färg för skuggan */
+        .goal-count { color: #888; font-size: 11px; letter-spacing: 1px; margin-top: 5px; }
         
-        /* STATS */
         .stats-grid { display: flex; justify-content: space-between; background-color: var(--panel-bg); padding: 20px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .stat-box { text-align: center; flex: 1; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .stat-value { font-size: 20px; font-weight: bold; color: #fff; }
-        .daily-indicator { color: var(--daily-blue); font-size: 14px; }
+        .daily-indicator { color: var(--daily-red); font-size: 14px; }
         .fire-status { color: #ff4500; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; animation: pulse 1.5s infinite; justify-content: center; gap: 4px; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
-        /* ACTION KNAPPAR */
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .pushup-btn { background-color: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57, 255, 20, 0.3); padding: 18px; font-size: 20px; font-weight: bold; border-radius: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .pushup-btn:active { background-color: var(--main-green); color: var(--dark-bg); transform: scale(0.95); }
         .custom-container { display: flex; gap: 8px; }
-        .custom-btn-main { flex-grow: 1; border-color: rgba(0, 243, 255, 0.3); color: var(--daily-blue); }
-        .custom-btn-main:active { background-color: var(--daily-blue); color: var(--dark-bg); }
-        .custom-settings-btn { width: 55px; border-color: rgba(0, 243, 255, 0.3); color: var(--daily-blue); display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 16px; background-color: #2a2a2a; cursor: pointer; }
+        .custom-btn-main { flex-grow: 1; border-color: rgba(255, 17, 68, 0.3); color: var(--daily-red); }
+        .custom-btn-main:active { background-color: var(--daily-red); color: var(--dark-bg); }
+        .custom-settings-btn { width: 55px; border-color: rgba(255, 17, 68, 0.3); color: var(--daily-red); display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 16px; background-color: #2a2a2a; cursor: pointer; }
         
         .undo-btn { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
         .undo-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
@@ -93,8 +77,10 @@
             </div>
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">login</span> Welcome</h2>
-                <label>Choose a Username:</label>
+                <label>Username:</label>
                 <input type="text" id="inputUsername" class="input-field" placeholder="e.g. IronChest99" autocomplete="off">
+                <label>Password:</label>
+                <input type="password" id="inputPassword" class="input-field" placeholder="Keep it simple">
                 <button class="primary-btn" onclick="loginUser()">
                     <span class="material-symbols-outlined icon">arrow_forward</span> Enter App
                 </button>
@@ -121,8 +107,8 @@
                 <button class="primary-btn" onclick="saveSettings()">
                     <span class="material-symbols-outlined icon">rocket_launch</span> Save & Start
                 </button>
-                <button class="danger-btn" onclick="resetAllData()">
-                    <span class="material-symbols-outlined icon">warning</span> Reset All Progress
+                <button class="danger-btn" onclick="resetProgressData()">
+                    <span class="material-symbols-outlined icon">warning</span> Reset Progress (Keep Account)
                 </button>
             </div>
         </div>
@@ -135,11 +121,11 @@
                     <circle id="svgOuter" class="ring-progress" cx="120" cy="120" r="105" stroke="var(--main-green)" stroke-width="14" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
                     
                     <circle id="svgInnerTrack" class="ring-track" cx="120" cy="120" r="85" stroke-width="14"/>
-                    <circle id="svgInner" class="ring-progress" cx="120" cy="120" r="85" stroke="var(--daily-blue)" stroke-width="14" stroke-dasharray="534" stroke-dashoffset="534"/>
+                    <circle id="svgInner" class="ring-progress" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="14" stroke-dasharray="534" stroke-dashoffset="534"/>
                 </svg>
                 <div class="ring-content">
-                    <p class="total-count" id="currentTotal">0</p>
-                    <p class="goal-count" id="goalText">TOTAL / 0</p>
+                    <p class="total-count" id="centerLargeText">0</p>
+                    <p class="goal-count" id="centerSmallText">TOTAL: 0 / 0</p>
                 </div>
             </div>
 
@@ -174,15 +160,17 @@
             </div>
             
             <button class="undo-btn" onclick="undoLastAction()">
-                <span class="material-symbols-outlined icon">undo</span> Undo Last Action
+                <span class="material-symbols-outlined icon">undo</span> Undo
             </button>
         </div>
 
     </div>
 
     <script>
-        // SÄKER DATAHÄMTNING (Stötdämpare ifall minnet är felformaterat)
-        let username = localStorage.getItem('username') || "";
+        // SÄKER DATAHÄMTNING
+        let localUsername = localStorage.getItem('username') || "";
+        let localPassword = localStorage.getItem('password') || "";
+        
         let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
         let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
         let customAmount = parseInt(localStorage.getItem('customAmount')) || 0;
@@ -190,48 +178,55 @@
         let actionHistory = [];
         try {
             let historyData = localStorage.getItem('actionHistory');
-            if (historyData) {
-                actionHistory = JSON.parse(historyData);
-            }
-        } catch (e) {
-            actionHistory = [];
-        }
+            if (historyData) actionHistory = JSON.parse(historyData);
+        } catch (e) { actionHistory = []; }
 
         let savedTotalGoal = parseInt(localStorage.getItem('totalGoal')) || 0;
         let savedStartDate = localStorage.getItem('startDate') || "";
         let savedEndDate = localStorage.getItem('endDate') || "";
         
-        let calculatedDailyGoal = 0;
-        let calculatedDaysLeft = 0;
-
-        const outerCircumference = 659.7; 
-        const innerCircumference = 534;   
+        let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
+        const outerCircumference = 659.7, innerCircumference = 534;   
 
         function hideAllScreens() {
             let screens = document.querySelectorAll('.screen');
-            for (let i = 0; i < screens.length; i++) {
-                screens[i].classList.remove('active-screen');
-            }
+            for (let i = 0; i < screens.length; i++) screens[i].classList.remove('active-screen');
         }
 
         function checkAppStart() {
-            if (username === "") {
+            if (localUsername === "") {
                 hideAllScreens();
                 document.getElementById('loginScreen').classList.add('active-screen');
                 document.getElementById('mainHeader').style.display = 'none';
             } else {
                 document.getElementById('mainHeader').style.display = 'flex';
-                document.getElementById('greetingTitle').innerText = username + "'s Pro";
+                document.getElementById('greetingTitle').innerText = localUsername + "'s Pro";
                 checkOnboarding();
             }
         }
 
+        // UPPDATERAD LOGIN-LOGIK
         function loginUser() {
-            let inputName = document.getElementById('inputUsername').value.trim();
-            if(inputName === "") { alert("Please enter a username!"); return; }
-            username = inputName;
-            localStorage.setItem('username', username);
-            checkAppStart();
+            let u = document.getElementById('inputUsername').value.trim();
+            let p = document.getElementById('inputPassword').value.trim();
+            
+            if(u === "" || p === "") { alert("Please enter both username and password!"); return; }
+            
+            if (localUsername === "") {
+                // Första gången
+                localStorage.setItem('username', u);
+                localStorage.setItem('password', p);
+                localUsername = u;
+                localPassword = p;
+                checkAppStart();
+            } else {
+                // Återkommande
+                if (u === localUsername && p === localPassword) {
+                    checkAppStart();
+                } else {
+                    alert("Wrong username or password!");
+                }
+            }
         }
 
         function checkAndResetNewDay() {
@@ -257,90 +252,81 @@
         }
 
         function showSetupScreen() {
-            hideAllScreens(); 
-            document.getElementById('setupScreen').classList.add('active-screen');
+            hideAllScreens(); document.getElementById('setupScreen').classList.add('active-screen');
             if (savedTotalGoal > 0) document.getElementById('inputTotalGoal').value = savedTotalGoal;
             if (savedStartDate !== "") document.getElementById('inputStartDate').value = savedStartDate;
             if (savedEndDate !== "") document.getElementById('inputEndDate').value = savedEndDate;
         }
 
         function showDashboard() {
-            hideAllScreens(); 
-            document.getElementById('dashboardScreen').classList.add('active-screen');
+            hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen');
             setTimeout(updateScreen, 50); 
         }
 
         function saveSettings() {
-            let g = document.getElementById('inputTotalGoal').value;
-            let s = document.getElementById('inputStartDate').value;
-            let e = document.getElementById('inputEndDate').value;
-            
+            let g = document.getElementById('inputTotalGoal').value, s = document.getElementById('inputStartDate').value, e = document.getElementById('inputEndDate').value;
             if(!g || !s || !e) { alert("Please fill in all fields!"); return; }
             
-            savedTotalGoal = parseInt(g); 
-            savedStartDate = s; 
-            savedEndDate = e;
+            savedTotalGoal = parseInt(g); savedStartDate = s; savedEndDate = e;
+            localStorage.setItem('totalGoal', savedTotalGoal); localStorage.setItem('startDate', savedStartDate); localStorage.setItem('endDate', savedEndDate);
             
-            localStorage.setItem('totalGoal', savedTotalGoal); 
-            localStorage.setItem('startDate', savedStartDate); 
-            localStorage.setItem('endDate', savedEndDate);
-            
-            checkAndResetNewDay(); 
-            calculateDatesAndGoals(); 
-            showDashboard();
+            checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard();
         }
 
-        function resetAllData() {
-            if(confirm("Are you sure? This deletes everything!")) { 
-                localStorage.clear(); 
+        // UPPDATERAD RESET-LOGIK (Raderar inte konto)
+        function resetProgressData() {
+            if(confirm("Are you sure? This deletes your challenge and pushups, but keeps your login.")) { 
+                localStorage.removeItem('totalPushups');
+                localStorage.removeItem('dailyPushupsDone');
+                localStorage.removeItem('actionHistory');
+                localStorage.removeItem('totalGoal');
+                localStorage.removeItem('startDate');
+                localStorage.removeItem('endDate');
+                localStorage.removeItem('lastLoginDate');
+                localStorage.removeItem('customAmount');
                 location.reload(); 
             }
         }
 
         function calculateDatesAndGoals() {
-            const start = new Date(savedStartDate);
-            const end = new Date(savedEndDate);
-            const today = new Date();
-            
-            start.setHours(0,0,0,0); 
-            end.setHours(0,0,0,0); 
-            today.setHours(0,0,0,0);
+            const start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date();
+            start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
             
             const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
             calculatedDaysLeft = Math.round((end - today) / (1000 * 60 * 60 * 24));
-            
             if (calculatedDaysLeft < 0) calculatedDaysLeft = 0;
             calculatedDailyGoal = totalDays > 0 ? Math.ceil(savedTotalGoal / totalDays) : savedTotalGoal; 
         }
 
         function updateScreen() {
-            document.getElementById('currentTotal').innerText = totalPushups;
-            document.getElementById('goalText').innerText = `TOTAL / ${savedTotalGoal ? savedTotalGoal.toLocaleString('en-US') : 0}`;
+            // Mitten-texterna uppdaterade enligt dina önskemål!
+            document.getElementById('centerLargeText').innerText = dailyPushupsDone;
+            document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${savedTotalGoal ? savedTotalGoal.toLocaleString('en-US') : 0}`;
+            
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
             
-            if (customAmount > 0) {
-                document.getElementById('customBtn').innerText = "+ " + customAmount;
-            }
+            // Säkerställer att Custom-knappen alltid visar rätt
+            document.getElementById('customBtn').innerText = customAmount > 0 ? "+ " + customAmount : "+ Custom";
 
-            // Animerad Yttre Ring (Grön)
+            // Yttre Grön Ring
             let totalPercentage = savedTotalGoal > 0 ? (totalPushups / savedTotalGoal) : 0;
             if (totalPercentage > 1) totalPercentage = 1;
             document.getElementById('svgOuter').style.strokeDashoffset = outerCircumference - (totalPercentage * outerCircumference);
 
-            // Animerad Inre Ring (Blå/Vit)
+            // Inre Ring (Ny logik för Neonröd och Varv 2)
             let dailyPercentage = calculatedDailyGoal > 0 ? (dailyPushupsDone / calculatedDailyGoal) : 0;
             let laps = Math.floor(dailyPercentage);
             let currentLapPercentage = dailyPercentage % 1; 
-            
             let innerOffset = innerCircumference - (currentLapPercentage * innerCircumference);
 
             if (laps === 0) {
                 document.getElementById('svgInnerTrack').setAttribute('stroke', '#222');
-                document.getElementById('svgInner').setAttribute('stroke', 'var(--daily-blue)');
-                document.getElementById('lapIndicator').style.color = 'var(--daily-blue)';
+                document.getElementById('svgInner').setAttribute('stroke', 'var(--daily-red)');
+                document.getElementById('lapIndicator').style.color = 'var(--daily-red)';
             } else {
-                document.getElementById('svgInnerTrack').setAttribute('stroke', 'var(--daily-blue)');
+                // När den är full: Spåret blir solid Röd, ny animation ovanpå i eldig Orange!
+                document.getElementById('svgInnerTrack').setAttribute('stroke', 'var(--daily-red)');
                 document.getElementById('svgInner').setAttribute('stroke', 'var(--lap-color)');
                 document.getElementById('lapIndicator').style.color = 'var(--lap-color)';
             }
@@ -351,55 +337,31 @@
         }
 
         function addPushups(amount) {
-            checkAndResetNewDay(); 
-            totalPushups += amount; 
-            dailyPushupsDone += amount; 
-            
-            actionHistory.push(amount); 
-            localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
-            
-            localStorage.setItem('totalPushups', totalPushups); 
-            localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
+            checkAndResetNewDay(); totalPushups += amount; dailyPushupsDone += amount; 
+            actionHistory.push(amount); localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
             updateScreen();
         }
 
         function undoLastAction() {
             if (actionHistory.length === 0) { alert("Nothing to undo!"); return; }
-            let lastAmount = actionHistory.pop(); 
-            totalPushups -= lastAmount; 
-            dailyPushupsDone -= lastAmount;
-            
-            if (totalPushups < 0) totalPushups = 0; 
-            if (dailyPushupsDone < 0) dailyPushupsDone = 0;
-            
-            localStorage.setItem('totalPushups', totalPushups); 
-            localStorage.setItem('dailyPushupsDone', dailyPushupsDone); 
-            localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            let lastAmount = actionHistory.pop(); totalPushups -= lastAmount; dailyPushupsDone -= lastAmount;
+            if (totalPushups < 0) totalPushups = 0; if (dailyPushupsDone < 0) dailyPushupsDone = 0;
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone); localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
             updateScreen();
         }
 
         function setCustomAmount() {
             let input = prompt("Choose amount for Custom button:", customAmount > 0 ? customAmount : "30");
             let parsedNumber = parseInt(input);
-            if (!isNaN(parsedNumber) && parsedNumber > 0) { 
-                customAmount = parsedNumber; 
-                localStorage.setItem('customAmount', customAmount); 
-                updateScreen(); 
-            }
+            if (!isNaN(parsedNumber) && parsedNumber > 0) { customAmount = parsedNumber; localStorage.setItem('customAmount', customAmount); updateScreen(); }
         }
 
         function addCustom() { 
-            if (customAmount === 0) {
-                setCustomAmount(); 
-            } else {
-                addPushups(customAmount); 
-            }
+            if (customAmount === 0) setCustomAmount(); else addPushups(customAmount); 
         }
 
-        // Huvudstarten - Körs när hela sidan har lästs in
-        window.onload = function() {
-            checkAppStart();
-        };
+        window.onload = function() { checkAppStart(); };
     </script>
 </body>
 </html>
