@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PushUp Tracker</title>
     <style>
+        :root {
+            --main-green: #39ff14;
+            --daily-blue: #00f3ff;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+        }
         body {
-            background-color: #121212;
+            background-color: var(--dark-bg);
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -20,43 +26,59 @@
             text-align: center;
         }
         .header {
-            color: #39ff14;
+            color: var(--main-green);
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 30px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
-        .progress-circle {
-            width: 200px;
-            height: 200px;
+
+        /* --- NY CIRKEL-STRUKTUR --- */
+        /* Den yttre ringen (Totalmålet - Grön) */
+        .circle-outer {
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            background: conic-gradient(#39ff14 0%, #333 0%);
+            background: conic-gradient(var(--main-green) 0%, #333 0%);
             margin: 0 auto 30px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.15);
             transition: background 0.3s ease;
         }
-        .progress-inner {
-            width: 170px;
-            height: 170px;
-            background-color: #121212;
+        /* Den inre ringen (Dagsmålet - Blå) */
+        .circle-inner {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(var(--daily-blue) 0%, var(--darker-bg) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        /* Hålet i mitten där texten står */
+        .circle-mask {
+            width: 150px;
+            height: 150px;
+            background-color: var(--dark-bg);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
+
         .total-count {
-            font-size: 40px;
+            font-size: 36px;
             font-weight: bold;
             margin: 0;
         }
         .goal-count {
             color: #888;
-            font-size: 14px;
+            font-size: 12px;
         }
         .stats-grid {
             display: flex;
@@ -68,56 +90,81 @@
         }
         .stat-box {
             text-align: center;
+            flex: 1;
         }
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .stat-value {
             font-size: 18px;
             font-weight: bold;
             color: #fff;
         }
+        /* En liten blå indikator för dagsmålet */
+        .daily-indicator { color: var(--daily-blue); }
+
         .fire-status {
             color: #ff4500;
             font-weight: bold;
-            display: none;
+            font-size: 14px;
+            display: none; /* Dold tills man når dagens mål */
             margin-top: 5px;
+            animation: pulse 1.5s infinite;
         }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         .action-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        button {
+        .pushup-btn {
             background-color: #2a2a2a;
-            color: #39ff14;
-            border: 2px solid #39ff14;
+            color: var(--main-green);
+            border: 2px solid var(--main-green);
             padding: 15px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
         }
-        button:active {
-            background-color: #39ff14;
-            color: #121212;
+        .pushup-btn:active {
+            background-color: var(--main-green);
+            color: var(--dark-bg);
+            transform: scale(0.98);
         }
-        .custom-btn {
-            border-color: #00f3ff;
-            color: #00f3ff;
+
+        /* --- NY CUSTOM KNAPP-DESIGN --- */
+        .custom-container {
+            display: flex;
+            gap: 10px;
         }
-        .custom-btn:active {
-            background-color: #00f3ff;
-            color: #121212;
+        .custom-btn-main {
+            flex-grow: 1; /* Tar upp mest plats */
+            border-color: var(--daily-blue);
+            color: var(--daily-blue);
         }
-        .edit-custom {
-            color: #00f3ff;
-            font-size: 14px;
-            margin-top: 15px;
-            cursor: pointer;
-            text-decoration: underline;
+        .custom-btn-main:active {
+            background-color: var(--daily-blue);
+            color: var(--dark-bg);
+        }
+        .custom-settings-icon {
+            width: 50px;
+            font-size: 20px;
+            border-color: var(--daily-blue);
+            color: var(--daily-blue);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
@@ -126,56 +173,80 @@
     <div class="app-container">
         <div class="header">PushUp Pro</div>
         
-        <div class="progress-circle" id="progressCircle">
-            <div class="progress-inner">
-                <p class="total-count" id="currentTotal">0</p>
-                <p class="goal-count">/ 10 000</p>
+        <div class="circle-outer" id="outerCircle">
+            <div class="circle-inner" id="innerCircle">
+                <div class="circle-mask">
+                    <p class="total-count" id="currentTotal">0</p>
+                    <p class="goal-count">TOTALT / 10k</p>
+                </div>
             </div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-box">
-                <div class="stat-label">DAGENS SNITT</div>
-                <div class="stat-value">322</div>
+                <div class="stat-label"><span class="daily-indicator">●</span> Dagens Mål</div>
+                <div class="stat-value" id="dailyProgressText">0 / 322</div>
                 <div class="fire-status" id="fireStatus">🔥 ON FIRE!</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">DAGAR KVAR</div>
+                <div class="stat-label">Dagar Kvar</div>
                 <div class="stat-value">31</div>
             </div>
         </div>
 
         <div class="action-buttons">
-            <button onclick="addPushups(10)">+ 10</button>
-            <button onclick="addPushups(15)">+ 15</button>
-            <button onclick="addPushups(20)">+ 20</button>
-            <button class="custom-btn" id="customBtn" onclick="addCustom()">+ Custom</button>
+            <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
+            <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
+            <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
+            
+            <div class="custom-container">
+                <button class="pushup-btn custom-btn-main" id="customBtn" onclick="addCustom()">+ Custom</button>
+                <button class="pushup-btn custom-settings-icon" onclick="setCustomAmount()">🖌️</button>
+            </div>
         </div>
-        
-        <div class="edit-custom" onclick="setCustomAmount()">Ändra Custom-värde ⚙️</div>
     </div>
 
     <script>
+        // --- APPENS HJÄRNA ---
         let totalPushups = 0;
+        // FÖR NUVARANDE: Vi låtsas att alla armhävningar är gjorda "idag" 
+        // tills vi bygger den riktiga databasen som nollställer varje natt.
+        let dailyPushupsDone = 0; 
+        
         let customAmount = 0; 
-        const goal = 10000;
+        
+        const totalGoal = 10000;
         const dailyGoal = 322; 
 
         function addPushups(amount) {
+            // Uppdatera siffrorna
             totalPushups += amount;
-            document.getElementById('currentTotal').innerText = totalPushups;
-            
-            let percentage = (totalPushups / goal) * 100;
-            if (percentage > 100) percentage = 100; 
-            document.getElementById('progressCircle').style.background = `conic-gradient(#39ff14 ${percentage}%, #333 0%)`;
+            dailyPushupsDone += amount; // Just nu följer dessa varandra
 
-            if(totalPushups >= dailyGoal) {
+            // Uppdatera texten på skärmen
+            document.getElementById('currentTotal').innerText = totalPushups;
+            document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${dailyGoal}`;
+            
+            // --- UPPDATERA CIRKLARNA ---
+            
+            // 1. Yttre ringen (Totala målet - Grön)
+            let totalPercentage = (totalPushups / totalGoal) * 100;
+            if (totalPercentage > 100) totalPercentage = 100;
+            document.getElementById('outerCircle').style.background = `conic-gradient(var(--main-green) ${totalPercentage}%, #333 0%)`;
+
+            // 2. Inre ringen (Dagens mål - Blå)
+            let dailyPercentage = (dailyPushupsDone / dailyGoal) * 100;
+            if (dailyPercentage > 100) dailyPercentage = 100;
+            document.getElementById('innerCircle').style.background = `conic-gradient(var(--daily-blue) ${dailyPercentage}%, var(--darker-bg) 0%)`;
+
+            // Kolla om vi är "On Fire"
+            if(dailyPushupsDone >= dailyGoal) {
                 document.getElementById('fireStatus').style.display = 'block';
             }
         }
 
         function setCustomAmount() {
-            let input = prompt("Hur många armhävningar vill du att Custom-knappen ska lägga till?", "25");
+            let input = prompt("Välj antal för Custom-knappen:", "30");
             let parsedNumber = parseInt(input);
             
             if (!isNaN(parsedNumber) && parsedNumber > 0) {
