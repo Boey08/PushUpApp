@@ -8,7 +8,7 @@
         :root {
             --main-green: #39ff14;
             --daily-blue: #00f3ff;
-            --lap-color: #ffffff; /* Färgen för varv 2 (när du passerar målet) */
+            --lap-color: #ffffff;
             --dark-bg: #121212;
             --darker-bg: #0a0a0a;
         }
@@ -24,17 +24,76 @@
         .app-container {
             width: 100%;
             max-width: 400px;
-            text-align: center;
         }
-        .header {
+        
+        /* Hanterar vilka skärmar som visas */
+        .screen { display: none; }
+        .active-screen { display: block; }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-title {
             color: var(--main-green);
             font-size: 24px;
             font-weight: bold;
-            margin-bottom: 30px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin: 0;
+        }
+        .settings-icon {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #888;
+            padding: 0;
         }
 
+        /* --- STIL FÖR INSTÄLLNINGAR --- */
+        .setup-card {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+        }
+        .setup-card label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: var(--darker-bg);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box; /* Ser till att den inte svämmar över kanten */
+        }
+        .save-btn {
+            width: 100%;
+            background-color: var(--main-green);
+            color: var(--dark-bg);
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* --- STIL FÖR DASHBOARD (Samma som innan) --- */
+        .dashboard-content { text-align: center; }
         .circle-outer {
             width: 220px;
             height: 220px;
@@ -68,15 +127,8 @@
             justify-content: center;
         }
 
-        .total-count {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .goal-count {
-            color: #888;
-            font-size: 12px;
-        }
+        .total-count { font-size: 36px; font-weight: bold; margin: 0; }
+        .goal-count { color: #888; font-size: 12px; }
         .stats-grid {
             display: flex;
             justify-content: space-between;
@@ -85,30 +137,13 @@
             border-radius: 15px;
             margin-bottom: 30px;
         }
-        .stat-box {
-            text-align: center;
-            flex: 1;
-        }
-        .stat-label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-        }
+        .stat-box { text-align: center; flex: 1; }
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 18px; font-weight: bold; color: #fff; }
         .daily-indicator { color: var(--daily-blue); }
 
         .fire-status {
-            color: #ff4500;
-            font-weight: bold;
-            font-size: 14px;
-            display: none; 
-            margin-top: 5px;
-            animation: pulse 1.5s infinite;
+            color: #ff4500; font-weight: bold; font-size: 14px; display: none; margin-top: 5px; animation: pulse 1.5s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
@@ -116,170 +151,236 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .pushup-btn {
-            background-color: #2a2a2a;
-            color: var(--main-green);
-            border: 2px solid var(--main-green);
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.1s;
+            background-color: #2a2a2a; color: var(--main-green); border: 2px solid var(--main-green);
+            padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: all 0.1s;
         }
-        .pushup-btn:active {
-            background-color: var(--main-green);
-            color: var(--dark-bg);
-            transform: scale(0.98);
-        }
-
-        .custom-container {
-            display: flex;
-            gap: 10px;
-        }
-        .custom-btn-main {
-            flex-grow: 1; 
-            border-color: var(--daily-blue);
-            color: var(--daily-blue);
-        }
-        .custom-btn-main:active {
-            background-color: var(--daily-blue);
-            color: var(--dark-bg);
-        }
-        .custom-settings-icon {
-            width: 50px;
-            font-size: 20px;
-            border-color: var(--daily-blue);
-            color: var(--daily-blue);
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .pushup-btn:active { background-color: var(--main-green); color: var(--dark-bg); transform: scale(0.98); }
+        .custom-container { display: flex; gap: 10px; }
+        .custom-btn-main { flex-grow: 1; border-color: var(--daily-blue); color: var(--daily-blue); }
+        .custom-btn-main:active { background-color: var(--daily-blue); color: var(--dark-bg); }
+        .custom-settings-icon { width: 50px; font-size: 20px; border-color: var(--daily-blue); color: var(--daily-blue); padding: 0; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div class="header">PushUp Pro</div>
         
-        <div class="circle-outer" id="outerCircle">
-            <div class="circle-inner" id="innerCircle">
-                <div class="circle-mask">
-                    <p class="total-count" id="currentTotal">0</p>
-                    <p class="goal-count">TOTALT / 10k</p>
+        <div class="header-bar">
+            <h1 class="header-title">PushUp Pro</h1>
+            <button class="settings-icon" onclick="showSetupScreen()">⚙️</button>
+        </div>
+
+        <div id="setupScreen" class="screen">
+            <div class="setup-card">
+                <h2>Din Utmaning</h2>
+                
+                <label>Totalt mål (Antal):</label>
+                <input type="number" id="inputTotalGoal" class="input-field" placeholder="t.ex. 10000">
+
+                <label>Startdatum:</label>
+                <input type="date" id="inputStartDate" class="input-field">
+
+                <label>Slutdatum:</label>
+                <input type="date" id="inputEndDate" class="input-field">
+
+                <button class="save-btn" onclick="saveSettings()">Spara & Kör igång 🚀</button>
+            </div>
+        </div>
+
+        <div id="dashboardScreen" class="screen dashboard-content">
+            <div class="circle-outer" id="outerCircle">
+                <div class="circle-inner" id="innerCircle">
+                    <div class="circle-mask">
+                        <p class="total-count" id="currentTotal">0</p>
+                        <p class="goal-count" id="goalText">TOTALT / 0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label"><span class="daily-indicator" id="lapIndicator">●</span> Dagens Mål</div>
+                    <div class="stat-value" id="dailyProgressText">0 / 0</div>
+                    <div class="fire-status" id="fireStatus">🔥 ON FIRE!</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Dagar Kvar</div>
+                    <div class="stat-value" id="daysLeftText">0</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
+                <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
+                <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
+                <div class="custom-container">
+                    <button class="pushup-btn custom-btn-main" id="customBtn" onclick="addCustom()">+ Custom</button>
+                    <button class="pushup-btn custom-settings-icon" onclick="setCustomAmount()">🖌️</button>
                 </div>
             </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-label"><span class="daily-indicator" id="lapIndicator">●</span> Dagens Mål</div>
-                <div class="stat-value" id="dailyProgressText">0 / 322</div>
-                <div class="fire-status" id="fireStatus">🔥 ON FIRE!</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Dagar Kvar</div>
-                <div class="stat-value">31</div>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
-            <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
-            <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
-            
-            <div class="custom-container">
-                <button class="pushup-btn custom-btn-main" id="customBtn" onclick="addCustom()">+ Custom</button>
-                <button class="pushup-btn custom-settings-icon" onclick="setCustomAmount()">🖌️</button>
-            </div>
-        </div>
     </div>
 
     <script>
-        // --- 1. HÄMTA DATA FRÅN MINNET (ELLER BÖRJA PÅ 0) ---
+        // --- 1. HÄMTA DATA (Och inställningar) FRÅN MINNET ---
         let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
         let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
         let customAmount = parseInt(localStorage.getItem('customAmount')) || 0;
         
-        const totalGoal = 10000;
-        const dailyGoal = 322; 
+        let savedTotalGoal = parseInt(localStorage.getItem('totalGoal')); // Inget standardvärde, vi vill veta om den är tom!
+        let savedStartDate = localStorage.getItem('startDate');
+        let savedEndDate = localStorage.getItem('endDate');
 
-        // --- 2. UPPDATERA SKÄRMEN DIREKT NÄR APPEN STARTAR ---
+        // Dynamiska variabler som räknas ut av datum
+        let calculatedDailyGoal = 0;
+        let calculatedDaysLeft = 0;
+
+        // --- 2. HANTERA SKÄRMAR OCH INSTÄLLNINGAR ---
+        function checkOnboarding() {
+            // Har användaren ett mål satt?
+            if (!savedTotalGoal || !savedStartDate || !savedEndDate) {
+                showSetupScreen();
+            } else {
+                calculateDatesAndGoals();
+                showDashboard();
+            }
+        }
+
+        function showSetupScreen() {
+            document.getElementById('dashboardScreen').classList.remove('active-screen');
+            document.getElementById('setupScreen').classList.add('active-screen');
+            
+            // Fyll i fälten om man redan har data
+            if(savedTotalGoal) document.getElementById('inputTotalGoal').value = savedTotalGoal;
+            if(savedStartDate) document.getElementById('inputStartDate').value = savedStartDate;
+            if(savedEndDate) document.getElementById('inputEndDate').value = savedEndDate;
+        }
+
+        function showDashboard() {
+            document.getElementById('setupScreen').classList.remove('active-screen');
+            document.getElementById('dashboardScreen').classList.add('active-screen');
+            updateScreen();
+        }
+
+        function saveSettings() {
+            let goalInput = document.getElementById('inputTotalGoal').value;
+            let startInput = document.getElementById('inputStartDate').value;
+            let endInput = document.getElementById('inputEndDate').value;
+
+            // Kontrollera att allt är ifyllt
+            if(!goalInput || !startInput || !endInput) {
+                alert("Vänligen fyll i alla fält!");
+                return;
+            }
+
+            // Spara till variabler och Local Storage
+            savedTotalGoal = parseInt(goalInput);
+            savedStartDate = startInput;
+            savedEndDate = endInput;
+
+            localStorage.setItem('totalGoal', savedTotalGoal);
+            localStorage.setItem('startDate', savedStartDate);
+            localStorage.setItem('endDate', savedEndDate);
+
+            calculateDatesAndGoals();
+            showDashboard();
+        }
+
+        // --- 3. DATUM-MATEMATIK ---
+        function calculateDatesAndGoals() {
+            const start = new Date(savedStartDate);
+            const end = new Date(savedEndDate);
+            const today = new Date();
+            
+            // Nollställ tiden för att undvika strul med timmar/minuter
+            start.setHours(0,0,0,0);
+            end.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            // Räkna ut totala antalet dagar utmaningen pågår (+1 för att inkludera sista dagen)
+            const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Räkna ut hur många dagar som är kvar från IDAG
+            calculatedDaysLeft = Math.round((end - today) / (1000 * 60 * 60 * 24));
+            if (calculatedDaysLeft < 0) calculatedDaysLeft = 0; // Utmaningen är över
+
+            // Räkna ut det dagliga snittet (Totalmål / Totala dagar) - Avrundat uppåt
+            if (totalDays > 0) {
+                calculatedDailyGoal = Math.ceil(savedTotalGoal / totalDays);
+            } else {
+                calculatedDailyGoal = savedTotalGoal; // Fallback om datumen är knasiga
+            }
+        }
+
+        // --- 4. UPPDATERA SKÄRM OCH KNAPPAR (Dashboard) ---
         function updateScreen() {
             document.getElementById('currentTotal').innerText = totalPushups;
-            document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${dailyGoal}`;
+            
+            // Fixa formateringen (t.ex. 10 000 istället för 10000)
+            let formattedGoal = savedTotalGoal.toLocaleString('sv-SE');
+            document.getElementById('goalText').innerText = `TOTALT / ${formattedGoal}`;
+            
+            document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal}`;
+            document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
             
             if (customAmount > 0) {
                 document.getElementById('customBtn').innerText = "+ " + customAmount;
             }
 
             // Yttre ringen
-            let totalPercentage = (totalPushups / totalGoal) * 100;
+            let totalPercentage = (totalPushups / savedTotalGoal) * 100;
             if (totalPercentage > 100) totalPercentage = 100;
             document.getElementById('outerCircle').style.background = `conic-gradient(var(--main-green) ${totalPercentage}%, #333 0%)`;
 
-            // Inre ringen (Apple Activity Style)
-            let dailyPercentage = (dailyPushupsDone / dailyGoal) * 100;
-            let laps = Math.floor(dailyPercentage / 100); // Hur många hela varv har vi snurrat?
-            let currentLapPercentage = dailyPercentage % 100; // Hur många procent är vi på i det aktuella varvet?
+            // Inre ringen
+            let dailyPercentage = calculatedDailyGoal > 0 ? (dailyPushupsDone / calculatedDailyGoal) * 100 : 0;
+            let laps = Math.floor(dailyPercentage / 100); 
+            let currentLapPercentage = dailyPercentage % 100;
 
             if (laps === 0) {
-                // Första varvet: Vanlig blå färg
                 document.getElementById('innerCircle').style.background = `conic-gradient(var(--daily-blue) ${currentLapPercentage}%, var(--darker-bg) 0%)`;
                 document.getElementById('lapIndicator').style.color = 'var(--daily-blue)';
             } else {
-                // Andra varvet (eller fler): Vit ring ritas OVANPÅ den blåa!
                 document.getElementById('innerCircle').style.background = `conic-gradient(var(--lap-color) ${currentLapPercentage}%, var(--daily-blue) 0%)`;
-                document.getElementById('lapIndicator').style.color = 'var(--lap-color)'; // Ändra den lilla pricken till vit också
+                document.getElementById('lapIndicator').style.color = 'var(--lap-color)';
             }
 
-            // Fire-status
-            if(dailyPushupsDone >= dailyGoal) {
+            if(dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) {
                 document.getElementById('fireStatus').style.display = 'block';
             } else {
                 document.getElementById('fireStatus').style.display = 'none';
             }
         }
 
-        // --- 3. LÄGG TILL OCH SPARA I MINNET ---
         function addPushups(amount) {
             totalPushups += amount;
             dailyPushupsDone += amount; 
-
-            // Spara i Local Storage
             localStorage.setItem('totalPushups', totalPushups);
             localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
-
             updateScreen();
         }
 
         function setCustomAmount() {
             let input = prompt("Välj antal för Custom-knappen:", customAmount > 0 ? customAmount : "30");
             let parsedNumber = parseInt(input);
-            
             if (!isNaN(parsedNumber) && parsedNumber > 0) {
                 customAmount = parsedNumber;
-                localStorage.setItem('customAmount', customAmount); // Spara valet
+                localStorage.setItem('customAmount', customAmount);
                 updateScreen();
             }
         }
 
         function addCustom() {
-            if (customAmount === 0) {
-                setCustomAmount();
-            } else {
-                addPushups(customAmount);
-            }
+            if (customAmount === 0) setCustomAmount();
+            else addPushups(customAmount);
         }
 
-        // Kör funktionen en gång när sidan laddas för att rita upp allt
-        updateScreen();
+        // --- STARTA APPEN ---
+        // Kollar om vi ska visa Dashboard eller Setup
+        checkOnboarding(); 
     </script>
 
 </body>
