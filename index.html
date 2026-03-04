@@ -8,6 +8,7 @@
         :root {
             --main-green: #39ff14;
             --daily-blue: #00f3ff;
+            --lap-color: #ffffff; /* Färgen för varv 2 (när du passerar målet) */
             --dark-bg: #121212;
             --darker-bg: #0a0a0a;
         }
@@ -34,8 +35,6 @@
             letter-spacing: 2px;
         }
 
-        /* --- NY CIRKEL-STRUKTUR --- */
-        /* Den yttre ringen (Totalmålet - Grön) */
         .circle-outer {
             width: 220px;
             height: 220px;
@@ -48,7 +47,6 @@
             box-shadow: 0 0 25px rgba(57, 255, 20, 0.15);
             transition: background 0.3s ease;
         }
-        /* Den inre ringen (Dagsmålet - Blå) */
         .circle-inner {
             width: 180px;
             height: 180px;
@@ -59,7 +57,6 @@
             justify-content: center;
             transition: background 0.3s ease;
         }
-        /* Hålet i mitten där texten står */
         .circle-mask {
             width: 150px;
             height: 150px;
@@ -103,14 +100,13 @@
             font-weight: bold;
             color: #fff;
         }
-        /* En liten blå indikator för dagsmålet */
         .daily-indicator { color: var(--daily-blue); }
 
         .fire-status {
             color: #ff4500;
             font-weight: bold;
             font-size: 14px;
-            display: none; /* Dold tills man når dagens mål */
+            display: none; 
             margin-top: 5px;
             animation: pulse 1.5s infinite;
         }
@@ -142,13 +138,12 @@
             transform: scale(0.98);
         }
 
-        /* --- NY CUSTOM KNAPP-DESIGN --- */
         .custom-container {
             display: flex;
             gap: 10px;
         }
         .custom-btn-main {
-            flex-grow: 1; /* Tar upp mest plats */
+            flex-grow: 1; 
             border-color: var(--daily-blue);
             color: var(--daily-blue);
         }
@@ -184,7 +179,7 @@
 
         <div class="stats-grid">
             <div class="stat-box">
-                <div class="stat-label"><span class="daily-indicator">●</span> Dagens Mål</div>
+                <div class="stat-label"><span class="daily-indicator" id="lapIndicator">●</span> Dagens Mål</div>
                 <div class="stat-value" id="dailyProgressText">0 / 322</div>
                 <div class="fire-status" id="fireStatus">🔥 ON FIRE!</div>
             </div>
@@ -207,51 +202,71 @@
     </div>
 
     <script>
-        // --- APPENS HJÄRNA ---
-        let totalPushups = 0;
-        // FÖR NUVARANDE: Vi låtsas att alla armhävningar är gjorda "idag" 
-        // tills vi bygger den riktiga databasen som nollställer varje natt.
-        let dailyPushupsDone = 0; 
-        
-        let customAmount = 0; 
+        // --- 1. HÄMTA DATA FRÅN MINNET (ELLER BÖRJA PÅ 0) ---
+        let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
+        let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
+        let customAmount = parseInt(localStorage.getItem('customAmount')) || 0;
         
         const totalGoal = 10000;
         const dailyGoal = 322; 
 
-        function addPushups(amount) {
-            // Uppdatera siffrorna
-            totalPushups += amount;
-            dailyPushupsDone += amount; // Just nu följer dessa varandra
-
-            // Uppdatera texten på skärmen
+        // --- 2. UPPDATERA SKÄRMEN DIREKT NÄR APPEN STARTAR ---
+        function updateScreen() {
             document.getElementById('currentTotal').innerText = totalPushups;
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${dailyGoal}`;
             
-            // --- UPPDATERA CIRKLARNA ---
-            
-            // 1. Yttre ringen (Totala målet - Grön)
+            if (customAmount > 0) {
+                document.getElementById('customBtn').innerText = "+ " + customAmount;
+            }
+
+            // Yttre ringen
             let totalPercentage = (totalPushups / totalGoal) * 100;
             if (totalPercentage > 100) totalPercentage = 100;
             document.getElementById('outerCircle').style.background = `conic-gradient(var(--main-green) ${totalPercentage}%, #333 0%)`;
 
-            // 2. Inre ringen (Dagens mål - Blå)
+            // Inre ringen (Apple Activity Style)
             let dailyPercentage = (dailyPushupsDone / dailyGoal) * 100;
-            if (dailyPercentage > 100) dailyPercentage = 100;
-            document.getElementById('innerCircle').style.background = `conic-gradient(var(--daily-blue) ${dailyPercentage}%, var(--darker-bg) 0%)`;
+            let laps = Math.floor(dailyPercentage / 100); // Hur många hela varv har vi snurrat?
+            let currentLapPercentage = dailyPercentage % 100; // Hur många procent är vi på i det aktuella varvet?
 
-            // Kolla om vi är "On Fire"
+            if (laps === 0) {
+                // Första varvet: Vanlig blå färg
+                document.getElementById('innerCircle').style.background = `conic-gradient(var(--daily-blue) ${currentLapPercentage}%, var(--darker-bg) 0%)`;
+                document.getElementById('lapIndicator').style.color = 'var(--daily-blue)';
+            } else {
+                // Andra varvet (eller fler): Vit ring ritas OVANPÅ den blåa!
+                document.getElementById('innerCircle').style.background = `conic-gradient(var(--lap-color) ${currentLapPercentage}%, var(--daily-blue) 0%)`;
+                document.getElementById('lapIndicator').style.color = 'var(--lap-color)'; // Ändra den lilla pricken till vit också
+            }
+
+            // Fire-status
             if(dailyPushupsDone >= dailyGoal) {
                 document.getElementById('fireStatus').style.display = 'block';
+            } else {
+                document.getElementById('fireStatus').style.display = 'none';
             }
         }
 
+        // --- 3. LÄGG TILL OCH SPARA I MINNET ---
+        function addPushups(amount) {
+            totalPushups += amount;
+            dailyPushupsDone += amount; 
+
+            // Spara i Local Storage
+            localStorage.setItem('totalPushups', totalPushups);
+            localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
+
+            updateScreen();
+        }
+
         function setCustomAmount() {
-            let input = prompt("Välj antal för Custom-knappen:", "30");
+            let input = prompt("Välj antal för Custom-knappen:", customAmount > 0 ? customAmount : "30");
             let parsedNumber = parseInt(input);
             
             if (!isNaN(parsedNumber) && parsedNumber > 0) {
                 customAmount = parsedNumber;
-                document.getElementById('customBtn').innerText = "+ " + customAmount;
+                localStorage.setItem('customAmount', customAmount); // Spara valet
+                updateScreen();
             }
         }
 
@@ -262,6 +277,9 @@
                 addPushups(customAmount);
             }
         }
+
+        // Kör funktionen en gång när sidan laddas för att rita upp allt
+        updateScreen();
     </script>
 
 </body>
