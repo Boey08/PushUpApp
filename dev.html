@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pushup Days</title>
-    
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="icon" type="image/png" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#121212">
+    <title>Pushup Days (DEV)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,22 +14,21 @@
     
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
-        body { background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh;}
+        body { background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 15px 20px; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh;}
         .app-container { width: 100%; max-width: 400px; }
         .screen { display: none; animation: fadeIn 0.3s ease; } .active-screen { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .icon { vertical-align: middle; font-size: 20px; }
         
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .brand-area { cursor: pointer; transition: transform 0.2s; } .brand-area:active { transform: scale(0.95); }
-        .header-title { font-size: 28px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, var(--main-green) 20%, var(--c1) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); }
+        .header-title { font-size: 26px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, var(--main-green) 20%, var(--c1) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); }
         .header-icons { display: flex; gap: 12px; }
         .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; } .icon-btn:hover { color: #fff; }
         
         .card { background: var(--panel-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2a2a; text-align: left; }
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-        .sub-label { font-size: 11px; color: #666; margin-top: -6px; margin-bottom: 10px; display: block; }
         .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; font-family: 'Segoe UI', Tahoma, sans-serif; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
         .input-field:focus { border-color: var(--main-green); }
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; padding-right: 5px; }
@@ -48,32 +41,33 @@
         .mode-tab.active { background: rgba(57,255,20,.1); color: var(--main-green); border-color: var(--main-green); }
         
         .dashboard-content { text-align: center; }
-        .user-greeting { font-size: 16px; color: #aaa; margin-bottom: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; }
+        .user-greeting { font-size: 15px; color: #aaa; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
         .ring-svg { transform: rotate(-90deg); position: absolute; width: 100%; height: 100%; z-index: 5; overflow: visible; }
         .ring-track { fill: none; stroke: #222; }
         .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5)); }
-        .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,.8); }
-        .total-count { font-size: 40px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255,17,68,.3); } .goal-count { color: #888; font-size: 12px; margin-top: 5px; letter-spacing: 1px;}
+        .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--dark-bg); width: 130px; height: 130px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,.8); }
+        .total-count { font-size: 36px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255,17,68,.3); } 
+        .goal-count { color: #888; font-size: 11px; margin-top: 4px; letter-spacing: 1px;}
         
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--panel-bg); padding: 15px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
-        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
-        .stat-value { font-size: 18px; font-weight: bold; }
-        .fire-status { color: #ffaa00; font-weight: bold; font-size: 14px; display: none; margin-top: 5px; animation: pulse 1s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; } 
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
+        .stat-value { font-size: 16px; font-weight: bold; }
+        .fire-status { color: #ffaa00; font-weight: bold; font-size: 13px; display: none; margin-top: 2px; animation: pulse 1s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         
-        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 18px; font-size: 20px; font-weight: bold; border-radius: 16px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
-        .custom-container { display: flex; gap: 8px; } .custom-btn-main { flex-grow: 1; }
-        .custom-settings-btn { width: 55px; border-radius: 16px; background: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #888; display: flex; align-items: center; justify-content: center; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
+        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 14px; font-size: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
+        .custom-container { display: flex; gap: 6px; } .custom-btn-main { flex-grow: 1; }
+        .custom-settings-btn { width: 45px; border-radius: 14px; background: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #888; display: flex; align-items: center; justify-content: center; }
         .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
-        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 10px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
         
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-box { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444; background: #333; }
         .lb-rank { font-size: 22px; font-weight: 900; color: #666; width: 35px; }
@@ -104,7 +98,7 @@
     
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        Connecting to Cloud...
+        DEV Environment...
     </div>
 
     <div id="celebrationOverlay" class="celebration-overlay">
@@ -118,6 +112,7 @@
         <div id="loginScreen" class="screen">
             <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
                 <h1 class="header-title" style="font-size: 42px;">Pushup Days</h1>
+                <p style="color: #ffaa00; font-weight: bold; font-size: 12px; margin-top: 5px;">DEVELOPMENT MODE</p>
             </div>
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">cloud_done</span> Cloud Login</h2>
@@ -164,7 +159,7 @@
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">calendar_today</span> Days Left</div><div class="stat-value" id="daysLeftText">0</div></div>
             </div>
             <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
-            <div class="action-buttons" style="margin-top: 20px;">
+            <div class="action-buttons">
                 <button class="pushup-btn" onclick="addPushups(10)">+ 10</button><button class="pushup-btn" onclick="addPushups(15)">+ 15</button><button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-1" id="customBtn0" onclick="addCustom(0)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(0)"><span class="material-symbols-outlined icon">edit</span></button></div>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-2" id="customBtn1" onclick="addCustom(1)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(1)"><span class="material-symbols-outlined icon">edit</span></button></div>
@@ -176,12 +171,14 @@
         <div id="friendsScreen" class="screen">
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
-                <p style="font-size: 12px; color: #888; margin-top: -10px;">Search username to add friends.</p>
+                <p style="font-size: 12px; color: #888; margin-top: -10px;">Start typing a name to search the cloud.</p>
+                
                 <div class="search-box">
-                    <input type="text" id="friendSearchInput" class="input-field" style="margin-bottom:0;" placeholder="Athlete name..." autocomplete="off">
-                    <button class="primary-btn" style="width:auto; margin-bottom:0; padding: 15px 20px;" onclick="searchFriend()"><span class="material-symbols-outlined">search</span></button>
+                    <input type="text" id="friendSearchInput" class="input-field" style="margin-bottom:0;" placeholder="Search athletes..." autocomplete="off" onkeyup="liveSearchFriends()">
+                    <div id="searchResultArea" style="max-height: 180px; overflow-y: auto; border-radius: 12px;"></div>
                 </div>
-                <div id="searchResultArea" style="margin-bottom: 20px;"></div>
+                
+                <h3 style="font-size: 14px; margin-top: 25px; border-bottom: 1px solid #333; padding-bottom: 5px;">Your List</h3>
                 <div id="friendsListContainer">Loading your friends...</div>
             </div>
         </div>
@@ -201,7 +198,10 @@
                     <button class="icon-btn" onclick="changeFriendMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid" id="friendCalendarGrid"></div>
-                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showLeaderboardScreen()">Back</button>
+                
+                <button id="removeFriendBtn" class="danger-btn" style="background:rgba(255,69,0,0.1); border-color:rgba(255,69,0,0.3); color:#ff4500; width:100%; margin-top:25px; display:none;">Remove Friend</button>
+                
+                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 10px;" onclick="showLeaderboardScreen()">Back</button>
             </div>
         </div>
 
@@ -275,11 +275,16 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        
+        // HÄR ÄR DEN MAGISKA SKILLNADEN:
+        const DB_COLLECTION = "users_dev"; 
 
-        let localUsername = localStorage.getItem('username') || "";
-        let localPassword = localStorage.getItem('password') || "";
+        let localUsername = localStorage.getItem('username_dev') || "";
+        let localPassword = localStorage.getItem('password_dev') || "";
         let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
         let myFriends = []; 
+        let allDevUsers = []; 
+        
         let appMode = 'challenge', savedDailyGoalSetting = 0, savedTotalGoal = 0, savedStartDate = "", savedEndDate = "";
         let calculatedDailyGoal = 0, calculatedDaysLeft = 0, hasCelebrated = false;
         
@@ -291,19 +296,19 @@
 
         function saveToCloud() {
             if(!localUsername) return;
-            db.collection("users").doc(localUsername).set({
+            db.collection(DB_COLLECTION).doc(localUsername).set({
                 username: localUsername, password: localPassword, totalPushups: totalPushups,
                 dailyPushupsDone: dailyPushupsDone, customAmounts: customAmounts, pushupLog: pushupLog,
                 friends: myFriends, appMode: appMode, dailyGoalSetting: savedDailyGoalSetting,
                 totalGoal: savedTotalGoal, startDate: savedStartDate, endDate: savedEndDate,
-                lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
+                lastLoginDate: localStorage.getItem('lastLoginDate_dev') || new Date().toDateString()
             }, { merge: true }); 
         }
 
         async function fetchMyCloudData() {
             if(!localUsername) return false;
             try {
-                let docSnap = await db.collection("users").doc(localUsername).get();
+                let docSnap = await db.collection(DB_COLLECTION).doc(localUsername).get();
                 if(docSnap.exists) {
                     let d = docSnap.data();
                     if(d.password !== localPassword) { alert("Wrong password for this user!"); logOutUser(); return false; }
@@ -312,10 +317,10 @@
                     myFriends = d.friends || []; appMode = d.appMode || 'challenge';
                     savedDailyGoalSetting = d.dailyGoalSetting || 0; savedTotalGoal = d.totalGoal || 0;
                     savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
-                    localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
+                    localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || new Date().toDateString());
                     return true;
                 } else {
-                    localStorage.setItem('lastLoginDate', new Date().toDateString());
+                    localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
                     savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
             } catch(e) { alert("Cloud connection error."); return false; }
@@ -340,14 +345,14 @@
         async function loginUser() {
             let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
             if(!u || !p) { alert("Enter credentials!"); return; }
-            localUsername = u; localPassword = p; localStorage.setItem('username', u); localStorage.setItem('password', p);
+            localUsername = u; localPassword = p; localStorage.setItem('username_dev', u); localStorage.setItem('password_dev', p);
             checkAppStart();
         }
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
 
         function checkAndResetNewDay() {
-            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate');
-            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate', t); saveToCloud(); }
+            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate_dev');
+            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate_dev', t); saveToCloud(); }
         }
 
         function setSetupMode(m) {
@@ -371,35 +376,23 @@
             hasCelebrated = false; saveToCloud(); calculateDatesAndGoals(); showDashboard();
         }
 
-        async function searchFriend() {
-            let q = document.getElementById('friendSearchInput').value.trim();
-            let res = document.getElementById('searchResultArea');
-            if(!q) return;
-            if(q === localUsername) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You can't add yourself.</p>"; return; }
-            if(myFriends.includes(q)) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You are already friends with " + q + ".</p>"; return; }
-            res.innerHTML = "<p style='color:#888; font-size:12px;'>Searching cloud...</p>";
-            try {
-                let snap = await db.collection("users").doc(q).get();
-                if(snap.exists) {
-                    res.innerHTML = `<div class="lb-item" style="border: 1px solid var(--main-green);"><div class="lb-name">${snap.data().username}</div><button class="primary-btn" style="width:auto; padding:8px 20px; font-size:14px; margin:0;" onclick="addFriend('${q}')">Add</button></div>`;
-                } else { res.innerHTML = "<p style='color:#ff4500; font-size:12px;'>Athlete not found.</p>"; }
-            } catch(e) { res.innerHTML = "<p>Error searching.</p>"; }
-        }
-
-        function addFriend(name) {
-            myFriends.push(name); saveToCloud();
-            document.getElementById('searchResultArea').innerHTML = "<p style='color:var(--main-green); font-size:12px;'>Added " + name + " to your friends!</p>";
-            document.getElementById('friendSearchInput').value = ""; showFriendsScreen();
-        }
-
+        // --- SMART VÄNSÖKNING (LIVE SEARCH) ---
         async function showFriendsScreen() {
             hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
             document.getElementById('searchResultArea').innerHTML = ""; 
+            document.getElementById('friendSearchInput').value = ""; 
             let container = document.getElementById('friendsListContainer');
+            
+            try {
+                let allSnap = await db.collection(DB_COLLECTION).get();
+                allDevUsers = allSnap.docs.map(doc => doc.data().username);
+            } catch(e) { console.log(e); }
+
             if(myFriends.length === 0) { container.innerHTML = "<p style='color:#888'>You haven't added any friends yet.</p>"; return; }
             container.innerHTML = "Loading your friends...";
+            
             try {
-                let promises = myFriends.map(f => db.collection("users").doc(f).get());
+                let promises = myFriends.map(f => db.collection(DB_COLLECTION).doc(f).get());
                 let docs = await Promise.all(promises);
                 let friendsData = docs.filter(d => d.exists).map(d => d.data());
                 friendsData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
@@ -414,57 +407,80 @@
             } catch(e) { container.innerHTML = "Error loading friends."; }
         }
 
+        function liveSearchFriends() {
+            let q = document.getElementById('friendSearchInput').value.trim().toLowerCase();
+            let res = document.getElementById('searchResultArea');
+            if(q.length === 0) { res.innerHTML = ""; return; }
+
+            let matches = allDevUsers.filter(u => u.toLowerCase().includes(q) && u !== localUsername && !myFriends.includes(u));
+
+            if(matches.length === 0) {
+                res.innerHTML = "<p style='color:#888; font-size:12px; margin: 5px 0;'>No new athletes found.</p>";
+                return;
+            }
+
+            let html = "";
+            matches.slice(0, 5).forEach(m => { 
+                html += `<div class="lb-item" style="border: 1px solid var(--main-green); padding: 10px; margin-bottom: 5px;">
+                            <div class="lb-name" style="font-size: 14px;">${m}</div>
+                            <button class="primary-btn" style="width:auto; padding:6px 15px; font-size:12px; margin:0;" onclick="addFriend('${m}')">Add</button>
+                         </div>`;
+            });
+            res.innerHTML = html;
+        }
+
+        function addFriend(name) {
+            myFriends.push(name); saveToCloud(); 
+            document.getElementById('searchResultArea').innerHTML = "<p style='color:var(--main-green); font-size:12px;'>Added " + name + " to your friends!</p>";
+            document.getElementById('friendSearchInput').value = ""; 
+            showFriendsScreen(); 
+        }
+
+        function removeFriend(name) {
+            if(confirm("Are you sure you want to remove " + name + " from your friends?")) {
+                myFriends = myFriends.filter(f => f !== name);
+                saveToCloud();
+                showFriendsScreen();
+            }
+        }
+
         async function showLeaderboardScreen() {
             hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
             let globalContainer = document.getElementById('globalLeaderboardContainer');
             let friendsContainer = document.getElementById('friendsLeaderboardContainer');
-            
-            globalContainer.innerHTML = "Loading global...";
-            friendsContainer.innerHTML = "Loading friends...";
+            globalContainer.innerHTML = "Loading global..."; friendsContainer.innerHTML = "Loading friends...";
             
             try {
-                // GLOBAL TOP 5
-                let globalSnap = await db.collection("users").orderBy("totalPushups", "desc").limit(5).get();
+                let globalSnap = await db.collection(DB_COLLECTION).orderBy("totalPushups", "desc").limit(5).get();
                 let gHtml = ""; let gRank = 1;
                 globalSnap.forEach(doc => {
-                    let d = doc.data();
-                    let isMe = d.username === localUsername;
-                    let hlClass = isMe ? "lb-highlight" : "";
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                    let d = doc.data(); let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0; let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    
                     gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     gRank++;
                 });
                 globalContainer.innerHTML = gHtml;
 
-                // FRIENDS TOPLIST (Me + Friends)
                 let allToFetch = [localUsername, ...myFriends];
-                let promises = allToFetch.map(u => db.collection("users").doc(u).get());
+                let promises = allToFetch.map(u => db.collection(DB_COLLECTION).doc(u).get());
                 let docs = await Promise.all(promises);
                 let usersData = docs.filter(d => d.exists).map(d => d.data());
                 usersData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
 
                 let fHtml = ""; let fRank = 1;
                 usersData.forEach(d => {
-                    let isMe = d.username === localUsername;
-                    let hlClass = isMe ? "lb-highlight" : "";
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                    let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0; let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    
                     fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     fRank++;
                 });
                 friendsContainer.innerHTML = fHtml;
 
-            } catch(e) { 
-                globalContainer.innerHTML = "Error loading."; 
-                friendsContainer.innerHTML = "Error loading."; 
-            }
+            } catch(e) { globalContainer.innerHTML = "Error."; friendsContainer.innerHTML = "Error."; }
         }
 
         let currentFriendLog = [];
@@ -472,17 +488,27 @@
             hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
             document.getElementById('fpName').innerHTML = "Loading..."; document.getElementById('fpScore').innerText = "-";
             document.getElementById('friendCalendarGrid').innerHTML = "";
+            document.getElementById('removeFriendBtn').style.display = 'none'; 
+            
             try {
-                let docSnap = await db.collection("users").doc(friendUsername).get();
+                let docSnap = await db.collection(DB_COLLECTION).doc(friendUsername).get();
                 if(docSnap.exists) {
                     let d = docSnap.data();
                     let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
                     document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
                     document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
+                    
+                    if(myFriends.includes(d.username)) {
+                        let remBtn = document.getElementById('removeFriendBtn');
+                        remBtn.style.display = 'block';
+                        remBtn.onclick = function() { removeFriend(d.username); };
+                    }
+                    
                     currentFriendLog = d.pushupLog || []; friendCurrMonth = new Date(); renderFriendCalendar();
                 }
             } catch(e) { document.getElementById('fpName').innerHTML = "Error"; }
         }
+        
         let friendCurrMonth = new Date();
         function changeFriendMonth(d) { friendCurrMonth.setMonth(friendCurrMonth.getMonth() + d); renderFriendCalendar(); }
         function renderFriendCalendar() {
