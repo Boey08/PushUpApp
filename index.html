@@ -30,8 +30,26 @@
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
         .sub-label { font-size: 11px; color: #666; margin-top: -6px; margin-bottom: 10px; display: block; }
-        .input-field { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; cursor: pointer; } .input-field:focus { border-color: var(--main-green); }
-        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; }
+        
+        /* MOBIL-FIXADE FÄLT */
+        .input-field { 
+            width: 100%; 
+            height: 52px; /* Tvingar samma höjd på alla fält */
+            padding: 12px 15px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #333; 
+            background: var(--darker-bg); 
+            color: #fff; 
+            font-size: 16px; 
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            outline: none; 
+            box-sizing: border-box; 
+            -webkit-appearance: none; /* iOS fix */
+            appearance: none;
+        } 
+        .input-field:focus { border-color: var(--main-green); }
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; padding-right: 5px; }
         
         .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
         .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; }
@@ -66,7 +84,8 @@
         .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
         .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
         
-        /* LISTOR */
+        /* VÄNNER & LISTOR */
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444; background: #333; }
         .lb-rank { font-size: 22px; font-weight: 900; color: #666; width: 35px; }
@@ -74,9 +93,7 @@
         .lb-score { color: var(--main-green); font-weight: 900; font-size: 18px; }
         .lb-highlight { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--main-green); }
         .lb-highlight .lb-rank { color: var(--main-green); }
-        .lb-highlight:hover { background: rgba(57, 255, 20, 0.15); border-color: var(--main-green); }
         
-        /* KALENDER */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; } 
         .calendar-day-header { text-align: center; font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;}
@@ -167,8 +184,16 @@
 
         <div id="friendsScreen" class="screen">
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">group</span> Cloud Athletes</h2>
-                <div id="friendsListContainer">Loading athletes...</div>
+                <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
+                <p style="font-size: 12px; color: #888; margin-top: -10px;">Search username to add friends.</p>
+                
+                <div class="search-box">
+                    <input type="text" id="friendSearchInput" class="input-field" style="margin-bottom:0;" placeholder="Athlete name..." autocomplete="off">
+                    <button class="primary-btn" style="width:auto; margin-bottom:0; padding: 15px 20px;" onclick="searchFriend()"><span class="material-symbols-outlined">search</span></button>
+                </div>
+                <div id="searchResultArea" style="margin-bottom: 20px;"></div>
+                
+                <div id="friendsListContainer">Loading your friends...</div>
             </div>
         </div>
 
@@ -187,14 +212,15 @@
                     <button class="icon-btn" onclick="changeFriendMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid" id="friendCalendarGrid"></div>
-                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showFriendsScreen()">Back</button>
+                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showFriendsScreen()">Back to Friends</button>
             </div>
         </div>
 
         <div id="leaderboardScreen" class="screen">
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">emoji_events</span> Global Toplist</h2>
-                <div id="leaderboardContainer">Loading leaderboard...</div>
+                <h2><span class="material-symbols-outlined icon">emoji_events</span> Friends Toplist</h2>
+                <p style="font-size: 12px; color: #888; margin-top: -10px;">Only showing you and your added friends.</p>
+                <div id="leaderboardContainer">Loading toplist...</div>
             </div>
         </div>
 
@@ -208,8 +234,10 @@
                 <div id="challengeInputs">
                     <label>Total Goal (Amount):</label>
                     <input type="number" id="inputTotalGoal" class="input-field" placeholder="e.g. 10000">
-                    <label>Start Date:</label><input type="date" id="inputStartDate" class="input-field" onclick="this.showPicker()">
-                    <label>End Date:</label><input type="date" id="inputEndDate" class="input-field" onclick="this.showPicker()">
+                    <label>Start Date:</label>
+                    <input type="date" id="inputStartDate" class="input-field" onclick="this.showPicker()">
+                    <label>End Date:</label>
+                    <input type="date" id="inputEndDate" class="input-field" onclick="this.showPicker()">
                 </div>
                 <div id="endlessInputs" style="display:none;">
                     <label>Daily Goal (Optional):</label>
@@ -260,62 +288,54 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 3. LOKALA VARIABLER FÖR ATT APPEN SKA VARA SNABB
+        // 3. LOKALA VARIABLER
         let localUsername = localStorage.getItem('username') || "";
         let localPassword = localStorage.getItem('password') || "";
         let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
+        let myFriends = []; // NYTT: Din privata vännerlista!
         let appMode = 'challenge', savedDailyGoalSetting = 0, savedTotalGoal = 0, savedStartDate = "", savedEndDate = "";
         let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
         let hasCelebrated = false;
         
         const outerCircumference = 659.7, innerCircumference = 534;   
         
-        // Haptisk feedback
         function vibrate(ms){if(navigator.vibrate)navigator.vibrate(ms);}
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- CLOUD SYNC FUNKTIONER ---
-        
-        // Spara till molnet
+        // --- CLOUD SYNC ---
         function saveToCloud() {
             if(!localUsername) return;
             db.collection("users").doc(localUsername).set({
                 username: localUsername,
-                password: localPassword, // Väldigt enkel säkerhet!
+                password: localPassword, 
                 totalPushups: totalPushups,
                 dailyPushupsDone: dailyPushupsDone,
                 customAmounts: customAmounts,
                 pushupLog: pushupLog,
+                friends: myFriends, // Sparar dina vänner
                 appMode: appMode,
                 dailyGoalSetting: savedDailyGoalSetting,
                 totalGoal: savedTotalGoal,
                 startDate: savedStartDate,
                 endDate: savedEndDate,
                 lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
-            }, { merge: true }); // Merge sparar bara det vi skickar, raderar inget annat
+            }, { merge: true }); 
         }
 
-        // Hämta min data från molnet
         async function fetchMyCloudData() {
             if(!localUsername) return false;
             try {
                 let docSnap = await db.collection("users").doc(localUsername).get();
                 if(docSnap.exists) {
                     let d = docSnap.data();
-                    
-                    // Enkel lösenordskoll
-                    if(d.password !== localPassword) {
-                        alert("Wrong password for this user!");
-                        logOutUser();
-                        return false;
-                    }
+                    if(d.password !== localPassword) { alert("Wrong password for this user!"); logOutUser(); return false; }
 
-                    // Ladda in allt från molnet
                     totalPushups = d.totalPushups || 0;
                     dailyPushupsDone = d.dailyPushupsDone || 0;
                     customAmounts = d.customAmounts || [25,30,50];
                     pushupLog = d.pushupLog || [];
+                    myFriends = d.friends || []; // Laddar dina vänner
                     appMode = d.appMode || 'challenge';
                     savedDailyGoalSetting = d.dailyGoalSetting || 0;
                     savedTotalGoal = d.totalGoal || 0;
@@ -324,38 +344,29 @@
                     localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
                     return true;
                 } else {
-                    // Ny användare i molnet!
                     localStorage.setItem('lastLoginDate', new Date().toDateString());
                     savedStartDate = getTodayString();
-                    saveToCloud(); // Skapar dokumentet
+                    saveToCloud(); 
                     return true;
                 }
             } catch(e) {
-                console.error("Cloud Error:", e);
-                alert("Could not connect to the cloud. Check your internet.");
-                return false;
+                alert("Cloud connection error."); return false;
             }
         }
 
-        // --- APP START OCH INLOGGNING ---
         async function checkAppStart() {
             if (!localUsername) {
                 document.getElementById('loadingOverlay').style.display = 'none';
                 hideAllScreens(); document.getElementById('loginScreen').classList.add('active-screen'); document.getElementById('mainHeader').style.display = 'none';
             } else {
                 document.getElementById('loadingOverlay').style.display = 'flex';
-                
-                // SYNKRONISERA MED MOLNET INNAN APPEN STARTAR!
                 let success = await fetchMyCloudData();
                 document.getElementById('loadingOverlay').style.display = 'none';
                 
                 if(success) {
                     document.getElementById('mainHeader').style.display = 'flex';
-                    checkAndResetNewDay();
-                    calculateDatesAndGoals();
-                    
-                    if (savedTotalGoal === 0 && savedDailyGoalSetting === 0) showSetupScreen(); 
-                    else showDashboard();
+                    checkAndResetNewDay(); calculateDatesAndGoals();
+                    if (savedTotalGoal === 0 && savedDailyGoalSetting === 0) showSetupScreen(); else showDashboard();
                 }
             }
         }
@@ -363,29 +374,20 @@
         async function loginUser() {
             let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
             if(!u || !p) { alert("Enter credentials!"); return; }
-            localUsername = u; localPassword = p;
-            localStorage.setItem('username', u); localStorage.setItem('password', p);
+            localUsername = u; localPassword = p; localStorage.setItem('username', u); localStorage.setItem('password', p);
             checkAppStart();
         }
-        
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
 
-        // --- DAGLIG NOLLSTÄLLNING ---
         function checkAndResetNewDay() {
             let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate');
-            if(l !== t) { 
-                dailyPushupsDone = 0; 
-                localStorage.setItem('lastLoginDate', t); 
-                saveToCloud(); // Uppdatera molnet att en ny dag börjat
-            }
+            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate', t); saveToCloud(); }
         }
 
-        // --- SKÄRMAR ---
         function setSetupMode(m) {
             appMode = m; document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-'+m).classList.add('active');
             document.getElementById('challengeInputs').style.display = m === 'challenge' ? 'block' : 'none'; document.getElementById('endlessInputs').style.display = m === 'endless' ? 'block' : 'none';
         }
-
         function showSetupScreen() {
             hideAllScreens(); document.getElementById('setupScreen').classList.add('active-screen'); setSetupMode(appMode);
             if(savedDailyGoalSetting>0) document.getElementById('inputDailyGoal').value = savedDailyGoalSetting;
@@ -393,44 +395,105 @@
             document.getElementById('inputStartDate').value = savedStartDate ? savedStartDate : getTodayString();
             if(savedEndDate) document.getElementById('inputEndDate').value = savedEndDate;
         }
-
         function showDashboard() { hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen'); setTimeout(updateScreen, 50); }
 
         function saveSettings() {
             if(appMode === 'challenge') {
                 let g = parseInt(document.getElementById('inputTotalGoal').value) || 0, s = document.getElementById('inputStartDate').value, e = document.getElementById('inputEndDate').value;
-                if(!g || !s || !e) { alert("Please fill in all fields!"); return; } 
-                savedTotalGoal = g; savedStartDate = s; savedEndDate = e;
-            } else {
-                savedDailyGoalSetting = parseInt(document.getElementById('inputDailyGoal').value) || 0; savedTotalGoal = 0; 
-            }
-            hasCelebrated = false; 
-            saveToCloud(); // SPARA TILL MOLNET DIREKT!
-            calculateDatesAndGoals(); showDashboard();
+                if(!g || !s || !e) { alert("Please fill in all fields!"); return; } savedTotalGoal = g; savedStartDate = s; savedEndDate = e;
+            } else { savedDailyGoalSetting = parseInt(document.getElementById('inputDailyGoal').value) || 0; savedTotalGoal = 0; }
+            hasCelebrated = false; saveToCloud(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // --- LOGIK FÖR TOPPLISTA (Hämtar från molnet!) ---
+        // --- NYTT: VÄNNER OCH SÖK-SYSTEM ---
+        async function searchFriend() {
+            let q = document.getElementById('friendSearchInput').value.trim();
+            let res = document.getElementById('searchResultArea');
+            if(!q) return;
+            if(q === localUsername) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You can't add yourself.</p>"; return; }
+            if(myFriends.includes(q)) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You are already friends with " + q + ".</p>"; return; }
+
+            res.innerHTML = "<p style='color:#888; font-size:12px;'>Searching cloud...</p>";
+            try {
+                let snap = await db.collection("users").doc(q).get();
+                if(snap.exists) {
+                    res.innerHTML = `
+                        <div class="lb-item" style="border: 1px solid var(--main-green);">
+                            <div class="lb-name">${snap.data().username}</div>
+                            <button class="primary-btn" style="width:auto; padding:8px 20px; font-size:14px; margin:0;" onclick="addFriend('${q}')">Add</button>
+                        </div>`;
+                } else {
+                    res.innerHTML = "<p style='color:#ff4500; font-size:12px;'>Athlete not found.</p>";
+                }
+            } catch(e) { res.innerHTML = "<p>Error searching.</p>"; }
+        }
+
+        function addFriend(name) {
+            myFriends.push(name);
+            saveToCloud(); // Spara till molnet!
+            document.getElementById('searchResultArea').innerHTML = "<p style='color:var(--main-green); font-size:12px;'>Added " + name + " to your friends!</p>";
+            document.getElementById('friendSearchInput').value = "";
+            showFriendsScreen(); // Uppdatera listan
+        }
+
+        async function showFriendsScreen() {
+            hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
+            document.getElementById('searchResultArea').innerHTML = ""; // Rensa sök
+            let container = document.getElementById('friendsListContainer');
+            if(myFriends.length === 0) { container.innerHTML = "<p style='color:#888'>You haven't added any friends yet.</p>"; return; }
+            container.innerHTML = "Loading your friends...";
+            
+            try {
+                // Hämta bara dina vänner från molnet!
+                let promises = myFriends.map(f => db.collection("users").doc(f).get());
+                let docs = await Promise.all(promises);
+                let friendsData = docs.filter(d => d.exists).map(d => d.data());
+                
+                // Sortera efter vem som har gjort flest (i din vännerlista)
+                friendsData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
+
+                let html = ""; let rank = 1;
+                friendsData.forEach(d => {
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
+                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                    html += `
+                    <div class="lb-item" onclick="openFriendProfile('${d.username}')">
+                        <div class="lb-rank">${rank}</div>
+                        <div class="lb-name">${d.username}${fireHtml}</div>
+                        <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
+                    </div>`;
+                    rank++;
+                });
+                container.innerHTML = html;
+            } catch(e) { container.innerHTML = "Error loading friends."; }
+        }
+
         async function showLeaderboardScreen() {
             hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
             let container = document.getElementById('leaderboardContainer');
-            container.innerHTML = "Fetching global athletes...";
+            container.innerHTML = "Loading toplist...";
             
             try {
-                // Hämta de 50 bästa från databasen, sorterat på totalPushups!
-                let snapshot = await db.collection("users").orderBy("totalPushups", "desc").limit(50).get();
-                let html = ""; let rank = 1;
+                // Hämtar Dig + Dina Vänner
+                let allToFetch = [localUsername, ...myFriends];
+                let promises = allToFetch.map(u => db.collection("users").doc(u).get());
+                let docs = await Promise.all(promises);
                 
-                snapshot.forEach(doc => {
-                    let d = doc.data();
+                let usersData = docs.filter(d => d.exists).map(d => d.data());
+                // Sortera på poäng
+                usersData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
+
+                let html = ""; let rank = 1;
+                usersData.forEach(d => {
                     let isMe = d.username === localUsername;
                     let hlClass = isMe ? "lb-highlight" : "";
                     let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
                     let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
+                    let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
                     
-                    // Gör raden klickbar för att se deras profil (vi skickar namnet som en sträng)
                     html += `
-                    <div class="lb-item ${hlClass}" onclick="openFriendProfile('${d.username}')">
+                    <div class="lb-item ${hlClass}" onclick="${onClick}">
                         <div class="lb-rank">${rank}</div>
                         <div class="lb-name">${displayName}${fireHtml}</div>
                         <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
@@ -438,52 +501,15 @@
                     rank++;
                 });
                 container.innerHTML = html;
-            } catch(e) {
-                container.innerHTML = "Error loading leaderboard.";
-                console.error(e);
-            }
-        }
-        
-        async function showFriendsScreen() {
-            hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
-            let container = document.getElementById('friendsListContainer');
-            container.innerHTML = "Fetching athletes...";
-            
-            try {
-                let snapshot = await db.collection("users").orderBy("totalPushups", "desc").limit(50).get();
-                let html = ""; let rank = 1;
-                
-                snapshot.forEach(doc => {
-                    let d = doc.data();
-                    if(d.username !== localUsername) { // Visa bara andra
-                        let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                        let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
-                        
-                        html += `
-                        <div class="lb-item" onclick="openFriendProfile('${d.username}')">
-                            <div class="lb-rank">${rank}</div>
-                            <div class="lb-name">${d.username}${fireHtml}</div>
-                            <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
-                        </div>`;
-                        rank++;
-                    }
-                });
-                if(html === "") html = "<p style='color:#888'>No other athletes in the cloud yet!</p>";
-                container.innerHTML = html;
-            } catch(e) {
-                container.innerHTML = "Error loading friends.";
-            }
+            } catch(e) { container.innerHTML = "Error loading leaderboard."; }
         }
 
-        // --- MOLN-PROFIL FÖR VÄNNER ---
+        // --- VÄNNS PROFIL & KALENDER ---
         let currentFriendLog = [];
         async function openFriendProfile(friendUsername) {
-            hideAllScreens(); 
-            document.getElementById('friendProfileScreen').classList.add('active-screen');
-            document.getElementById('fpName').innerHTML = "Loading...";
-            document.getElementById('fpScore').innerText = "-";
+            hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
+            document.getElementById('fpName').innerHTML = "Loading..."; document.getElementById('fpScore').innerText = "-";
             document.getElementById('friendCalendarGrid').innerHTML = "";
-            
             try {
                 let docSnap = await db.collection("users").doc(friendUsername).get();
                 if(docSnap.exists) {
@@ -491,17 +517,10 @@
                     let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
                     document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
                     document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
-                    
-                    // Spara deras logg tillfälligt för att rita kalendern
-                    currentFriendLog = d.pushupLog || [];
-                    friendCurrMonth = new Date();
-                    renderFriendCalendar();
+                    currentFriendLog = d.pushupLog || []; friendCurrMonth = new Date(); renderFriendCalendar();
                 }
-            } catch(e) {
-                document.getElementById('fpName').innerHTML = "User not found.";
-            }
+            } catch(e) { document.getElementById('fpName').innerHTML = "Error"; }
         }
-
         let friendCurrMonth = new Date();
         function changeFriendMonth(d) { friendCurrMonth.setMonth(friendCurrMonth.getMonth() + d); renderFriendCalendar(); }
         function renderFriendCalendar() {
@@ -510,20 +529,13 @@
             let fDay = new Date(y, m, 1).getDay(), fEU = fDay === 0 ? 6 : fDay - 1, dim = new Date(y, m + 1, 0).getDate();
             let h = '<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
             for (let i = 0; i < fEU; i++) h += '<div class="calendar-cell cell-empty"></div>';
-            
-            let dTot = {}; 
-            currentFriendLog.forEach(l => { 
-                let dt = new Date(l.timestamp); 
-                if (dt.getFullYear() === y && dt.getMonth() === m) { let day = dt.getDate(); dTot[day] = (dTot[day] || 0) + l.amount; } 
-            });
-            
+            let dTot = {}; currentFriendLog.forEach(l => { let dt = new Date(l.timestamp); if (dt.getFullYear() === y && dt.getMonth() === m) { let day = dt.getDate(); dTot[day] = (dTot[day] || 0) + l.amount; } });
             for (let d = 1; d <= dim; d++) {
                 let t = dTot[d] || 0, th = t > 0 ? `<div class="cell-total">${t}</div>` : '';
                 let isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
                 let st = isT ? 'border:1px solid var(--daily-red);' : '';
                 h += `<div class="calendar-cell" style="${st} cursor:default;"><div class="cell-date">${d}</div>${th}</div>`;
-            }
-            document.getElementById('friendCalendarGrid').innerHTML = h;
+            } document.getElementById('friendCalendarGrid').innerHTML = h;
         }
 
         // --- DASHBOARD LOGIK ---
@@ -555,7 +567,6 @@
 
             let totalPct = (appMode==='challenge'&&savedTotalGoal>0) ? Math.min(totalPushups/savedTotalGoal,1) : 1;
             document.getElementById('svgOuter').style.strokeDashoffset = 659.7-(totalPct*659.7);
-            
             let dailyPct = calculatedDailyGoal>0 ? dailyPushupsDone/calculatedDailyGoal : 0;
             let laps = Math.floor(dailyPct), currPct = dailyPct%1;
             
@@ -569,20 +580,15 @@
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
             document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
             if(isFire){
-                document.getElementById('ringGlowContainer').classList.add('is-on-fire');
-                document.getElementById('greetingTitle').innerHTML = "@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
+                document.getElementById('ringGlowContainer').classList.add('is-on-fire'); document.getElementById('greetingTitle').innerHTML = "@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
             } else {
-                document.getElementById('ringGlowContainer').classList.remove('is-on-fire');
-                document.getElementById('greetingTitle').innerHTML = "@"+localUsername;
+                document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); document.getElementById('greetingTitle').innerHTML = "@"+localUsername;
             }
         }
 
-        // --- INTERAKTIONER ---
         function addPushups(amount){
-            vibrate(30); checkAndResetNewDay(); let oldTotal = totalPushups;
-            totalPushups += amount; dailyPushupsDone += amount;
-            pushupLog.push({amount:amount,timestamp:Date.now()}); 
-            saveToCloud(); // Pushar till molnet direkt!
+            vibrate(30); checkAndResetNewDay(); let oldTotal = totalPushups; totalPushups += amount; dailyPushupsDone += amount;
+            pushupLog.push({amount:amount,timestamp:Date.now()}); saveToCloud(); 
             if(appMode==='challenge'&&savedTotalGoal>0&&totalPushups>=savedTotalGoal&&oldTotal<savedTotalGoal&&!hasCelebrated)triggerCelebration();
             calculateDatesAndGoals(); updateScreen();
         }
@@ -590,15 +596,13 @@
         function undoLastAction(){
             vibrate(50); if(pushupLog.length===0){alert("Nothing to undo!");return;}
             let lastAmt = pushupLog.pop().amount; totalPushups = Math.max(0,totalPushups-lastAmt); dailyPushupsDone = Math.max(0,dailyPushupsDone-lastAmt);
-            if(appMode==='challenge'&&totalPushups<savedTotalGoal){hasCelebrated=false;}
-            saveToCloud(); // Uppdaterar molnet att vi ångrat oss!
-            calculateDatesAndGoals(); updateScreen();
+            if(appMode==='challenge'&&totalPushups<savedTotalGoal){hasCelebrated=false;} saveToCloud(); calculateDatesAndGoals(); updateScreen();
         }
 
         function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p; saveToCloud(); updateScreen();}}
         function addCustom(index){if(customAmounts[index]===0)setCustomAmount(index);else addPushups(customAmounts[index]);}
 
-        // DIN KALENDER
+        // DIN EGEN KALENDER
         let currMonth=new Date(), chartInst=null;
         function showCalendarScreen(){hideAllScreens();document.getElementById('calendarScreen').classList.add('active-screen');currMonth=new Date();renderCalendar();}
         function changeMonth(d){currMonth.setMonth(currMonth.getMonth()+d);renderCalendar();}
