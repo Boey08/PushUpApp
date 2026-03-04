@@ -9,39 +9,37 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
-        body { background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh;}
+        body { background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh;}
         .app-container { width: 100%; max-width: 400px; }
         .screen { display: none; animation: fadeIn 0.3s ease; } .active-screen { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .icon { vertical-align: middle; font-size: 20px; }
         
-        /* HEADER & LOGOTYP */
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .brand-area { cursor: pointer; transition: transform 0.2s; } .brand-area:active { transform: scale(0.95); }
         .header-title { font-size: 28px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, var(--main-green) 20%, var(--c1) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); }
         .header-icons { display: flex; gap: 12px; }
         .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; } .icon-btn:hover { color: #fff; }
         
-        /* CARDS & INPUTS */
         .card { background: var(--panel-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2a2a; text-align: left; }
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
         .sub-label { font-size: 11px; color: #666; margin-top: -6px; margin-bottom: 10px; display: block; }
-        .input-field { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; cursor: pointer; } 
-        .input-field:focus { border-color: var(--main-green); }
+        .input-field { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; cursor: pointer; } .input-field:focus { border-color: var(--main-green); }
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; }
         
-        .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;}
-        .primary-btn:active { transform: scale(0.98); }
+        .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
         .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; }
         
         .mode-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .mode-tab { flex: 1; padding: 12px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; border: 2px solid transparent; transition: 0.2s;}
         .mode-tab.active { background: rgba(57,255,20,.1); color: var(--main-green); border-color: var(--main-green); }
         
-        /* DASHBOARD RINGAR */
         .dashboard-content { text-align: center; }
         .user-greeting { font-size: 16px; color: #aaa; margin-bottom: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; }
@@ -49,13 +47,11 @@
         .ring-track { fill: none; stroke: #222; }
         .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5)); }
         .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,.8); }
-        .total-count { font-size: 40px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255,17,68,.3); } 
-        .goal-count { color: #888; font-size: 12px; margin-top: 5px; letter-spacing: 1px;}
+        .total-count { font-size: 40px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255,17,68,.3); } .goal-count { color: #888; font-size: 12px; margin-top: 5px; letter-spacing: 1px;}
         
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        /* STATS GRID */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--panel-bg); padding: 15px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
@@ -63,17 +59,14 @@
         .fire-status { color: #ffaa00; font-weight: bold; font-size: 14px; display: none; margin-top: 5px; animation: pulse 1s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         
-        /* ACTION KNAPPAR */
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 18px; font-size: 20px; font-weight: bold; border-radius: 16px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
-        .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
+        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 18px; font-size: 20px; font-weight: bold; border-radius: 16px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
         .custom-container { display: flex; gap: 8px; } .custom-btn-main { flex-grow: 1; }
         .custom-settings-btn { width: 55px; border-radius: 16px; background: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #888; display: flex; align-items: center; justify-content: center; }
         .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
-        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;}
-        .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
         
-        /* VÄNNER OCH TOPPLISTA */
+        /* LISTOR */
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444; background: #333; }
         .lb-rank { font-size: 22px; font-weight: 900; color: #666; width: 35px; }
@@ -83,7 +76,7 @@
         .lb-highlight .lb-rank { color: var(--main-green); }
         .lb-highlight:hover { background: rgba(57, 255, 20, 0.15); border-color: var(--main-green); }
         
-        /* KALENDER OCH DIAGRAM */
+        /* KALENDER */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; } 
         .calendar-day-header { text-align: center; font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;}
@@ -91,17 +84,24 @@
         .calendar-cell:hover { background: #333; }
         .cell-date { font-size: 12px; color: #ccc; font-weight: bold;} 
         .cell-total { font-size: 14px; color: var(--main-green); font-weight: 900; }
-        .cell-empty { background: transparent; cursor: default; border: none; }
-        .cell-empty:hover { background: transparent; }
+        .cell-empty { background: transparent; cursor: default; border: none; } .cell-empty:hover { background: transparent; }
         .chart-container { width: 100%; height: 250px; margin-bottom: 20px; margin-top: 10px;}
         
-        /* CELEBRATION OVERLAY */
         .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; } .celebration-overlay.show { display: flex; animation: fadeIn 0.5s; }
         .celeb-icon { font-size: 120px; color: #ffaa00; text-shadow: 0 0 50px #ffaa00; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); } @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } } @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        #loadingOverlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--dark-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--main-green); font-weight: bold; flex-direction: column; gap: 10px;}
+        .spinner { border: 4px solid rgba(57, 255, 20, 0.3); border-top: 4px solid var(--main-green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        Connecting to Cloud...
+    </div>
+
     <div id="celebrationOverlay" class="celebration-overlay">
         <span class="material-symbols-outlined celeb-icon">trophy</span>
         <h1 style="color:var(--main-green); letter-spacing:3px; margin:0;">GOAL REACHED!</h1>
@@ -115,7 +115,7 @@
                 <h1 class="header-title" style="font-size: 42px;">Pushup Days</h1>
             </div>
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">login</span> Welcome</h2>
+                <h2><span class="material-symbols-outlined icon">cloud_done</span> Cloud Login</h2>
                 <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="off">
                 <input type="password" id="inputPassword" class="input-field" placeholder="Password">
                 <button class="primary-btn" onclick="loginUser()">Enter App</button>
@@ -137,7 +137,6 @@
 
         <div id="dashboardScreen" class="screen dashboard-content">
             <div class="user-greeting" id="greetingTitle">@User</div>
-            
             <div class="ring-container" id="ringGlowContainer">
                 <svg class="ring-svg" viewBox="0 0 240 240">
                     <circle class="ring-track" cx="120" cy="120" r="105" stroke-width="14"/>
@@ -151,18 +150,14 @@
                     <p class="goal-count" id="centerSmallText">TOTAL: 0 / 0</p>
                 </div>
             </div>
-
             <div class="stats-grid">
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">query_stats</span> Daily Avg</div><div class="stat-value" id="dailyAvgText">0</div></div>
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--daily-red)">radio_button_checked</span> Daily Goal</div><div class="stat-value" id="dailyProgressText">0 / 0</div></div>
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">calendar_today</span> Days Left</div><div class="stat-value" id="daysLeftText">0</div></div>
             </div>
             <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
-
             <div class="action-buttons" style="margin-top: 20px;">
-                <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
-                <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
-                <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
+                <button class="pushup-btn" onclick="addPushups(10)">+ 10</button><button class="pushup-btn" onclick="addPushups(15)">+ 15</button><button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-1" id="customBtn0" onclick="addCustom(0)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(0)"><span class="material-symbols-outlined icon">edit</span></button></div>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-2" id="customBtn1" onclick="addCustom(1)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(1)"><span class="material-symbols-outlined icon">edit</span></button></div>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-3" id="customBtn2" onclick="addCustom(2)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(2)"><span class="material-symbols-outlined icon">edit</span></button></div>
@@ -172,17 +167,8 @@
 
         <div id="friendsScreen" class="screen">
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
-                <p style="font-size: 12px; color: #888; margin-top: -10px;">(Preview mode. Add real friends later!)</p>
-                <div class="lb-item" onclick="showFriendProfile('PushupKing', 11200, true)">
-                    <div class="lb-rank">1</div><div class="lb-name">PushupKing <span style="font-size:16px">🔥</span></div><div class="lb-score">11,200</div>
-                </div>
-                <div class="lb-item" onclick="showFriendProfile('GymBro2026', 6100, false)">
-                    <div class="lb-rank">2</div><div class="lb-name">GymBro2026</div><div class="lb-score">6,100</div>
-                </div>
-                <div class="lb-item" onclick="showFriendProfile('SaraFitness', 3450, true)">
-                    <div class="lb-rank">3</div><div class="lb-name">SaraFitness <span style="font-size:16px">🔥</span></div><div class="lb-score">3,450</div>
-                </div>
+                <h2><span class="material-symbols-outlined icon">group</span> Cloud Athletes</h2>
+                <div id="friendsListContainer">Loading athletes...</div>
             </div>
         </div>
 
@@ -195,14 +181,12 @@
                         <div style="font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Total Pushups</div>
                     </div>
                 </div>
-                
                 <div class="calendar-header">
                     <button class="icon-btn" onclick="changeFriendMonth(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
                     <h3 id="friendCalendarMonthYear" style="margin:0;font-size:16px; color: #fff;">Month</h3>
                     <button class="icon-btn" onclick="changeFriendMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid" id="friendCalendarGrid"></div>
-
                 <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showFriendsScreen()">Back</button>
             </div>
         </div>
@@ -210,9 +194,7 @@
         <div id="leaderboardScreen" class="screen">
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">emoji_events</span> Global Toplist</h2>
-                <div class="lb-item" onclick="showFriendProfile('IronChest99', 12450, false)"><div class="lb-rank">1</div><div class="lb-name">IronChest99</div><div class="lb-score">12,450</div></div>
-                <div class="lb-item" onclick="showFriendProfile('PushupKing', 11200, true)"><div class="lb-rank">2</div><div class="lb-name">PushupKing <span style="font-size:16px">🔥</span></div><div class="lb-score">11,200</div></div>
-                <div class="lb-item lb-highlight" onclick="showDashboard()"><div class="lb-rank">3</div><div class="lb-name" id="lbYourName">You</div><div class="lb-score" id="lbYourScore">0</div></div>
+                <div id="leaderboardContainer">Loading leaderboard...</div>
             </div>
         </div>
 
@@ -226,20 +208,15 @@
                 <div id="challengeInputs">
                     <label>Total Goal (Amount):</label>
                     <input type="number" id="inputTotalGoal" class="input-field" placeholder="e.g. 10000">
-                    
-                    <label>Start Date:</label>
-                    <input type="date" id="inputStartDate" class="input-field" onclick="this.showPicker()">
-                    
-                    <label>End Date:</label>
-                    <input type="date" id="inputEndDate" class="input-field" onclick="this.showPicker()">
+                    <label>Start Date:</label><input type="date" id="inputStartDate" class="input-field" onclick="this.showPicker()">
+                    <label>End Date:</label><input type="date" id="inputEndDate" class="input-field" onclick="this.showPicker()">
                 </div>
                 <div id="endlessInputs" style="display:none;">
                     <label>Daily Goal (Optional):</label>
                     <input type="number" id="inputDailyGoal" class="input-field" placeholder="e.g. 50">
                     <p style="font-size: 12px; color: #888;">No end dates, no total goal. Just build a daily habit.</p>
                 </div>
-                <button class="primary-btn" onclick="saveSettings()"><span class="material-symbols-outlined icon">save</span> Save Settings</button>
-                <button class="danger-btn" onclick="resetProgressData()">Reset Progress</button>
+                <button class="primary-btn" onclick="saveSettings()"><span class="material-symbols-outlined icon">cloud_upload</span> Save to Cloud</button>
                 <button class="danger-btn" style="background:transparent;border:none;color:#888;" onclick="logOutUser()">Log Out</button>
             </div>
         </div>
@@ -269,73 +246,263 @@
     </div>
 
     <script>
-        // HAPTISK FEEDBACK (Vibration på mobiler)
-        function vibrate(ms){if(navigator.vibrate)navigator.vibrate(ms);}
+        // 1. DIN FIREBASE KONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXHGVi8wIKsOCOocWuugNOPoAl9l1OeB8",
+            authDomain: "pushup-days.firebaseapp.com",
+            projectId: "pushup-days",
+            storageBucket: "pushup-days.firebasestorage.app",
+            messagingSenderId: "500331304476",
+            appId: "1:500331304476:web:2a0bdec8dba913df4131d9"
+        };
 
-        let localUsername=localStorage.getItem('username')||""; let localPassword=localStorage.getItem('password')||"";
-        let totalPushups=parseInt(localStorage.getItem('totalPushups'))||0; let dailyPushupsDone=parseInt(localStorage.getItem('dailyPushupsDone'))||0;
-        let customAmounts=JSON.parse(localStorage.getItem('customAmounts'))||[25,30,50];
-        let pushupLog=[]; try{let d=localStorage.getItem('pushupLog');if(d)pushupLog=JSON.parse(d);}catch(e){}
-        let appMode=localStorage.getItem('appMode')||'challenge'; let hasCelebrated=localStorage.getItem('hasCelebrated')==='true';
-        let savedDailyGoalSetting=parseInt(localStorage.getItem('dailyGoalSetting'))||0; let savedTotalGoal=parseInt(localStorage.getItem('totalGoal'))||0;
-        let savedStartDate=localStorage.getItem('startDate')||""; let savedEndDate=localStorage.getItem('endDate')||"";
-        let calculatedDailyGoal=0,calculatedDaysLeft=0;
+        // 2. STARTA FIREBASE
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 3. LOKALA VARIABLER FÖR ATT APPEN SKA VARA SNABB
+        let localUsername = localStorage.getItem('username') || "";
+        let localPassword = localStorage.getItem('password') || "";
+        let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
+        let appMode = 'challenge', savedDailyGoalSetting = 0, savedTotalGoal = 0, savedStartDate = "", savedEndDate = "";
+        let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
+        let hasCelebrated = false;
         
-        function setSetupMode(m){
-            appMode=m; document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active')); document.getElementById('tab-'+m).classList.add('active');
-            document.getElementById('challengeInputs').style.display=m==='challenge'?'block':'none'; document.getElementById('endlessInputs').style.display=m==='endless'?'block':'none';
-        }
+        const outerCircumference = 659.7, innerCircumference = 534;   
+        
+        // Haptisk feedback
+        function vibrate(ms){if(navigator.vibrate)navigator.vibrate(ms);}
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        function checkAppStart(){
-            if(!localUsername){hideAllScreens();document.getElementById('loginScreen').classList.add('active-screen');document.getElementById('mainHeader').style.display='none';}
-            else{
-                document.getElementById('mainHeader').style.display='flex';
-                document.getElementById('greetingTitle').innerText="@"+localUsername;
-                if(dailyPushupsDone>=calculatedDailyGoal&&calculatedDailyGoal>0){document.getElementById('greetingTitle').innerHTML="@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";}
-                checkOnboarding();
+        // --- CLOUD SYNC FUNKTIONER ---
+        
+        // Spara till molnet
+        function saveToCloud() {
+            if(!localUsername) return;
+            db.collection("users").doc(localUsername).set({
+                username: localUsername,
+                password: localPassword, // Väldigt enkel säkerhet!
+                totalPushups: totalPushups,
+                dailyPushupsDone: dailyPushupsDone,
+                customAmounts: customAmounts,
+                pushupLog: pushupLog,
+                appMode: appMode,
+                dailyGoalSetting: savedDailyGoalSetting,
+                totalGoal: savedTotalGoal,
+                startDate: savedStartDate,
+                endDate: savedEndDate,
+                lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
+            }, { merge: true }); // Merge sparar bara det vi skickar, raderar inget annat
+        }
+
+        // Hämta min data från molnet
+        async function fetchMyCloudData() {
+            if(!localUsername) return false;
+            try {
+                let docSnap = await db.collection("users").doc(localUsername).get();
+                if(docSnap.exists) {
+                    let d = docSnap.data();
+                    
+                    // Enkel lösenordskoll
+                    if(d.password !== localPassword) {
+                        alert("Wrong password for this user!");
+                        logOutUser();
+                        return false;
+                    }
+
+                    // Ladda in allt från molnet
+                    totalPushups = d.totalPushups || 0;
+                    dailyPushupsDone = d.dailyPushupsDone || 0;
+                    customAmounts = d.customAmounts || [25,30,50];
+                    pushupLog = d.pushupLog || [];
+                    appMode = d.appMode || 'challenge';
+                    savedDailyGoalSetting = d.dailyGoalSetting || 0;
+                    savedTotalGoal = d.totalGoal || 0;
+                    savedStartDate = d.startDate || getTodayString();
+                    savedEndDate = d.endDate || "";
+                    localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
+                    return true;
+                } else {
+                    // Ny användare i molnet!
+                    localStorage.setItem('lastLoginDate', new Date().toDateString());
+                    savedStartDate = getTodayString();
+                    saveToCloud(); // Skapar dokumentet
+                    return true;
+                }
+            } catch(e) {
+                console.error("Cloud Error:", e);
+                alert("Could not connect to the cloud. Check your internet.");
+                return false;
             }
         }
 
-        function loginUser(){
-            let u=document.getElementById('inputUsername').value.trim(),p=document.getElementById('inputPassword').value.trim();
-            if(!u||!p){alert("Enter credentials!");return;}
-            if(!localUsername){localStorage.setItem('username',u);localStorage.setItem('password',p);localUsername=u;localPassword=p;checkAppStart();}
-            else{if(u===localUsername&&p===localPassword)checkAppStart();else alert("Wrong credentials!");}
+        // --- APP START OCH INLOGGNING ---
+        async function checkAppStart() {
+            if (!localUsername) {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                hideAllScreens(); document.getElementById('loginScreen').classList.add('active-screen'); document.getElementById('mainHeader').style.display = 'none';
+            } else {
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                // SYNKRONISERA MED MOLNET INNAN APPEN STARTAR!
+                let success = await fetchMyCloudData();
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+                if(success) {
+                    document.getElementById('mainHeader').style.display = 'flex';
+                    checkAndResetNewDay();
+                    calculateDatesAndGoals();
+                    
+                    if (savedTotalGoal === 0 && savedDailyGoalSetting === 0) showSetupScreen(); 
+                    else showDashboard();
+                }
+            }
         }
-        function logOutUser(){localStorage.clear();location.reload();}
 
-        function checkAndResetNewDay(){
-            let t=new Date().toDateString(); let l=localStorage.getItem('lastLoginDate');
-            if(l!==t){dailyPushupsDone=0;localStorage.setItem('dailyPushupsDone',0);localStorage.setItem('lastLoginDate',t);}
+        async function loginUser() {
+            let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
+            if(!u || !p) { alert("Enter credentials!"); return; }
+            localUsername = u; localPassword = p;
+            localStorage.setItem('username', u); localStorage.setItem('password', p);
+            checkAppStart();
         }
-
-        function checkOnboarding(){if(!localStorage.getItem('appMode'))showSetupScreen();else{checkAndResetNewDay();calculateDatesAndGoals();showDashboard();}}
-
-        function showSetupScreen(){
-            hideAllScreens();document.getElementById('setupScreen').classList.add('active-screen');setSetupMode(appMode);
-            if(savedDailyGoalSetting>0)document.getElementById('inputDailyGoal').value=savedDailyGoalSetting;
-            if(savedTotalGoal>0)document.getElementById('inputTotalGoal').value=savedTotalGoal;
-            document.getElementById('inputStartDate').value=savedStartDate?savedStartDate:getTodayString();
-            if(savedEndDate)document.getElementById('inputEndDate').value=savedEndDate;
-        }
-
-        function showDashboard(){hideAllScreens();document.getElementById('dashboardScreen').classList.add('active-screen');setTimeout(updateScreen,50);}
-        function showLeaderboardScreen(){hideAllScreens();document.getElementById('leaderboardScreen').classList.add('active-screen');
-            let fireHtml=(dailyPushupsDone>=calculatedDailyGoal&&calculatedDailyGoal>0)?" <span style='font-size:16px;'>🔥</span>":"";
-            document.getElementById('lbYourName').innerHTML="You (@"+localUsername+")"+fireHtml; document.getElementById('lbYourScore').innerText=totalPushups.toLocaleString('en-US');}
-        function showFriendsScreen(){hideAllScreens();document.getElementById('friendsScreen').classList.add('active-screen');}
         
-        // --- NY LOGIK FÖR VÄNNERS KALENDER ---
-        let friendCurrMonth = new Date();
-        function showFriendProfile(n,s,f){
-            hideAllScreens();document.getElementById('friendProfileScreen').classList.add('active-screen');
-            document.getElementById('fpName').innerHTML=n+(f?" <span style='font-size:24px;'>🔥</span>":"");
-            document.getElementById('fpScore').innerText=s.toLocaleString('en-US');
-            friendCurrMonth = new Date();
-            renderFriendCalendar();
+        function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
+
+        // --- DAGLIG NOLLSTÄLLNING ---
+        function checkAndResetNewDay() {
+            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate');
+            if(l !== t) { 
+                dailyPushupsDone = 0; 
+                localStorage.setItem('lastLoginDate', t); 
+                saveToCloud(); // Uppdatera molnet att en ny dag börjat
+            }
         }
+
+        // --- SKÄRMAR ---
+        function setSetupMode(m) {
+            appMode = m; document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-'+m).classList.add('active');
+            document.getElementById('challengeInputs').style.display = m === 'challenge' ? 'block' : 'none'; document.getElementById('endlessInputs').style.display = m === 'endless' ? 'block' : 'none';
+        }
+
+        function showSetupScreen() {
+            hideAllScreens(); document.getElementById('setupScreen').classList.add('active-screen'); setSetupMode(appMode);
+            if(savedDailyGoalSetting>0) document.getElementById('inputDailyGoal').value = savedDailyGoalSetting;
+            if(savedTotalGoal>0) document.getElementById('inputTotalGoal').value = savedTotalGoal;
+            document.getElementById('inputStartDate').value = savedStartDate ? savedStartDate : getTodayString();
+            if(savedEndDate) document.getElementById('inputEndDate').value = savedEndDate;
+        }
+
+        function showDashboard() { hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen'); setTimeout(updateScreen, 50); }
+
+        function saveSettings() {
+            if(appMode === 'challenge') {
+                let g = parseInt(document.getElementById('inputTotalGoal').value) || 0, s = document.getElementById('inputStartDate').value, e = document.getElementById('inputEndDate').value;
+                if(!g || !s || !e) { alert("Please fill in all fields!"); return; } 
+                savedTotalGoal = g; savedStartDate = s; savedEndDate = e;
+            } else {
+                savedDailyGoalSetting = parseInt(document.getElementById('inputDailyGoal').value) || 0; savedTotalGoal = 0; 
+            }
+            hasCelebrated = false; 
+            saveToCloud(); // SPARA TILL MOLNET DIREKT!
+            calculateDatesAndGoals(); showDashboard();
+        }
+
+        // --- LOGIK FÖR TOPPLISTA (Hämtar från molnet!) ---
+        async function showLeaderboardScreen() {
+            hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
+            let container = document.getElementById('leaderboardContainer');
+            container.innerHTML = "Fetching global athletes...";
+            
+            try {
+                // Hämta de 50 bästa från databasen, sorterat på totalPushups!
+                let snapshot = await db.collection("users").orderBy("totalPushups", "desc").limit(50).get();
+                let html = ""; let rank = 1;
+                
+                snapshot.forEach(doc => {
+                    let d = doc.data();
+                    let isMe = d.username === localUsername;
+                    let hlClass = isMe ? "lb-highlight" : "";
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
+                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                    let displayName = isMe ? "You (@" + d.username + ")" : d.username;
+                    
+                    // Gör raden klickbar för att se deras profil (vi skickar namnet som en sträng)
+                    html += `
+                    <div class="lb-item ${hlClass}" onclick="openFriendProfile('${d.username}')">
+                        <div class="lb-rank">${rank}</div>
+                        <div class="lb-name">${displayName}${fireHtml}</div>
+                        <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
+                    </div>`;
+                    rank++;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = "Error loading leaderboard.";
+                console.error(e);
+            }
+        }
+        
+        async function showFriendsScreen() {
+            hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
+            let container = document.getElementById('friendsListContainer');
+            container.innerHTML = "Fetching athletes...";
+            
+            try {
+                let snapshot = await db.collection("users").orderBy("totalPushups", "desc").limit(50).get();
+                let html = ""; let rank = 1;
+                
+                snapshot.forEach(doc => {
+                    let d = doc.data();
+                    if(d.username !== localUsername) { // Visa bara andra
+                        let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
+                        let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                        
+                        html += `
+                        <div class="lb-item" onclick="openFriendProfile('${d.username}')">
+                            <div class="lb-rank">${rank}</div>
+                            <div class="lb-name">${d.username}${fireHtml}</div>
+                            <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
+                        </div>`;
+                        rank++;
+                    }
+                });
+                if(html === "") html = "<p style='color:#888'>No other athletes in the cloud yet!</p>";
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = "Error loading friends.";
+            }
+        }
+
+        // --- MOLN-PROFIL FÖR VÄNNER ---
+        let currentFriendLog = [];
+        async function openFriendProfile(friendUsername) {
+            hideAllScreens(); 
+            document.getElementById('friendProfileScreen').classList.add('active-screen');
+            document.getElementById('fpName').innerHTML = "Loading...";
+            document.getElementById('fpScore').innerText = "-";
+            document.getElementById('friendCalendarGrid').innerHTML = "";
+            
+            try {
+                let docSnap = await db.collection("users").doc(friendUsername).get();
+                if(docSnap.exists) {
+                    let d = docSnap.data();
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
+                    document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
+                    document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
+                    
+                    // Spara deras logg tillfälligt för att rita kalendern
+                    currentFriendLog = d.pushupLog || [];
+                    friendCurrMonth = new Date();
+                    renderFriendCalendar();
+                }
+            } catch(e) {
+                document.getElementById('fpName').innerHTML = "User not found.";
+            }
+        }
+
+        let friendCurrMonth = new Date();
         function changeFriendMonth(d) { friendCurrMonth.setMonth(friendCurrMonth.getMonth() + d); renderFriendCalendar(); }
         function renderFriendCalendar() {
             let y = friendCurrMonth.getFullYear(), m = friendCurrMonth.getMonth();
@@ -343,101 +510,95 @@
             let fDay = new Date(y, m, 1).getDay(), fEU = fDay === 0 ? 6 : fDay - 1, dim = new Date(y, m + 1, 0).getDate();
             let h = '<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
             for (let i = 0; i < fEU; i++) h += '<div class="calendar-cell cell-empty"></div>';
-            // Skapa "Fejk" data för vännerna tills molnet är på plats
+            
+            let dTot = {}; 
+            currentFriendLog.forEach(l => { 
+                let dt = new Date(l.timestamp); 
+                if (dt.getFullYear() === y && dt.getMonth() === m) { let day = dt.getDate(); dTot[day] = (dTot[day] || 0) + l.amount; } 
+            });
+            
             for (let d = 1; d <= dim; d++) {
+                let t = dTot[d] || 0, th = t > 0 ? `<div class="cell-total">${t}</div>` : '';
                 let isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
                 let st = isT ? 'border:1px solid var(--daily-red);' : '';
-                let mockTotal = (d % 3 === 0 || d % 5 === 0) ? (d * 5 + 20) : 0; 
-                let th = mockTotal > 0 ? `<div class="cell-total">${mockTotal}</div>` : '';
                 h += `<div class="calendar-cell" style="${st} cursor:default;"><div class="cell-date">${d}</div>${th}</div>`;
             }
             document.getElementById('friendCalendarGrid').innerHTML = h;
         }
 
-        function saveSettings(){
-            localStorage.setItem('appMode',appMode);
-            if(appMode==='challenge'){
-                let g=parseInt(document.getElementById('inputTotalGoal').value)||0,s=document.getElementById('inputStartDate').value,e=document.getElementById('inputEndDate').value;
-                if(!g||!s||!e){alert("Please fill in all fields!");return;} savedTotalGoal=g;savedStartDate=s;savedEndDate=e;
-            }else{savedDailyGoalSetting=parseInt(document.getElementById('inputDailyGoal').value)||0;savedTotalGoal=0;}
-            localStorage.setItem('dailyGoalSetting',savedDailyGoalSetting);localStorage.setItem('totalGoal',savedTotalGoal);localStorage.setItem('startDate',savedStartDate);localStorage.setItem('endDate',savedEndDate);
-            hasCelebrated=false;localStorage.setItem('hasCelebrated','false'); checkAndResetNewDay();calculateDatesAndGoals();showDashboard();
-        }
-
-        function resetProgressData(){if(confirm("Are you sure? This deletes your challenge and pushups, but keeps your login.")){localStorage.removeItem('totalPushups');localStorage.removeItem('dailyPushupsDone');localStorage.removeItem('pushupLog');localStorage.removeItem('totalGoal');localStorage.removeItem('dailyGoalSetting');localStorage.removeItem('startDate');localStorage.removeItem('endDate');localStorage.removeItem('appMode');localStorage.removeItem('hasCelebrated');location.reload();}}
-
-        function calculateDatesAndGoals(){
-            if(appMode==='challenge'){
-                let start=new Date(savedStartDate),end=new Date(savedEndDate),today=new Date();start.setHours(0,0,0,0);end.setHours(0,0,0,0);today.setHours(0,0,0,0);
-                let totalDays=Math.round((end-start)/86400000)+1; calculatedDaysLeft=Math.max(Math.round((end-today)/86400000),0);
-                calculatedDailyGoal=totalDays>0?Math.ceil(savedTotalGoal/totalDays):0;
-            }else{calculatedDailyGoal=savedDailyGoalSetting;calculatedDaysLeft="∞";}
+        // --- DASHBOARD LOGIK ---
+        function calculateDatesAndGoals() {
+            if(appMode === 'challenge') {
+                let start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date(); start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
+                let totalDays = Math.round((end-start)/86400000)+1; calculatedDaysLeft = Math.max(Math.round((end-today)/86400000),0);
+                calculatedDailyGoal = totalDays > 0 ? Math.ceil(savedTotalGoal/totalDays) : 0;
+            } else { calculatedDailyGoal = savedDailyGoalSetting; calculatedDaysLeft = "∞"; }
             
-            if(pushupLog.length>0){
-                let f=new Date(pushupLog[0].timestamp);f.setHours(0,0,0,0);let t=new Date();t.setHours(0,0,0,0);
-                let daysActive=Math.round((t-f)/86400000)+1; document.getElementById('dailyAvgText').innerText=Math.round(totalPushups/daysActive);
-            }else document.getElementById('dailyAvgText').innerText="0";
+            if(pushupLog.length > 0) {
+                let f = new Date(pushupLog[0].timestamp); f.setHours(0,0,0,0); let t = new Date(); t.setHours(0,0,0,0);
+                let daysActive = Math.round((t-f)/86400000)+1; document.getElementById('dailyAvgText').innerText = Math.round(totalPushups/daysActive);
+            } else { document.getElementById('dailyAvgText').innerText = "0"; }
         }
 
-        function triggerCelebration(){
+        function triggerCelebration() {
             let end=Date.now()+5000; (function frame(){confetti({particleCount:5,angle:60,spread:80,origin:{x:0},colors:['#39ff14','#ffffff','#ffaa00','#ff1144'],zIndex:10000});confetti({particleCount:5,angle:120,spread:80,origin:{x:1},colors:['#39ff14','#ffffff','#ffaa00','#ff1144'],zIndex:10000});if(Date.now()<end)requestAnimationFrame(frame);}());
-            let el=document.getElementById('celebrationOverlay'); el.style.display='flex'; el.classList.add('show'); hasCelebrated=true;localStorage.setItem('hasCelebrated','true');
+            let el=document.getElementById('celebrationOverlay'); el.style.display='flex'; el.classList.add('show'); hasCelebrated=true; saveToCloud();
             setTimeout(()=>{el.classList.remove('show');setTimeout(()=>{el.style.display='none';},500)},5000);
         }
 
-        function updateScreen(){
-            document.getElementById('centerLargeText').innerText=dailyPushupsDone;
-            document.getElementById('centerSmallText').innerText=`TOTAL: ${totalPushups.toLocaleString('en-US')} / ${(appMode==='challenge'&&savedTotalGoal>0)?savedTotalGoal.toLocaleString('en-US'):"∞"}`;
-            document.getElementById('dailyProgressText').innerText=`${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
-            document.getElementById('daysLeftText').innerText=calculatedDaysLeft;
-            for(let i=0;i<3;i++)document.getElementById('customBtn'+i).innerText=customAmounts[i]>0?"+ "+customAmounts[i]:"+ Custom";
+        function updateScreen() {
+            document.getElementById('centerLargeText').innerText = dailyPushupsDone;
+            document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${(appMode==='challenge'&&savedTotalGoal>0)?savedTotalGoal.toLocaleString('en-US'):"∞"}`;
+            document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
+            document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
+            for(let i=0;i<3;i++) document.getElementById('customBtn'+i).innerText = customAmounts[i]>0 ? "+ "+customAmounts[i] : "+ Custom";
 
-            let totalPct=(appMode==='challenge'&&savedTotalGoal>0)?Math.min(totalPushups/savedTotalGoal,1):1;
-            document.getElementById('svgOuter').style.strokeDashoffset=659.7-(totalPct*659.7);
+            let totalPct = (appMode==='challenge'&&savedTotalGoal>0) ? Math.min(totalPushups/savedTotalGoal,1) : 1;
+            document.getElementById('svgOuter').style.strokeDashoffset = 659.7-(totalPct*659.7);
             
-            let dailyPct=calculatedDailyGoal>0?dailyPushupsDone/calculatedDailyGoal:0;
-            let laps=Math.floor(dailyPct),currPct=dailyPct%1;
+            let dailyPct = calculatedDailyGoal>0 ? dailyPushupsDone/calculatedDailyGoal : 0;
+            let laps = Math.floor(dailyPct), currPct = dailyPct%1;
             
-            if(laps===0||calculatedDailyGoal===0){
+            if(laps===0 || calculatedDailyGoal===0){
                 document.getElementById('svgInnerFull').style.opacity=0; document.getElementById('svgInnerTrack').setAttribute('stroke','#222'); document.getElementById('svgInner').setAttribute('stroke','var(--daily-red)');
-            }else{
+            } else {
                 document.getElementById('svgInnerFull').style.opacity=1; document.getElementById('svgInnerTrack').setAttribute('stroke','#222'); document.getElementById('svgInner').setAttribute('stroke','var(--lap-color)');
             }
-            document.getElementById('svgInner').style.strokeDashoffset=calculatedDailyGoal>0?(534-(currPct*534)):534;
+            document.getElementById('svgInner').style.strokeDashoffset = calculatedDailyGoal>0 ? (534-(currPct*534)) : 534;
 
-            let isFire=(dailyPushupsDone>=calculatedDailyGoal&&calculatedDailyGoal>0);
-            document.getElementById('fireStatus').style.display=isFire?'flex':'none';
+            let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
+            document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
             if(isFire){
                 document.getElementById('ringGlowContainer').classList.add('is-on-fire');
-                document.getElementById('greetingTitle').innerHTML="@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
-            }else{
+                document.getElementById('greetingTitle').innerHTML = "@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
+            } else {
                 document.getElementById('ringGlowContainer').classList.remove('is-on-fire');
-                document.getElementById('greetingTitle').innerHTML="@"+localUsername;
+                document.getElementById('greetingTitle').innerHTML = "@"+localUsername;
             }
         }
 
+        // --- INTERAKTIONER ---
         function addPushups(amount){
-            vibrate(30);
-            checkAndResetNewDay(); let oldTotal=totalPushups; totalPushups+=amount;dailyPushupsDone+=amount;
-            pushupLog.push({amount:amount,timestamp:Date.now()});localStorage.setItem('pushupLog',JSON.stringify(pushupLog));
-            localStorage.setItem('totalPushups',totalPushups);localStorage.setItem('dailyPushupsDone',dailyPushupsDone);
+            vibrate(30); checkAndResetNewDay(); let oldTotal = totalPushups;
+            totalPushups += amount; dailyPushupsDone += amount;
+            pushupLog.push({amount:amount,timestamp:Date.now()}); 
+            saveToCloud(); // Pushar till molnet direkt!
             if(appMode==='challenge'&&savedTotalGoal>0&&totalPushups>=savedTotalGoal&&oldTotal<savedTotalGoal&&!hasCelebrated)triggerCelebration();
-            calculateDatesAndGoals();updateScreen();
+            calculateDatesAndGoals(); updateScreen();
         }
 
         function undoLastAction(){
-            vibrate(50);
-            if(pushupLog.length===0){alert("Nothing to undo!");return;}
-            let lastAmt=pushupLog.pop().amount; totalPushups=Math.max(0,totalPushups-lastAmt); dailyPushupsDone=Math.max(0,dailyPushupsDone-lastAmt);
-            if(appMode==='challenge'&&totalPushups<savedTotalGoal){hasCelebrated=false;localStorage.setItem('hasCelebrated','false');}
-            localStorage.setItem('totalPushups',totalPushups);localStorage.setItem('dailyPushupsDone',dailyPushupsDone);localStorage.setItem('pushupLog',JSON.stringify(pushupLog));
-            calculateDatesAndGoals();updateScreen();
+            vibrate(50); if(pushupLog.length===0){alert("Nothing to undo!");return;}
+            let lastAmt = pushupLog.pop().amount; totalPushups = Math.max(0,totalPushups-lastAmt); dailyPushupsDone = Math.max(0,dailyPushupsDone-lastAmt);
+            if(appMode==='challenge'&&totalPushups<savedTotalGoal){hasCelebrated=false;}
+            saveToCloud(); // Uppdaterar molnet att vi ångrat oss!
+            calculateDatesAndGoals(); updateScreen();
         }
 
-        function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p;localStorage.setItem('customAmounts',JSON.stringify(customAmounts));updateScreen();}}
+        function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p; saveToCloud(); updateScreen();}}
         function addCustom(index){if(customAmounts[index]===0)setCustomAmount(index);else addPushups(customAmounts[index]);}
 
-        // DIN EGEN KALENDER OCH DIAGRAM
+        // DIN KALENDER
         let currMonth=new Date(), chartInst=null;
         function showCalendarScreen(){hideAllScreens();document.getElementById('calendarScreen').classList.add('active-screen');currMonth=new Date();renderCalendar();}
         function changeMonth(d){currMonth.setMonth(currMonth.getMonth()+d);renderCalendar();}
