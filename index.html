@@ -18,10 +18,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .icon { vertical-align: middle; font-size: 20px; }
         
-        /* HEADER */
+        /* HEADER - Nu är titeln tydligt klickbar */
         .header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
-        .brand-area { display: flex; align-items: center; gap: 8px; }
-        .header-title { color: var(--main-green); font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .brand-area { display: flex; flex-direction: column; cursor: pointer; } 
+        .header-title { color: var(--main-green); font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; transition: opacity 0.2s; }
+        .brand-area:hover .header-title { opacity: 0.8; }
         .header-subtitle { color: #888; font-size: 13px; margin-top: 2px; font-weight: bold; letter-spacing: 1px; }
         .header-icons { display: flex; gap: 12px; margin-top: 5px; }
         .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; }
@@ -43,27 +44,20 @@
         .mode-tab.active { background: rgba(57, 255, 20, 0.1); color: var(--main-green); border-color: var(--main-green); }
         
         .dashboard-content { text-align: center; }
-        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: filter 0.3s; }
-        .ring-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; z-index: 2; }
+        /* Ring-container med plats för eld-canvasen bakom */
+        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .ring-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; z-index: 5; }
         .ring-track { fill: none; stroke: #222; }
         .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5)); }
         .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         
-        /* Mer realistisk "Eld"-effekt med flimmer (Flicker) */
-        @keyframes realisticFireFlicker { 
-            0% { filter: drop-shadow(0 0 15px #ff1144) drop-shadow(0 0 30px #ff3300); transform: scale(1); } 
-            20% { filter: drop-shadow(0 0 20px #ff3300) drop-shadow(0 0 45px #ffaa00); transform: scale(1.01); } 
-            40% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 25px #ff5500); transform: scale(1); } 
-            60% { filter: drop-shadow(0 0 25px #ffaa00) drop-shadow(0 0 55px #ff1144); transform: scale(1.02); } 
-            80% { filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 35px #ffaa00); transform: scale(1.01); } 
-            100% { filter: drop-shadow(0 0 20px #ff1144) drop-shadow(0 0 40px #ff5500); transform: scale(1); } 
-        }
-        .is-on-fire { animation: realisticFireFlicker 0.4s infinite alternate !important; }
+        /* CANVAS FÖR DEN REALISTISKA ELDEN */
+        #fireCanvas { position: absolute; top: -20px; left: -20px; width: 280px; height: 280px; z-index: 0; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+        #fireCanvas.active { opacity: 1; }
 
         .total-count { font-size: 38px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255, 17, 68, 0.3); position: relative; } 
         .goal-count { color: #888; font-size: 11px; letter-spacing: 1px; margin-top: 5px; }
         
-        /* NY STATS GRID MED 3 SPALTER */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background-color: var(--panel-bg); padding: 15px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .stat-box { text-align: center; }
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
@@ -85,7 +79,6 @@
         .undo-btn { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #aaa; padding: 10px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
         .undo-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
         
-        /* LISTOR (Vänner & Leaderboard) */
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: transform 0.1s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444;}
         .lb-rank { font-size: 20px; font-weight: bold; color: #888; width: 30px; }
@@ -94,7 +87,6 @@
         .lb-highlight { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--main-green); }
         .lb-highlight .lb-rank { color: var(--main-green); }
         
-        /* KALENDER */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 10px; }
         .calendar-day-header { text-align: center; font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
@@ -105,7 +97,7 @@
         .chart-container { width: 100%; height: 200px; margin-bottom: 15px; margin-top: 10px; }
         .day-total-text { text-align: center; font-size: 16px; color: var(--main-green); font-weight: bold; margin-bottom: 5px; }
         
-        /* CELEBRATION (Ny snyggare overlay, effekterna sköts av canvas-confetti!) */
+        /* CELEBRATION OVERLAY */
         .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; text-align: center; }
         .celebration-overlay.show { opacity: 1; pointer-events: auto; }
         .celeb-icon { font-size: 100px; color: #ffaa00; text-shadow: 0 0 40px #ffaa00; margin-bottom: 20px; animation: float 2s infinite ease-in-out; }
@@ -136,11 +128,9 @@
         </div>
 
         <div class="header-bar" id="mainHeader" style="display:none;">
-            <div class="brand-area">
-                <div>
-                    <h1 class="header-title">Pushup Days</h1>
-                    <div class="header-subtitle" id="greetingTitle">User</div>
-                </div>
+            <div class="brand-area" onclick="showDashboard()">
+                <h1 class="header-title">Pushup Days</h1>
+                <div class="header-subtitle" id="greetingTitle">User</div>
             </div>
             <div class="header-icons">
                 <button class="icon-btn" onclick="showDashboard()"><span class="material-symbols-outlined">home</span></button>
@@ -241,7 +231,7 @@
 
         <div id="dashboardScreen" class="screen dashboard-content">
             <div class="ring-container" id="ringGlowContainer">
-                <svg class="ring-svg" viewBox="0 0 240 240">
+                <canvas id="fireCanvas" width="280" height="280"></canvas> <svg class="ring-svg" viewBox="0 0 240 240">
                     <circle class="ring-track" cx="120" cy="120" r="105" stroke-width="14"/>
                     <circle id="svgOuter" class="ring-progress" cx="120" cy="120" r="105" stroke="var(--main-green)" stroke-width="14" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
                     <circle id="svgInnerTrack" class="ring-track" cx="120" cy="120" r="85" stroke-width="14"/>
@@ -305,6 +295,63 @@
         let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
         const outerCircumference = 659.7, innerCircumference = 534;   
         
+        // --- NY REALISTISK ELD-MOTOR (Canvas Particles) ---
+        const fireCanvas = document.getElementById('fireCanvas');
+        const fireCtx = fireCanvas.getContext('2d');
+        let fireParticles = [];
+        let isFireAnimating = false;
+
+        function createFireParticle() {
+            // Skapa partiklar längst ner i ringen (mitten av canvas, botten)
+            const x = fireCanvas.width / 2 + (Math.random() * 60 - 30); // Spridning i sidled
+            const y = fireCanvas.height - 40; // Startposition nerifrån
+            const size = Math.random() * 15 + 10; // Storlek
+            const speedY = Math.random() * 3 + 2; // Fart uppåt
+            const life = Math.random() * 0.6 + 0.4; // Livslängd
+            fireParticles.push({ x, y, size, speedY, life, maxLife: life });
+        }
+
+        function animateFire() {
+            if (!isFireAnimating) return;
+            fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
+            
+            // Skapa nya partiklar konstant
+            if (fireParticles.length < 150) { for(let i=0; i<5; i++) createFireParticle(); }
+
+            for (let i = fireParticles.length - 1; i >= 0; i--) {
+                let p = fireParticles[i];
+                p.y -= p.speedY; // Flytta uppåt
+                p.x += Math.sin(p.life * 10) * 1.5; // Vobbla i sidled
+                p.life -= 0.01; // Minska liv
+                p.size -= 0.1; // Krymp
+
+                if (p.life <= 0 || p.size <= 0) { fireParticles.splice(i, 1); continue; }
+
+                // Färg baserat på liv: Vit -> Gul -> Orange -> Röd -> Rök
+                let color;
+                let lifeRatio = p.life / p.maxLife;
+                if (lifeRatio > 0.8) color = 'rgba(255, 255, 200, ' + lifeRatio + ')'; // Vit-gul (hetast)
+                else if (lifeRatio > 0.6) color = 'rgba(255, 200, 0, ' + lifeRatio + ')'; // Gul
+                else if (lifeRatio > 0.4) color = 'rgba(255, 120, 0, ' + lifeRatio + ')'; // Orange
+                else if (lifeRatio > 0.2) color = 'rgba(255, 50, 0, ' + lifeRatio + ')'; // Röd
+                else color = 'rgba(100, 100, 100, ' + lifeRatio + ')'; // Rök
+
+                fireCtx.beginPath();
+                // Rita en mjuk cirkel (radial gradient för "glöd"-effekt)
+                let gradient = fireCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                fireCtx.fillStyle = gradient;
+                fireCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                fireCtx.fill();
+            }
+            requestAnimationFrame(animateFire);
+        }
+
+        function startFire() { if (!isFireAnimating) { isFireAnimating = true; document.getElementById('fireCanvas').classList.add('active'); animateFire(); }}
+        function stopFire() { isFireAnimating = false; document.getElementById('fireCanvas').classList.remove('active'); fireParticles = []; fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height); }
+        // --------------------------------------------------
+
         function setSetupMode(mode) {
             appMode = mode;
             document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-' + mode).classList.add('active');
@@ -321,12 +368,7 @@
             } else {
                 document.getElementById('mainHeader').style.display = 'flex';
                 document.getElementById('greetingTitle').innerText = "@" + localUsername;
-                
-                // Om de är "On fire", lägg till en eld-ikon i namnet uppe i hörnet!
-                if(dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) {
-                    document.getElementById('greetingTitle').innerHTML = "@" + localUsername + " <span style='color:#ffaa00'>🔥</span>";
-                }
-                
+                if(dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) { document.getElementById('greetingTitle').innerHTML = "@" + localUsername + " <span style='color:#ffaa00'>🔥</span>"; }
                 checkOnboarding();
             }
         }
@@ -334,11 +376,8 @@
         function loginUser() {
             let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
             if(u === "" || p === "") { alert("Please enter credentials!"); return; }
-            if (localUsername === "") {
-                localStorage.setItem('username', u); localStorage.setItem('password', p); localUsername = u; localPassword = p; checkAppStart();
-            } else {
-                if (u === localUsername && p === localPassword) checkAppStart(); else alert("Wrong username or password!");
-            }
+            if (localUsername === "") { localStorage.setItem('username', u); localStorage.setItem('password', p); localUsername = u; localPassword = p; checkAppStart(); } 
+            else { if (u === localUsername && p === localPassword) checkAppStart(); else alert("Wrong username or password!"); }
         }
         
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.removeItem('username'); localStorage.removeItem('password'); checkAppStart(); }
@@ -363,16 +402,12 @@
 
         function showLeaderboardScreen() {
             hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
-            // Lägger till eld-ikon på dig själv om du är on fire i topplistan!
             let fireHtml = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) ? " <span style='font-size: 14px;'>🔥</span>" : "";
             document.getElementById('lbYourName').innerHTML = "You (@" + localUsername + ")" + fireHtml;
             document.getElementById('lbYourScore').innerText = totalPushups.toLocaleString('en-US');
         }
         
-        function showFriendsScreen() {
-            hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
-        }
-        
+        function showFriendsScreen() { hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen'); }
         function showFriendProfile(name, score, isOnFire) {
             hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
             document.getElementById('fpName').innerHTML = name + (isOnFire ? " <span style='font-size: 20px;'>🔥</span>" : "");
@@ -411,36 +446,25 @@
                 calculatedDailyGoal = savedDailyGoalSetting; calculatedDaysLeft = "∞";
             }
             
-            // Räkna ut det dagliga snittet (Total Pushups / Dagar sedan första loggen)
             if(pushupLog.length > 0) {
-                let firstLogDate = new Date(pushupLog[0].timestamp);
-                firstLogDate.setHours(0,0,0,0);
+                let firstLogDate = new Date(pushupLog[0].timestamp); firstLogDate.setHours(0,0,0,0);
                 let today = new Date(); today.setHours(0,0,0,0);
                 let daysActive = Math.round((today - firstLogDate) / (1000 * 60 * 60 * 24)) + 1;
-                let avg = Math.round(totalPushups / daysActive);
-                document.getElementById('dailyAvgText').innerText = avg;
-            } else {
-                document.getElementById('dailyAvgText').innerText = "0";
-            }
+                document.getElementById('dailyAvgText').innerText = Math.round(totalPushups / daysActive);
+            } else { document.getElementById('dailyAvgText').innerText = "0"; }
         }
 
         function triggerCelebration() {
-            // Skjut av konfetti! (Anropar den externa fysik-motorn)
-            var duration = 4000;
-            var end = Date.now() + duration;
-
+            // MAXAD KONFETTI! (Längre tid, fler partiklar, starkare färger)
+            var duration = 5000; var end = Date.now() + duration;
             (function frame() {
-                confetti({
-                    particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#39ff14', '#ffffff']
-                });
-                confetti({
-                    particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#39ff14', '#ffffff']
-                });
+                // Vänster sida
+                confetti({ particleCount: 4, angle: 60, spread: 80, origin: { x: 0 }, colors: ['#39ff14', '#ffffff', '#ffaa00', '#ff1144'], ticks: 300, decay: 0.94, startVelocity: 40 });
+                // Höger sida
+                confetti({ particleCount: 4, angle: 120, spread: 80, origin: { x: 1 }, colors: ['#39ff14', '#ffffff', '#ffaa00', '#ff1144'], ticks: 300, decay: 0.94, startVelocity: 40 });
                 if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
-
-            let el = document.getElementById('celebrationOverlay');
-            el.classList.add('show');
+            let el = document.getElementById('celebrationOverlay'); el.classList.add('show');
             hasCelebrated = true; localStorage.setItem('hasCelebrated', 'true');
             setTimeout(() => { el.classList.remove('show'); }, 5000);
         }
@@ -476,10 +500,12 @@
             let isFire = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0);
             document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
             if(isFire) {
-                document.getElementById('ringGlowContainer').classList.add('is-on-fire');
+                // Starta den nya partikel-elden!
+                startFire();
                 document.getElementById('greetingTitle').innerHTML = "@" + localUsername + " <span style='color:#ffaa00'>🔥</span>";
             } else {
-                document.getElementById('ringGlowContainer').classList.remove('is-on-fire');
+                // Stoppa elden
+                stopFire();
                 document.getElementById('greetingTitle').innerHTML = "@" + localUsername;
             }
         }
@@ -490,8 +516,7 @@
             pushupLog.push({ amount: amount, timestamp: Date.now() }); localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
             localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
             if (appMode === 'challenge' && savedTotalGoal > 0 && totalPushups >= savedTotalGoal && oldTotal < savedTotalGoal && !hasCelebrated) { triggerCelebration(); }
-            calculateDatesAndGoals(); // Uppdatera snittet!
-            updateScreen();
+            calculateDatesAndGoals(); updateScreen();
         }
 
         function undoLastAction() {
@@ -501,8 +526,7 @@
             if (totalPushups < 0) totalPushups = 0; if (dailyPushupsDone < 0) dailyPushupsDone = 0;
             if (appMode === 'challenge' && totalPushups < savedTotalGoal) { hasCelebrated = false; localStorage.setItem('hasCelebrated', 'false'); }
             localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone); localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
-            calculateDatesAndGoals(); // Uppdatera snittet!
-            updateScreen();
+            calculateDatesAndGoals(); updateScreen();
         }
 
         function setCustomAmount(index) {
@@ -513,7 +537,6 @@
 
         function addCustom(index) { if (customAmounts[index] === 0) setCustomAmount(index); else addPushups(customAmounts[index]); }
         
-        // FÖR KALENDERN I BAKGRUNDEN
         let currentMonthDate = new Date();
         function showCalendarScreen() { hideAllScreens(); document.getElementById('calendarScreen').classList.add('active-screen'); currentMonthDate = new Date(); renderCalendar(); }
         function changeMonth(dir) { currentMonthDate.setMonth(currentMonthDate.getMonth() + dir); renderCalendar(); }
