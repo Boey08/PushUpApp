@@ -3,17 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PushUp Tracker</title>
+    <title>Pushup Days</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <style>
-        :root { 
-            --main-green: #39ff14; 
-            --daily-red: #ff1144; /* Ny neonröd färg */
-            --lap-color: #ffaa00; /* Eldig orange för varv 2 */
-            --dark-bg: #121212; 
-            --darker-bg: #0a0a0a; 
-            --panel-bg: #1e1e1e; 
-        }
+        :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; }
         body { background-color: var(--dark-bg); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 400px; }
         .screen { display: none; animation: fadeIn 0.3s ease; }
@@ -21,30 +14,42 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .icon { vertical-align: middle; font-size: 20px; }
         
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header-title { color: var(--main-green); font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        /* HEADER & BRANDING */
+        .header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+        .brand-area { display: flex; flex-direction: column; }
+        .header-title { color: var(--main-green); font-size: 26px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .header-subtitle { color: #888; font-size: 14px; margin-top: 2px; font-weight: bold; letter-spacing: 1px; }
+        .header-icons { display: flex; gap: 15px; }
         .icon-btn { font-size: 28px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; }
         .icon-btn:hover { color: #fff; }
         
-        .card { background-color: var(--panel-bg); padding: 25px; border-radius: 20px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card { background-color: var(--panel-bg); padding: 25px; border-radius: 20px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px;}
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .input-field { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background-color: var(--darker-bg); color: white; font-size: 16px; box-sizing: border-box; outline: none; }
         .input-field:focus { border-color: var(--main-green); }
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.6; }
         
-        .primary-btn { width: 100%; background-color: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.1s; }
-        .primary-btn:active { transform: scale(0.98); }
+        .primary-btn { width: 100%; background-color: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .danger-btn { width: 100%; background: rgba(255, 69, 0, 0.1); color: #ff4500; border: 1px solid rgba(255, 69, 0, 0.3); padding: 15px; font-size: 14px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; display: flex; justify-content: center; gap: 8px; }
+        .secondary-btn { width: 100%; background: transparent; color: #aaa; border: 1px solid #555; padding: 15px; font-size: 14px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; }
         
         .dashboard-content { text-align: center; }
-        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; }
+        
+        /* RINGAR OCH ELD-EFFEKT */
+        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: filter 0.3s; }
         .ring-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
         .ring-track { fill: none; stroke: #222; }
         .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease; filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.5)); }
         .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         
-        .total-count { font-size: 42px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255, 17, 68, 0.3); } /* Anpassad färg för skuggan */
+        @keyframes ringFireAnimation {
+            0% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ffaa00); }
+            100% { filter: drop-shadow(0 0 25px #ffaa00) drop-shadow(0 0 45px #ff1144); }
+        }
+        .is-on-fire { animation: ringFireAnimation 0.8s infinite alternate !important; }
+
+        .total-count { font-size: 42px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255, 17, 68, 0.3); } 
         .goal-count { color: #888; font-size: 11px; letter-spacing: 1px; margin-top: 5px; }
         
         .stats-grid { display: flex; justify-content: space-between; background-color: var(--panel-bg); padding: 20px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -52,7 +57,7 @@
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .stat-value { font-size: 20px; font-weight: bold; color: #fff; }
         .daily-indicator { color: var(--daily-red); font-size: 14px; }
-        .fire-status { color: #ff4500; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; animation: pulse 1.5s infinite; justify-content: center; gap: 4px; }
+        .fire-status { color: #ffaa00; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; animation: pulse 1.5s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 5px #ff1144; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
@@ -65,7 +70,9 @@
         
         .undo-btn { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
         .undo-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .undo-btn:active { transform: scale(0.98); }
+        
+        /* Enkel Historik-lista */
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 14px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -73,7 +80,7 @@
         
         <div id="loginScreen" class="screen">
             <div class="header-bar" style="justify-content: center; margin-top: 40px;">
-                <h1 class="header-title">PushUp Pro</h1>
+                <h1 class="header-title">Pushup Days</h1>
             </div>
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">login</span> Welcome</h2>
@@ -88,10 +95,18 @@
         </div>
 
         <div class="header-bar" id="mainHeader" style="display:none;">
-            <h1 class="header-title" id="greetingTitle">PushUp Pro</h1>
-            <button class="icon-btn" onclick="showSetupScreen()">
-                <span class="material-symbols-outlined">settings</span>
-            </button>
+            <div class="brand-area">
+                <h1 class="header-title">Pushup Days</h1>
+                <div class="header-subtitle" id="greetingTitle">User</div>
+            </div>
+            <div class="header-icons">
+                <button class="icon-btn" onclick="showHistoryScreen()">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                </button>
+                <button class="icon-btn" onclick="showSetupScreen()">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+            </div>
         </div>
 
         <div id="setupScreen" class="screen">
@@ -108,19 +123,32 @@
                     <span class="material-symbols-outlined icon">rocket_launch</span> Save & Start
                 </button>
                 <button class="danger-btn" onclick="resetProgressData()">
-                    <span class="material-symbols-outlined icon">warning</span> Reset Progress (Keep Account)
+                    <span class="material-symbols-outlined icon">warning</span> Reset Progress
                 </button>
+                <button class="secondary-btn" onclick="logOutUser()">
+                    <span class="material-symbols-outlined icon">logout</span> Log Out
+                </button>
+            </div>
+        </div>
+        
+        <div id="historyScreen" class="screen">
+            <div class="card">
+                <h2><span class="material-symbols-outlined icon">history</span> Data Log</h2>
+                <p style="font-size: 12px; color: #888;">This is the raw data we are logging. We will build the visual calendar and charts from this data soon!</p>
+                <div id="historyListContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                    </div>
+                <button class="primary-btn" onclick="showDashboard()">Back to Dashboard</button>
             </div>
         </div>
 
         <div id="dashboardScreen" class="screen dashboard-content">
-            
-            <div class="ring-container">
+            <div class="ring-container" id="ringGlowContainer">
                 <svg class="ring-svg" viewBox="0 0 240 240">
                     <circle class="ring-track" cx="120" cy="120" r="105" stroke-width="14"/>
                     <circle id="svgOuter" class="ring-progress" cx="120" cy="120" r="105" stroke="var(--main-green)" stroke-width="14" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
                     
                     <circle id="svgInnerTrack" class="ring-track" cx="120" cy="120" r="85" stroke-width="14"/>
+                    <circle id="svgInnerFull" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="14" fill="none" style="opacity: 0; transition: opacity 0.3s;" />
                     <circle id="svgInner" class="ring-progress" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="14" stroke-dasharray="534" stroke-dashoffset="534"/>
                 </svg>
                 <div class="ring-content">
@@ -167,88 +195,65 @@
     </div>
 
     <script>
-        // SÄKER DATAHÄMTNING
+        // DATA
         let localUsername = localStorage.getItem('username') || "";
         let localPassword = localStorage.getItem('password') || "";
-        
         let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
         let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
         let customAmount = parseInt(localStorage.getItem('customAmount')) || 0;
         
-        let actionHistory = [];
-        try {
-            let historyData = localStorage.getItem('actionHistory');
-            if (historyData) actionHistory = JSON.parse(historyData);
-        } catch (e) { actionHistory = []; }
+        // NY HJÄRNA: Databasen över tidsstämplade armhävningar
+        let pushupLog = [];
+        try { let logData = localStorage.getItem('pushupLog'); if (logData) pushupLog = JSON.parse(logData); } catch (e) { pushupLog = []; }
 
         let savedTotalGoal = parseInt(localStorage.getItem('totalGoal')) || 0;
         let savedStartDate = localStorage.getItem('startDate') || "";
         let savedEndDate = localStorage.getItem('endDate') || "";
-        
         let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
         const outerCircumference = 659.7, innerCircumference = 534;   
 
         function hideAllScreens() {
-            let screens = document.querySelectorAll('.screen');
-            for (let i = 0; i < screens.length; i++) screens[i].classList.remove('active-screen');
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active-screen'));
         }
 
         function checkAppStart() {
             if (localUsername === "") {
-                hideAllScreens();
-                document.getElementById('loginScreen').classList.add('active-screen');
-                document.getElementById('mainHeader').style.display = 'none';
+                hideAllScreens(); document.getElementById('loginScreen').classList.add('active-screen'); document.getElementById('mainHeader').style.display = 'none';
             } else {
                 document.getElementById('mainHeader').style.display = 'flex';
-                document.getElementById('greetingTitle').innerText = localUsername + "'s Pro";
+                document.getElementById('greetingTitle').innerText = "@" + localUsername;
                 checkOnboarding();
             }
         }
 
-        // UPPDATERAD LOGIN-LOGIK
         function loginUser() {
             let u = document.getElementById('inputUsername').value.trim();
             let p = document.getElementById('inputPassword').value.trim();
-            
             if(u === "" || p === "") { alert("Please enter both username and password!"); return; }
-            
             if (localUsername === "") {
-                // Första gången
-                localStorage.setItem('username', u);
-                localStorage.setItem('password', p);
-                localUsername = u;
-                localPassword = p;
-                checkAppStart();
+                localStorage.setItem('username', u); localStorage.setItem('password', p); localUsername = u; localPassword = p; checkAppStart();
             } else {
-                // Återkommande
-                if (u === localUsername && p === localPassword) {
-                    checkAppStart();
-                } else {
-                    alert("Wrong username or password!");
-                }
+                if (u === localUsername && p === localPassword) checkAppStart(); else alert("Wrong username or password!");
             }
+        }
+        
+        function logOutUser() {
+            localUsername = ""; localPassword = "";
+            localStorage.removeItem('username'); localStorage.removeItem('password');
+            checkAppStart();
         }
 
         function checkAndResetNewDay() {
             let todayString = new Date().toDateString();
             let lastLoginDate = localStorage.getItem('lastLoginDate');
             if (lastLoginDate !== todayString) {
-                dailyPushupsDone = 0; 
-                localStorage.setItem('dailyPushupsDone', 0);
-                localStorage.setItem('lastLoginDate', todayString);
-                actionHistory = []; 
-                localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+                dailyPushupsDone = 0; localStorage.setItem('dailyPushupsDone', 0); localStorage.setItem('lastLoginDate', todayString);
             }
         }
 
         function checkOnboarding() {
-            if (savedTotalGoal === 0 || savedStartDate === "" || savedEndDate === "") { 
-                showSetupScreen(); 
-            } else { 
-                checkAndResetNewDay(); 
-                calculateDatesAndGoals(); 
-                showDashboard(); 
-            }
+            if (savedTotalGoal === 0 || savedStartDate === "" || savedEndDate === "") showSetupScreen(); 
+            else { checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard(); }
         }
 
         function showSetupScreen() {
@@ -258,40 +263,45 @@
             if (savedEndDate !== "") document.getElementById('inputEndDate').value = savedEndDate;
         }
 
+        function showHistoryScreen() {
+            hideAllScreens(); document.getElementById('historyScreen').classList.add('active-screen');
+            let container = document.getElementById('historyListContainer');
+            container.innerHTML = "";
+            
+            // Visa de senaste loggarna (börjar bakifrån så de nyaste syns först)
+            let logsToShow = pushupLog.slice(-15).reverse();
+            if (logsToShow.length === 0) {
+                container.innerHTML = "<p style='color:#888;'>No pushups logged yet. Time to work out!</p>";
+                return;
+            }
+            logsToShow.forEach(log => {
+                let d = new Date(log.timestamp);
+                let timeString = d.toLocaleDateString() + " " + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
+                container.innerHTML += `<div class="history-item"><span>${timeString}</span> <span style="color:var(--main-green); font-weight:bold;">+${log.amount}</span></div>`;
+            });
+        }
+
         function showDashboard() {
-            hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen');
-            setTimeout(updateScreen, 50); 
+            hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen'); setTimeout(updateScreen, 50); 
         }
 
         function saveSettings() {
             let g = document.getElementById('inputTotalGoal').value, s = document.getElementById('inputStartDate').value, e = document.getElementById('inputEndDate').value;
             if(!g || !s || !e) { alert("Please fill in all fields!"); return; }
-            
             savedTotalGoal = parseInt(g); savedStartDate = s; savedEndDate = e;
             localStorage.setItem('totalGoal', savedTotalGoal); localStorage.setItem('startDate', savedStartDate); localStorage.setItem('endDate', savedEndDate);
-            
             checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // UPPDATERAD RESET-LOGIK (Raderar inte konto)
         function resetProgressData() {
             if(confirm("Are you sure? This deletes your challenge and pushups, but keeps your login.")) { 
-                localStorage.removeItem('totalPushups');
-                localStorage.removeItem('dailyPushupsDone');
-                localStorage.removeItem('actionHistory');
-                localStorage.removeItem('totalGoal');
-                localStorage.removeItem('startDate');
-                localStorage.removeItem('endDate');
-                localStorage.removeItem('lastLoginDate');
-                localStorage.removeItem('customAmount');
-                location.reload(); 
+                localStorage.removeItem('totalPushups'); localStorage.removeItem('dailyPushupsDone'); localStorage.removeItem('pushupLog'); localStorage.removeItem('totalGoal'); localStorage.removeItem('startDate'); localStorage.removeItem('endDate'); localStorage.removeItem('lastLoginDate'); localStorage.removeItem('customAmount'); location.reload(); 
             }
         }
 
         function calculateDatesAndGoals() {
             const start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date();
             start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
-            
             const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
             calculatedDaysLeft = Math.round((end - today) / (1000 * 60 * 60 * 24));
             if (calculatedDaysLeft < 0) calculatedDaysLeft = 0;
@@ -299,55 +309,71 @@
         }
 
         function updateScreen() {
-            // Mitten-texterna uppdaterade enligt dina önskemål!
             document.getElementById('centerLargeText').innerText = dailyPushupsDone;
             document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${savedTotalGoal ? savedTotalGoal.toLocaleString('en-US') : 0}`;
-            
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
-            
-            // Säkerställer att Custom-knappen alltid visar rätt
             document.getElementById('customBtn').innerText = customAmount > 0 ? "+ " + customAmount : "+ Custom";
 
-            // Yttre Grön Ring
             let totalPercentage = savedTotalGoal > 0 ? (totalPushups / savedTotalGoal) : 0;
             if (totalPercentage > 1) totalPercentage = 1;
             document.getElementById('svgOuter').style.strokeDashoffset = outerCircumference - (totalPercentage * outerCircumference);
 
-            // Inre Ring (Ny logik för Neonröd och Varv 2)
             let dailyPercentage = calculatedDailyGoal > 0 ? (dailyPushupsDone / calculatedDailyGoal) : 0;
             let laps = Math.floor(dailyPercentage);
             let currentLapPercentage = dailyPercentage % 1; 
             let innerOffset = innerCircumference - (currentLapPercentage * innerCircumference);
 
+            // Äkta Apple-effekt logik
             if (laps === 0) {
+                document.getElementById('svgInnerFull').style.opacity = 0; // Göm röda botten
                 document.getElementById('svgInnerTrack').setAttribute('stroke', '#222');
                 document.getElementById('svgInner').setAttribute('stroke', 'var(--daily-red)');
                 document.getElementById('lapIndicator').style.color = 'var(--daily-red)';
             } else {
-                // När den är full: Spåret blir solid Röd, ny animation ovanpå i eldig Orange!
-                document.getElementById('svgInnerTrack').setAttribute('stroke', 'var(--daily-red)');
-                document.getElementById('svgInner').setAttribute('stroke', 'var(--lap-color)');
+                document.getElementById('svgInnerFull').style.opacity = 1; // Visa solid röd botten
+                document.getElementById('svgInnerTrack').setAttribute('stroke', '#222');
+                document.getElementById('svgInner').setAttribute('stroke', 'var(--lap-color)'); // Orange ritas över
                 document.getElementById('lapIndicator').style.color = 'var(--lap-color)';
             }
             document.getElementById('svgInner').style.strokeDashoffset = innerOffset;
 
+            // Eld-effekten!
             let isFire = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0);
             document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
+            if(isFire) {
+                document.getElementById('ringGlowContainer').classList.add('is-on-fire');
+            } else {
+                document.getElementById('ringGlowContainer').classList.remove('is-on-fire');
+            }
         }
 
         function addPushups(amount) {
-            checkAndResetNewDay(); totalPushups += amount; dailyPushupsDone += amount; 
-            actionHistory.push(amount); localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            checkAndResetNewDay(); 
+            totalPushups += amount; 
+            dailyPushupsDone += amount; 
+            
+            // Ny Logg-funktion! Spara tid och antal
+            pushupLog.push({ amount: amount, timestamp: Date.now() });
+            localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
+            
             localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
             updateScreen();
         }
 
         function undoLastAction() {
-            if (actionHistory.length === 0) { alert("Nothing to undo!"); return; }
-            let lastAmount = actionHistory.pop(); totalPushups -= lastAmount; dailyPushupsDone -= lastAmount;
+            if (pushupLog.length === 0) { alert("Nothing to undo!"); return; }
+            
+            // Ta bort den senaste loggade händelsen och hämta hur många det var
+            let lastLog = pushupLog.pop(); 
+            let lastAmount = lastLog.amount;
+            
+            totalPushups -= lastAmount; 
+            dailyPushupsDone -= lastAmount;
+            
             if (totalPushups < 0) totalPushups = 0; if (dailyPushupsDone < 0) dailyPushupsDone = 0;
-            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone); localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone); localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
             updateScreen();
         }
 
@@ -357,10 +383,7 @@
             if (!isNaN(parsedNumber) && parsedNumber > 0) { customAmount = parsedNumber; localStorage.setItem('customAmount', customAmount); updateScreen(); }
         }
 
-        function addCustom() { 
-            if (customAmount === 0) setCustomAmount(); else addPushups(customAmount); 
-        }
-
+        function addCustom() { if (customAmount === 0) setCustomAmount(); else addPushups(customAmount); }
         window.onload = function() { checkAppStart(); };
     </script>
 </body>
