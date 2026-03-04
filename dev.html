@@ -59,14 +59,29 @@
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
+        /* NY FIRE STATUS - Alltid ta plats men syns bara vid mål */
+        .fire-status { 
+            color: #ffaa00; 
+            font-weight: bold; 
+            font-size: 13px; 
+            display: flex; 
+            visibility: hidden; /* Osynlig men tar plats */
+            align-items: center; 
+            justify-content: flex-start; /* Vänsterjusterad */
+            gap: 4px; 
+            text-shadow: 0 0 10px #ff1144; 
+            margin-left: 8px; /* Lite indrag så den ligger i linje med kanten på stats-rutan */
+            margin-bottom: 4px; 
+            animation: pulse 1s infinite; 
+        } 
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
         .stats-grid { display: grid; gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
         .stat-value { font-size: 16px; font-weight: bold; }
-        .fire-status { color: #ffaa00; font-weight: bold; font-size: 13px; display: none; margin-top: 2px; animation: pulse 1s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; } 
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         
-        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; margin-bottom: 15px; }
         .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 14px; font-size: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
         .custom-container { display: flex; gap: 6px; } .custom-btn-main { flex-grow: 1; }
         .custom-settings-btn { width: 45px; border-radius: 14px; background: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #888; display: flex; align-items: center; justify-content: center; }
@@ -160,6 +175,8 @@
                 </div>
             </div>
             
+            <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
+            
             <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 12px 4px;">
                 <div class="stat-box">
                     <div class="stat-label" style="font-size:9px; letter-spacing:0; line-height:1.2; text-align:center;">
@@ -187,7 +204,6 @@
                 </div>
             </div>
             
-            <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
             <div class="action-buttons">
                 <button class="pushup-btn" onclick="addPushups(10)">+ 10</button><button class="pushup-btn" onclick="addPushups(15)">+ 15</button><button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
                 <div class="custom-container"><button class="pushup-btn custom-btn-main color-1" id="customBtn0" onclick="addCustom(0)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(0)"><span class="material-symbols-outlined icon">edit</span></button></div>
@@ -308,7 +324,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
-        // --- DEV-DATABAS ---
         const DB_COLLECTION = "users_dev"; 
 
         let localUsername = localStorage.getItem('username_dev') || "";
@@ -324,30 +339,23 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- RÄKNA UT PR OCH VECKA ---
         function getAdvancedStats(logArr) {
             if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0 };
             
             let dailyTotals = {};
             let weekly = 0;
             
-            // Hitta måndag denna vecka (00:00:00)
             let curr = new Date();
             let day = curr.getDay();
-            let diff = curr.getDate() - day + (day === 0 ? -6 : 1); // Fix för söndag
+            let diff = curr.getDate() - day + (day === 0 ? -6 : 1); 
             let startOfWeek = new Date(curr.setDate(diff));
             startOfWeek.setHours(0,0,0,0);
             let startOfWeekTime = startOfWeek.getTime();
 
             logArr.forEach(l => {
-                // Summera för PR
                 let dString = new Date(l.timestamp).toDateString();
                 dailyTotals[dString] = (dailyTotals[dString] || 0) + l.amount;
-                
-                // Summera för denna vecka
-                if(l.timestamp >= startOfWeekTime) {
-                    weekly += l.amount;
-                }
+                if(l.timestamp >= startOfWeekTime) { weekly += l.amount; }
             });
 
             let pr = Math.max(...Object.values(dailyTotals), 0);
@@ -371,7 +379,7 @@
                 let docSnap = await db.collection(DB_COLLECTION).doc(localUsername).get();
                 if(docSnap.exists) {
                     let d = docSnap.data();
-                    if(d.password !== localPassword) { alert("Wrong password for this user!"); logOutUser(); return false; }
+                    if(d.password !== localPassword) { alert("Wrong password!"); logOutUser(); return false; }
                     totalPushups = d.totalPushups || 0; dailyPushupsDone = d.dailyPushupsDone || 0;
                     customAmounts = d.customAmounts || [25,30,50]; pushupLog = d.pushupLog || [];
                     myFriends = d.friends || []; appMode = d.appMode || 'challenge';
@@ -383,7 +391,7 @@
                     localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
                     savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
-            } catch(e) { alert("Cloud connection error."); return false; }
+            } catch(e) { return false; }
         }
 
         async function checkAppStart() {
@@ -628,7 +636,10 @@
             document.getElementById('svgInner').style.strokeDashoffset = calculatedDailyGoal>0 ? (534-(currPct*534)) : 534;
 
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
-            document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
+            
+            // NY VISIBILITY KOD HÄR:
+            document.getElementById('fireStatus').style.visibility = isFire ? 'visible' : 'hidden';
+            
             if(isFire){
                 document.getElementById('ringGlowContainer').classList.add('is-on-fire'); document.getElementById('greetingTitle').innerHTML = "@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
             } else {
