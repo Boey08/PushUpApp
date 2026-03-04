@@ -31,23 +31,7 @@
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
         .sub-label { font-size: 11px; color: #666; margin-top: -6px; margin-bottom: 10px; display: block; }
         
-        /* MOBIL-FIXADE FÄLT */
-        .input-field { 
-            width: 100%; 
-            height: 52px; /* Tvingar samma höjd på alla fält */
-            padding: 12px 15px; 
-            margin-bottom: 20px; 
-            border-radius: 12px; 
-            border: 1px solid #333; 
-            background: var(--darker-bg); 
-            color: #fff; 
-            font-size: 16px; 
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            outline: none; 
-            box-sizing: border-box; 
-            -webkit-appearance: none; /* iOS fix */
-            appearance: none;
-        } 
+        .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; font-family: 'Segoe UI', Tahoma, sans-serif; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
         .input-field:focus { border-color: var(--main-green); }
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; padding-right: 5px; }
         
@@ -84,7 +68,6 @@
         .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
         .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
         
-        /* VÄNNER & LISTOR */
         .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444; background: #333; }
@@ -133,6 +116,9 @@
             </div>
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">cloud_done</span> Cloud Login</h2>
+                <p style="font-size: 13px; color: #aaa; margin-top: -15px; margin-bottom: 20px; line-height: 1.5;">
+                    New user? Just make up a username and a password below to create your account automatically!
+                </p>
                 <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="off">
                 <input type="password" id="inputPassword" class="input-field" placeholder="Password">
                 <button class="primary-btn" onclick="loginUser()">Enter App</button>
@@ -186,13 +172,11 @@
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
                 <p style="font-size: 12px; color: #888; margin-top: -10px;">Search username to add friends.</p>
-                
                 <div class="search-box">
                     <input type="text" id="friendSearchInput" class="input-field" style="margin-bottom:0;" placeholder="Athlete name..." autocomplete="off">
                     <button class="primary-btn" style="width:auto; margin-bottom:0; padding: 15px 20px;" onclick="searchFriend()"><span class="material-symbols-outlined">search</span></button>
                 </div>
                 <div id="searchResultArea" style="margin-bottom: 20px;"></div>
-                
                 <div id="friendsListContainer">Loading your friends...</div>
             </div>
         </div>
@@ -212,15 +196,17 @@
                     <button class="icon-btn" onclick="changeFriendMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid" id="friendCalendarGrid"></div>
-                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showFriendsScreen()">Back to Friends</button>
+                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc; width: 100%; margin-top: 25px;" onclick="showLeaderboardScreen()">Back</button>
             </div>
         </div>
 
         <div id="leaderboardScreen" class="screen">
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">emoji_events</span> Friends Toplist</h2>
-                <p style="font-size: 12px; color: #888; margin-top: -10px;">Only showing you and your added friends.</p>
-                <div id="leaderboardContainer">Loading toplist...</div>
+                <h2><span class="material-symbols-outlined icon">public</span> Global Top 5</h2>
+                <div id="globalLeaderboardContainer">Loading global toplist...</div>
+                
+                <h2 style="margin-top: 35px; border-top: 1px solid #333; padding-top: 25px;"><span class="material-symbols-outlined icon">group</span> Friends Toplist</h2>
+                <div id="friendsLeaderboardContainer">Loading friends toplist...</div>
             </div>
         </div>
 
@@ -274,7 +260,6 @@
     </div>
 
     <script>
-        // 1. DIN FIREBASE KONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAXHGVi8wIKsOCOocWuugNOPoAl9l1OeB8",
             authDomain: "pushup-days.firebaseapp.com",
@@ -283,19 +268,15 @@
             messagingSenderId: "500331304476",
             appId: "1:500331304476:web:2a0bdec8dba913df4131d9"
         };
-
-        // 2. STARTA FIREBASE
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 3. LOKALA VARIABLER
         let localUsername = localStorage.getItem('username') || "";
         let localPassword = localStorage.getItem('password') || "";
         let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
-        let myFriends = []; // NYTT: Din privata vännerlista!
+        let myFriends = []; 
         let appMode = 'challenge', savedDailyGoalSetting = 0, savedTotalGoal = 0, savedStartDate = "", savedEndDate = "";
-        let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
-        let hasCelebrated = false;
+        let calculatedDailyGoal = 0, calculatedDaysLeft = 0, hasCelebrated = false;
         
         const outerCircumference = 659.7, innerCircumference = 534;   
         
@@ -303,22 +284,13 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- CLOUD SYNC ---
         function saveToCloud() {
             if(!localUsername) return;
             db.collection("users").doc(localUsername).set({
-                username: localUsername,
-                password: localPassword, 
-                totalPushups: totalPushups,
-                dailyPushupsDone: dailyPushupsDone,
-                customAmounts: customAmounts,
-                pushupLog: pushupLog,
-                friends: myFriends, // Sparar dina vänner
-                appMode: appMode,
-                dailyGoalSetting: savedDailyGoalSetting,
-                totalGoal: savedTotalGoal,
-                startDate: savedStartDate,
-                endDate: savedEndDate,
+                username: localUsername, password: localPassword, totalPushups: totalPushups,
+                dailyPushupsDone: dailyPushupsDone, customAmounts: customAmounts, pushupLog: pushupLog,
+                friends: myFriends, appMode: appMode, dailyGoalSetting: savedDailyGoalSetting,
+                totalGoal: savedTotalGoal, startDate: savedStartDate, endDate: savedEndDate,
                 lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
             }, { merge: true }); 
         }
@@ -330,28 +302,18 @@
                 if(docSnap.exists) {
                     let d = docSnap.data();
                     if(d.password !== localPassword) { alert("Wrong password for this user!"); logOutUser(); return false; }
-
-                    totalPushups = d.totalPushups || 0;
-                    dailyPushupsDone = d.dailyPushupsDone || 0;
-                    customAmounts = d.customAmounts || [25,30,50];
-                    pushupLog = d.pushupLog || [];
-                    myFriends = d.friends || []; // Laddar dina vänner
-                    appMode = d.appMode || 'challenge';
-                    savedDailyGoalSetting = d.dailyGoalSetting || 0;
-                    savedTotalGoal = d.totalGoal || 0;
-                    savedStartDate = d.startDate || getTodayString();
-                    savedEndDate = d.endDate || "";
+                    totalPushups = d.totalPushups || 0; dailyPushupsDone = d.dailyPushupsDone || 0;
+                    customAmounts = d.customAmounts || [25,30,50]; pushupLog = d.pushupLog || [];
+                    myFriends = d.friends || []; appMode = d.appMode || 'challenge';
+                    savedDailyGoalSetting = d.dailyGoalSetting || 0; savedTotalGoal = d.totalGoal || 0;
+                    savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
                     localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
                     return true;
                 } else {
                     localStorage.setItem('lastLoginDate', new Date().toDateString());
-                    savedStartDate = getTodayString();
-                    saveToCloud(); 
-                    return true;
+                    savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
-            } catch(e) {
-                alert("Cloud connection error."); return false;
-            }
+            } catch(e) { alert("Cloud connection error."); return false; }
         }
 
         async function checkAppStart() {
@@ -362,7 +324,6 @@
                 document.getElementById('loadingOverlay').style.display = 'flex';
                 let success = await fetchMyCloudData();
                 document.getElementById('loadingOverlay').style.display = 'none';
-                
                 if(success) {
                     document.getElementById('mainHeader').style.display = 'flex';
                     checkAndResetNewDay(); calculateDatesAndGoals();
@@ -405,85 +366,84 @@
             hasCelebrated = false; saveToCloud(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // --- NYTT: VÄNNER OCH SÖK-SYSTEM ---
         async function searchFriend() {
             let q = document.getElementById('friendSearchInput').value.trim();
             let res = document.getElementById('searchResultArea');
             if(!q) return;
             if(q === localUsername) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You can't add yourself.</p>"; return; }
             if(myFriends.includes(q)) { res.innerHTML = "<p style='color:#888; font-size:12px;'>You are already friends with " + q + ".</p>"; return; }
-
             res.innerHTML = "<p style='color:#888; font-size:12px;'>Searching cloud...</p>";
             try {
                 let snap = await db.collection("users").doc(q).get();
                 if(snap.exists) {
-                    res.innerHTML = `
-                        <div class="lb-item" style="border: 1px solid var(--main-green);">
-                            <div class="lb-name">${snap.data().username}</div>
-                            <button class="primary-btn" style="width:auto; padding:8px 20px; font-size:14px; margin:0;" onclick="addFriend('${q}')">Add</button>
-                        </div>`;
-                } else {
-                    res.innerHTML = "<p style='color:#ff4500; font-size:12px;'>Athlete not found.</p>";
-                }
+                    res.innerHTML = `<div class="lb-item" style="border: 1px solid var(--main-green);"><div class="lb-name">${snap.data().username}</div><button class="primary-btn" style="width:auto; padding:8px 20px; font-size:14px; margin:0;" onclick="addFriend('${q}')">Add</button></div>`;
+                } else { res.innerHTML = "<p style='color:#ff4500; font-size:12px;'>Athlete not found.</p>"; }
             } catch(e) { res.innerHTML = "<p>Error searching.</p>"; }
         }
 
         function addFriend(name) {
-            myFriends.push(name);
-            saveToCloud(); // Spara till molnet!
+            myFriends.push(name); saveToCloud();
             document.getElementById('searchResultArea').innerHTML = "<p style='color:var(--main-green); font-size:12px;'>Added " + name + " to your friends!</p>";
-            document.getElementById('friendSearchInput').value = "";
-            showFriendsScreen(); // Uppdatera listan
+            document.getElementById('friendSearchInput').value = ""; showFriendsScreen();
         }
 
         async function showFriendsScreen() {
             hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
-            document.getElementById('searchResultArea').innerHTML = ""; // Rensa sök
+            document.getElementById('searchResultArea').innerHTML = ""; 
             let container = document.getElementById('friendsListContainer');
             if(myFriends.length === 0) { container.innerHTML = "<p style='color:#888'>You haven't added any friends yet.</p>"; return; }
             container.innerHTML = "Loading your friends...";
-            
             try {
-                // Hämta bara dina vänner från molnet!
                 let promises = myFriends.map(f => db.collection("users").doc(f).get());
                 let docs = await Promise.all(promises);
                 let friendsData = docs.filter(d => d.exists).map(d => d.data());
-                
-                // Sortera efter vem som har gjort flest (i din vännerlista)
                 friendsData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
-
                 let html = ""; let rank = 1;
                 friendsData.forEach(d => {
                     let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
                     let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
-                    html += `
-                    <div class="lb-item" onclick="openFriendProfile('${d.username}')">
-                        <div class="lb-rank">${rank}</div>
-                        <div class="lb-name">${d.username}${fireHtml}</div>
-                        <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
-                    </div>`;
+                    html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-rank">${rank}</div><div class="lb-name">${d.username}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     rank++;
                 });
                 container.innerHTML = html;
             } catch(e) { container.innerHTML = "Error loading friends."; }
         }
 
+        // --- DUAL LEADERBOARD LOGIK ---
         async function showLeaderboardScreen() {
             hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
-            let container = document.getElementById('leaderboardContainer');
-            container.innerHTML = "Loading toplist...";
+            let globalContainer = document.getElementById('globalLeaderboardContainer');
+            let friendsContainer = document.getElementById('friendsLeaderboardContainer');
+            
+            globalContainer.innerHTML = "Loading global...";
+            friendsContainer.innerHTML = "Loading friends...";
             
             try {
-                // Hämtar Dig + Dina Vänner
+                // 1. GLOBAL TOP 5
+                let globalSnap = await db.collection("users").orderBy("totalPushups", "desc").limit(5).get();
+                let gHtml = ""; let gRank = 1;
+                globalSnap.forEach(doc => {
+                    let d = doc.data();
+                    let isMe = d.username === localUsername;
+                    let hlClass = isMe ? "lb-highlight" : "";
+                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
+                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
+                    let displayName = isMe ? "You (@" + d.username + ")" : d.username;
+                    let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
+                    
+                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    gRank++;
+                });
+                globalContainer.innerHTML = gHtml;
+
+                // 2. FRIENDS TOPLIST (Du + Dina vänner)
                 let allToFetch = [localUsername, ...myFriends];
                 let promises = allToFetch.map(u => db.collection("users").doc(u).get());
                 let docs = await Promise.all(promises);
-                
                 let usersData = docs.filter(d => d.exists).map(d => d.data());
-                // Sortera på poäng
                 usersData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
 
-                let html = ""; let rank = 1;
+                let fHtml = ""; let fRank = 1;
                 usersData.forEach(d => {
                     let isMe = d.username === localUsername;
                     let hlClass = isMe ? "lb-highlight" : "";
@@ -492,19 +452,17 @@
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
                     
-                    html += `
-                    <div class="lb-item ${hlClass}" onclick="${onClick}">
-                        <div class="lb-rank">${rank}</div>
-                        <div class="lb-name">${displayName}${fireHtml}</div>
-                        <div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div>
-                    </div>`;
-                    rank++;
+                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    fRank++;
                 });
-                container.innerHTML = html;
-            } catch(e) { container.innerHTML = "Error loading leaderboard."; }
+                friendsContainer.innerHTML = fHtml;
+
+            } catch(e) { 
+                globalContainer.innerHTML = "Error loading."; 
+                friendsContainer.innerHTML = "Error loading."; 
+            }
         }
 
-        // --- VÄNNS PROFIL & KALENDER ---
         let currentFriendLog = [];
         async function openFriendProfile(friendUsername) {
             hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
@@ -538,7 +496,6 @@
             } document.getElementById('friendCalendarGrid').innerHTML = h;
         }
 
-        // --- DASHBOARD LOGIK ---
         function calculateDatesAndGoals() {
             if(appMode === 'challenge') {
                 let start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date(); start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
@@ -602,7 +559,6 @@
         function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p; saveToCloud(); updateScreen();}}
         function addCustom(index){if(customAmounts[index]===0)setCustomAmount(index);else addPushups(customAmounts[index]);}
 
-        // DIN EGEN KALENDER
         let currMonth=new Date(), chartInst=null;
         function showCalendarScreen(){hideAllScreens();document.getElementById('calendarScreen').classList.add('active-screen');currMonth=new Date();renderCalendar();}
         function changeMonth(d){currMonth.setMonth(currMonth.getMonth()+d);renderCalendar();}
