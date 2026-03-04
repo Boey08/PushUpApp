@@ -39,7 +39,7 @@
         .input-field:focus { border-color: var(--main-green); }
         
         .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
-        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; }
+        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; transition: 0.2s; } .danger-btn:active { transform: scale(0.98); }
         
         .mode-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .mode-tab { flex: 1; padding: 12px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; border: 2px solid transparent; transition: 0.2s;}
@@ -59,18 +59,17 @@
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        /* NY FIRE STATUS - Centrerad med mer luft */
         .fire-status { 
             color: #ffaa00; 
             font-weight: bold; 
             font-size: 13px; 
             display: flex; 
-            visibility: hidden; /* Håller platsen */
+            visibility: hidden; 
             align-items: center; 
-            justify-content: center; /* Centrerad */
+            justify-content: center; 
             gap: 4px; 
             text-shadow: 0 0 10px #ff1144; 
-            margin-bottom: 12px; /* Mer luft under */
+            margin-bottom: 12px; 
             animation: pulse 1s infinite; 
         } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -283,6 +282,9 @@
                     <p style="font-size: 12px; color: #888;">No end dates, no total goal. Just build a daily habit.</p>
                 </div>
                 <button class="primary-btn" onclick="saveSettings()"><span class="material-symbols-outlined icon">save</span> Save</button>
+                
+                <button class="danger-btn" style="background:rgba(255,69,0,0.1); border-color:rgba(255,69,0,0.3); color:#ff4500;" onclick="resetData()">Reset Progress</button>
+                
                 <button class="danger-btn" style="background:transparent;border:none;color:#888;" onclick="logOutUser()">Log Out</button>
             </div>
         </div>
@@ -416,6 +418,21 @@
             checkAppStart();
         }
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
+
+        // --- NY FUNKTION FÖR ATT NOLLSTÄLLA DATA ---
+        function resetData() {
+            if(confirm("⚠️ ARE YOU SURE?\n\nThis will permanently delete all your logged pushups, daily PR, and weekly stats. Your friends and settings will remain.")) {
+                totalPushups = 0;
+                dailyPushupsDone = 0;
+                pushupLog = [];
+                hasCelebrated = false;
+                saveToCloud();
+                calculateDatesAndGoals();
+                updateScreen();
+                alert("Progress reset to zero.");
+                showDashboard();
+            }
+        }
 
         function checkAndResetNewDay() {
             let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate_dev');
