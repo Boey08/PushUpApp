@@ -59,19 +59,18 @@
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        /* NY FIRE STATUS - Alltid ta plats men syns bara vid mål */
+        /* NY FIRE STATUS - Centrerad med mer luft */
         .fire-status { 
             color: #ffaa00; 
             font-weight: bold; 
             font-size: 13px; 
             display: flex; 
-            visibility: hidden; /* Osynlig men tar plats */
+            visibility: hidden; /* Håller platsen */
             align-items: center; 
-            justify-content: flex-start; /* Vänsterjusterad */
+            justify-content: center; /* Centrerad */
             gap: 4px; 
             text-shadow: 0 0 10px #ff1144; 
-            margin-left: 8px; /* Lite indrag så den ligger i linje med kanten på stats-rutan */
-            margin-bottom: 4px; 
+            margin-bottom: 12px; /* Mer luft under */
             animation: pulse 1s infinite; 
         } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -637,7 +636,6 @@
 
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
             
-            // NY VISIBILITY KOD HÄR:
             document.getElementById('fireStatus').style.visibility = isFire ? 'visible' : 'hidden';
             
             if(isFire){
