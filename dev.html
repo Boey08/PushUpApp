@@ -160,11 +160,31 @@
                 </div>
             </div>
             
-            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 10px 5px;">
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--daily-red)">radio_button_checked</span> Goal</div><div class="stat-value" id="dailyProgressText" style="font-size:14px;">0/0</div></div>
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">calendar_today</span> Left</div><div class="stat-value" id="daysLeftText" style="font-size:14px;">0</div></div>
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--c1)">emoji_events</span> PR</div><div class="stat-value" id="myPrText" style="font-size:14px;">0</div></div>
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--lap-color)">date_range</span> Week</div><div class="stat-value" id="myWeeklyText" style="font-size:14px;">0</div></div>
+            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 12px 4px;">
+                <div class="stat-box">
+                    <div class="stat-label" style="font-size:9px; letter-spacing:0; line-height:1.2; text-align:center;">
+                        <span class="material-symbols-outlined icon" style="font-size:16px; color:var(--daily-red); margin-bottom:2px;">radio_button_checked</span><br>Daily Goal
+                    </div>
+                    <div class="stat-value" id="dailyProgressText" style="font-size:14px; margin-top:2px;">0/0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label" style="font-size:9px; letter-spacing:0; line-height:1.2; text-align:center;">
+                        <span class="material-symbols-outlined icon" style="font-size:16px; margin-bottom:2px;">calendar_today</span><br>Days Left
+                    </div>
+                    <div class="stat-value" id="daysLeftText" style="font-size:14px; margin-top:2px;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label" style="font-size:9px; letter-spacing:0; line-height:1.2; text-align:center;">
+                        <span class="material-symbols-outlined icon" style="font-size:16px; color:var(--c1); margin-bottom:2px;">emoji_events</span><br>Daily PR
+                    </div>
+                    <div class="stat-value" id="myPrText" style="font-size:14px; margin-top:2px;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label" style="font-size:9px; letter-spacing:0; line-height:1.2; text-align:center;">
+                        <span class="material-symbols-outlined icon" style="font-size:16px; color:var(--lap-color); margin-bottom:2px;">date_range</span><br>This Week
+                    </div>
+                    <div class="stat-value" id="myWeeklyText" style="font-size:14px; margin-top:2px;">0</div>
+                </div>
             </div>
             
             <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
@@ -304,7 +324,7 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- NY FUNKTION: RÄKNA UT PR OCH VECKA ---
+        // --- RÄKNA UT PR OCH VECKA ---
         function getAdvancedStats(logArr) {
             if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0 };
             
@@ -537,7 +557,6 @@
                     document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
                     document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
                     
-                    // UPPDATERA VÄNNENS NYA STATS
                     let fStats = getAdvancedStats(d.pushupLog || []);
                     document.getElementById('fpPrText').innerText = fStats.pr;
                     document.getElementById('fpWeeklyText').innerText = fStats.weekly;
@@ -588,7 +607,6 @@
             document.getElementById('centerLargeText').innerText = dailyPushupsDone;
             document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${(appMode==='challenge'&&savedTotalGoal>0)?savedTotalGoal.toLocaleString('en-US'):"∞"}`;
             
-            // --- UPPDATERA DINA NYA STATS PÅ EN RAD ---
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
             let myStats = getAdvancedStats(pushupLog);
