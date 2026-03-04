@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PushUp Tracker</title>
     <style>
-        /* CSS - Designen och färgerna */
         body {
-            background-color: #121212; /* Mörk bakgrund */
+            background-color: #121212;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -17,11 +16,11 @@
         }
         .app-container {
             width: 100%;
-            max-width: 400px; /* Perfekt mobilbredd */
+            max-width: 400px;
             text-align: center;
         }
         .header {
-            color: #39ff14; /* Neongrön */
+            color: #39ff14;
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 30px;
@@ -32,14 +31,23 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            border: 10px solid #333;
-            border-top-color: #39ff14; /* Neongrön indikator */
+            background: conic-gradient(#39ff14 0%, #333 0%);
             margin: 0 auto 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+            transition: background 0.3s ease;
+        }
+        .progress-inner {
+            width: 170px;
+            height: 170px;
+            background-color: #121212;
+            border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
         }
         .total-count {
             font-size: 40px;
@@ -71,9 +79,9 @@
             color: #fff;
         }
         .fire-status {
-            color: #ff4500; /* Eldorange */
+            color: #ff4500;
             font-weight: bold;
-            display: none; /* Dold tills man når dagens mål */
+            display: none;
             margin-top: 5px;
         }
         .action-buttons {
@@ -97,12 +105,19 @@
             color: #121212;
         }
         .custom-btn {
-            border-color: #00f3ff; /* Elektrisk blå för custom */
+            border-color: #00f3ff;
             color: #00f3ff;
         }
         .custom-btn:active {
             background-color: #00f3ff;
             color: #121212;
+        }
+        .edit-custom {
+            color: #00f3ff;
+            font-size: 14px;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -111,9 +126,11 @@
     <div class="app-container">
         <div class="header">PushUp Pro</div>
         
-        <div class="progress-circle">
-            <p class="total-count" id="currentTotal">0</p>
-            <p class="goal-count">/ 10 000</p>
+        <div class="progress-circle" id="progressCircle">
+            <div class="progress-inner">
+                <p class="total-count" id="currentTotal">0</p>
+                <p class="goal-count">/ 10 000</p>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -132,30 +149,47 @@
             <button onclick="addPushups(10)">+ 10</button>
             <button onclick="addPushups(15)">+ 15</button>
             <button onclick="addPushups(20)">+ 20</button>
-            <button class="custom-btn" onclick="addCustom()">+ Custom</button>
+            <button class="custom-btn" id="customBtn" onclick="addCustom()">+ Custom</button>
         </div>
+        
+        <div class="edit-custom" onclick="setCustomAmount()">Ändra Custom-värde ⚙️</div>
     </div>
 
     <script>
-        // JavaScript - Appens hjärna
         let totalPushups = 0;
-        let customAmount = 25; // Standardvärde för custom-knappen just nu
+        let customAmount = 0; 
+        const goal = 10000;
         const dailyGoal = 322; 
 
         function addPushups(amount) {
             totalPushups += amount;
             document.getElementById('currentTotal').innerText = totalPushups;
             
-            // Kolla om vi är "On Fire"
+            let percentage = (totalPushups / goal) * 100;
+            if (percentage > 100) percentage = 100; 
+            document.getElementById('progressCircle').style.background = `conic-gradient(#39ff14 ${percentage}%, #333 0%)`;
+
             if(totalPushups >= dailyGoal) {
                 document.getElementById('fireStatus').style.display = 'block';
             }
         }
 
+        function setCustomAmount() {
+            let input = prompt("Hur många armhävningar vill du att Custom-knappen ska lägga till?", "25");
+            let parsedNumber = parseInt(input);
+            
+            if (!isNaN(parsedNumber) && parsedNumber > 0) {
+                customAmount = parsedNumber;
+                document.getElementById('customBtn').innerText = "+ " + customAmount;
+            }
+        }
+
         function addCustom() {
-            // Här kommer vi senare bygga in en snygg ruta där man ändrar antalet.
-            // Just nu lägger den till värdet vi satt ovan.
-            addPushups(customAmount);
+            if (customAmount === 0) {
+                setCustomAmount();
+            } else {
+                addPushups(customAmount);
+            }
         }
     </script>
 
