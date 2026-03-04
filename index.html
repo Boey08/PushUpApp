@@ -4,108 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pushup Days</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
-        :root{--main-green:#39ff14;--daily-red:#ff1144;--lap-color:#ffaa00;--dark-bg:#121212;--panel-bg:#1e1e1e;--c1:#00f3ff;--c2:#bf00ff;--c3:#ccff00;}
-        body{background-color:var(--dark-bg);color:#fff;font-family:'Segoe UI',sans-serif;margin:0;padding:20px;display:flex;justify-content:center;overflow-x:hidden;}
-        .app-container{width:100%;max-width:400px;}
-        .screen{display:none;animation:fadeIn .3s ease;} .active-screen{display:block!important;}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        .icon{vertical-align:middle;font-size:20px;}
+        :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
+        body { background-color: var(--dark-bg); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; overflow-x: hidden;}
+        .app-container { width: 100%; max-width: 400px; }
         
-        /* BILDER */
-        .app-logo{width:120px;height:auto;margin-bottom:20px;filter:drop-shadow(0 0 10px rgba(57,255,20,.3));}
-        .fire-image-bg{position:absolute;top:-30px;left:-30px;width:300px;height:300px;z-index:0;opacity:0;transition:opacity .8s;pointer-events:none;}
-        .fire-image-bg.active{opacity:0.8;animation:breatheFire 2.5s infinite ease-in-out;}
-        @keyframes breatheFire{0%,100%{transform:scale(1);filter:brightness(1) blur(2px);}50%{transform:scale(1.08);filter:brightness(1.4) blur(0px);}}
+        .screen { display: none; animation: fadeIn 0.3s ease; }
+        .active-screen { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .icon { vertical-align: middle; font-size: 20px; }
         
         /* HEADER */
-        .header-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:25px;}
-        .brand-area{display:flex;flex-direction:column;cursor:pointer;transition:transform .2s;} .brand-area:active{transform:scale(.95);}
-        .header-title{color:var(--main-green);font-size:24px;font-weight:bold;text-transform:uppercase;letter-spacing:2px;margin:0;}
-        .header-subtitle{color:#888;font-size:13px;margin-top:2px;font-weight:bold;}
-        .header-icons{display:flex;gap:12px;margin-top:5px;}
-        .icon-btn{font-size:26px;cursor:pointer;background:none;border:none;color:#888;padding:0;} .icon-btn:hover{color:#fff;}
+        .header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+        .brand-area { display: flex; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s; }
+        .brand-area:active { transform: scale(0.95); }
+        .header-title { color: var(--main-green); font-size: 26px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .header-subtitle { color: #888; font-size: 13px; margin-top: 2px; font-weight: bold; letter-spacing: 1px; }
         
-        /* UI KORT & KNAPPAR */
-        .card{background:var(--panel-bg);padding:20px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.5);margin-bottom:20px;}
-        .card h2{margin-top:0;color:#fff;display:flex;align-items:center;gap:10px;font-size:20px;}
-        .card label{display:block;margin-bottom:8px;color:#aaa;font-size:12px;text-transform:uppercase;font-weight:bold;}
-        .sub-label{font-size:10px;color:#666;margin-top:-6px;margin-bottom:8px;display:block;}
-        .input-field{width:100%;padding:12px;margin-bottom:15px;border-radius:12px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:16px;box-sizing:border-box;outline:none;}
-        .input-field:focus{border-color:var(--main-green);}
-        input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;}
-        .primary-btn{width:100%;background:var(--main-green);color:var(--dark-bg);border:none;padding:15px;font-size:16px;font-weight:bold;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;}
-        .danger-btn{width:100%;background:rgba(255,69,0,.1);color:#ff4500;border:1px solid rgba(255,69,0,.3);padding:12px;font-size:14px;border-radius:12px;cursor:pointer;margin-top:10px;font-weight:bold;}
+        .header-icons { display: flex; gap: 12px; margin-top: 5px; }
+        .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; }
+        .icon-btn:hover { color: #fff; }
         
-        .mode-tabs{display:flex;gap:10px;margin-bottom:20px;}
-        .mode-tab{flex:1;padding:10px;text-align:center;background:#2a2a2a;color:#888;border-radius:12px;cursor:pointer;font-weight:bold;font-size:13px;border:2px solid transparent;}
-        .mode-tab.active{background:rgba(57,255,20,.1);color:var(--main-green);border-color:var(--main-green);}
+        /* CARDS & FORMS */
+        .card { background-color: var(--panel-bg); padding: 20px; border-radius: 20px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px;}
+        .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 20px;}
+        .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .card .sub-label { font-size: 10px; color: #666; margin-top: -6px; margin-bottom: 8px; display: block; }
         
-        /* DASHBOARD */
-        .dashboard-content{text-align:center;}
-        .ring-container{position:relative;width:240px;height:240px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;}
-        .ring-svg{transform:rotate(-90deg);position:absolute;width:100%;height:100%;z-index:5;overflow:visible;}
-        .ring-track{fill:none;stroke:#222;}
-        .ring-progress{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);}
-        .ring-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--dark-bg);width:140px;height:140px;border-radius:50%;box-shadow:inset 0 0 20px rgba(0,0,0,.8);}
-        .total-count{font-size:38px;font-weight:bold;margin:0;text-shadow:0 2px 10px rgba(255,17,68,.3);}
-        .goal-count{color:#888;font-size:11px;margin-top:5px;}
+        /* Fixat datumfält så de inte kraschar skärmen längre! */
+        .input-field { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; background-color: var(--darker-bg); color: white; font-size: 16px; box-sizing: border-box; outline: none; }
+        .input-field:focus { border-color: var(--main-green); }
+        /* Tvinga fram webbläsarens inbyggda kalenderikon om den finns, men låt bli att förstöra knappar */
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.5; }
+
+        .primary-btn { width: 100%; background-color: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .danger-btn { width: 100%; background: rgba(255, 69, 0, 0.1); color: #ff4500; border: 1px solid rgba(255, 69, 0, 0.3); padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; display: flex; justify-content: center; gap: 8px; }
         
-        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--panel-bg);padding:15px;border-radius:20px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,.3);}
-        .stat-box{text-align:center;}
-        .stat-label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:5px;display:flex;flex-direction:column;align-items:center;}
-        .stat-value{font-size:16px;font-weight:bold;}
-        .fire-status{color:#ffaa00;font-weight:bold;font-size:12px;display:none;margin-top:5px;animation:pulse 1s infinite;justify-content:center;gap:4px;}
-        @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+        .mode-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-tab { flex: 1; padding: 10px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px; border: 2px solid transparent; }
+        .mode-tab.active { background: rgba(57, 255, 20, 0.1); color: var(--main-green); border-color: var(--main-green); }
         
-        .action-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;}
-        .pushup-btn{background:#2a2a2a;color:var(--main-green);border:2px solid rgba(57,255,20,.3);padding:15px;font-size:18px;font-weight:bold;border-radius:14px;cursor:pointer;}
-        .pushup-btn:active{transform:scale(.95);}
-        .custom-container{display:flex;gap:6px;} .custom-btn-main{flex-grow:1;}
-        .custom-settings-btn{width:50px;border-radius:14px;background:#2a2a2a;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-        .color-1{color:var(--c1);border-color:rgba(0,243,255,.3);} .color-2{color:var(--c2);border-color:rgba(191,0,255,.3);} .color-3{color:var(--c3);border-color:rgba(204,255,0,.3);}
-        .undo-btn{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#aaa;padding:10px;font-size:14px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+        /* DASHBOARD RINGS */
+        .dashboard-content { text-align: center; }
+        .ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: filter 0.3s; }
+        .ring-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; z-index: 2; }
+        .ring-track { fill: none; stroke: #222; }
+        .ring-progress { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5)); }
+        .ring-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--dark-bg); width: 140px; height: 140px; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         
-        /* CELEBRATION BILD */
-        .celebration-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(18,18,18,.98);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-        .celeb-image{width:250px;height:auto;margin-bottom:20px;animation:popScale .6s cubic-bezier(.17,.89,.32,1.28);}
-        @keyframes popScale{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+        /* MJUK CSS-ELD (Inga skakiga partiklar, bara snygg stabil glöd) */
+        @keyframes smoothFireGlow { 
+            0% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 
+            50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } 
+            100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 
+        }
+        .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
+
+        .total-count { font-size: 38px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255, 17, 68, 0.3); } 
+        .goal-count { color: #888; font-size: 11px; letter-spacing: 1px; margin-top: 5px; }
         
-        /* KALENDER & LISTOR */
-        .lb-item{display:flex;align-items:center;background:#2a2a2a;padding:15px;border-radius:12px;margin-bottom:10px;cursor:pointer;}
-        .lb-rank{font-size:20px;font-weight:bold;color:#888;width:30px;} .lb-name{flex-grow:1;font-weight:bold;font-size:16px;} .lb-score{color:var(--main-green);font-weight:bold;font-size:18px;}
-        .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
-        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-        .calendar-day-header{text-align:center;font-size:10px;color:#888;font-weight:bold;}
-        .calendar-cell{background:#2a2a2a;border-radius:6px;padding:6px 2px;text-align:center;cursor:pointer;min-height:40px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid transparent;}
-        .cell-date{font-size:11px;color:#ccc;} .cell-total{font-size:12px;color:var(--main-green);font-weight:bold;}
-        .chart-container{width:100%;height:200px;margin-bottom:15px;}
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background-color: var(--panel-bg); padding: 15px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .stat-box { text-align: center; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+        .stat-value { font-size: 16px; font-weight: bold; color: #fff; }
+        .daily-indicator { color: var(--daily-red); font-size: 12px; }
+        
+        .fire-status { color: #ffaa00; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; animation: pulseText 1s infinite; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; }
+        @keyframes pulseText { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        /* KNAPPAR */
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .pushup-btn { background-color: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57, 255, 20, 0.3); padding: 15px; font-size: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; transition: all 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .pushup-btn:active { transform: scale(0.95); }
+        .custom-container { display: flex; gap: 6px; }
+        .custom-btn-main { flex-grow: 1; }
+        .custom-settings-btn { width: 50px; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 14px; background-color: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #aaa;}
+        .color-1 { color: var(--c1); border-color: rgba(0, 243, 255, 0.3); } .color-1:active { background-color: var(--c1); color: var(--dark-bg); }
+        .color-2 { color: var(--c2); border-color: rgba(191, 0, 255, 0.3); } .color-2:active { background-color: var(--c2); color: var(--dark-bg); }
+        .color-3 { color: var(--c3); border-color: rgba(204, 255, 0, 0.3); } .color-3:active { background-color: var(--c3); color: var(--dark-bg); }
+        .undo-btn { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #aaa; padding: 10px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+        .undo-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        
+        /* LISTOR OCH KALENDER */
+        .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: transform 0.1s; border: 1px solid transparent;}
+        .lb-item:hover { transform: scale(1.02); border-color: #444;}
+        .lb-rank { font-size: 20px; font-weight: bold; color: #888; width: 30px; }
+        .lb-name { flex-grow: 1; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 5px; }
+        .lb-score { color: var(--main-green); font-weight: bold; font-size: 18px; }
+        .lb-highlight { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--main-green); }
+        .lb-highlight .lb-rank { color: var(--main-green); }
+        
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 10px; }
+        .calendar-day-header { text-align: center; font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .calendar-cell { background: #2a2a2a; border-radius: 6px; padding: 6px 2px; text-align: center; cursor: pointer; min-height: 40px; display: flex; flex-direction: column; justify-content: space-between; transition: background 0.2s; border: 1px solid transparent; }
+        .cell-date { font-size: 11px; color: #ccc; }
+        .cell-total { font-size: 12px; color: var(--main-green); font-weight: bold; }
+        .cell-empty { background: transparent; cursor: default; border: none; }
+        .chart-container { width: 100%; height: 200px; margin-bottom: 15px; margin-top: 10px; }
+        .day-total-text { text-align: center; font-size: 16px; color: var(--main-green); font-weight: bold; margin-bottom: 5px; }
+        
+        /* CELEBRATION OVERLAY (Stannar kvar med lysande trofé och konfetti!) */
+        .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; text-align: center; }
+        .celebration-overlay.show { opacity: 1; pointer-events: auto; }
+        .celeb-icon { font-size: 120px; color: #ffaa00; text-shadow: 0 0 50px #ffaa00; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .celeb-text { font-size: 36px; font-weight: bold; color: #fff; text-shadow: 0 0 20px var(--main-green); margin: 0; text-transform: uppercase; letter-spacing: 2px;}
     </style>
 </head>
 <body>
     
     <div id="celebrationOverlay" class="celebration-overlay">
-        <img src="Celebration.png" alt="Celebration" class="celeb-image">
-        <h1 style="color:var(--main-green); letter-spacing:3px;">GOAL REACHED!</h1>
-        <p style="color: #888;">You are an absolute beast.</p>
+        <span class="material-symbols-outlined celeb-icon">trophy</span>
+        <h1 class="celeb-text">Goal Reached!</h1>
+        <p style="color: #ccc; font-size: 18px;">You are an absolute beast.</p>
     </div>
 
     <div class="app-container">
         
         <div id="loginScreen" class="screen">
-            <div style="text-align: center; margin-top: 40px;">
-                <img src="Logo.png" alt="Logo" class="app-logo">
-                <h1 class="header-title" style="margin-bottom:30px;">Pushup Days</h1>
+            <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
+                <h1 style="color: var(--main-green); font-size: 40px; text-transform: uppercase; letter-spacing: 3px; margin:0; text-shadow: 0 0 20px rgba(57, 255, 20, 0.4);">Pushup Days</h1>
             </div>
             <div class="card">
-                <label>Username:</label>
-                <input type="text" id="inputUsername" class="input-field" placeholder="e.g. IronChest99" autocomplete="off">
-                <label>Password:</label>
-                <input type="password" id="inputPassword" class="input-field" placeholder="Keep it simple">
-                <button class="primary-btn" onclick="loginUser()">LOGIN</button>
+                <h2><span class="material-symbols-outlined icon">login</span> Welcome</h2>
+                <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="off">
+                <input type="password" id="inputPassword" class="input-field" placeholder="Password">
+                <button class="primary-btn" onclick="loginUser()">Enter App</button>
             </div>
         </div>
 
@@ -122,38 +156,47 @@
             </div>
         </div>
 
-        <div id="dashboardScreen" class="screen dashboard-content">
-            <div class="ring-container" id="ringGlowContainer">
-                <img src="Fire.png" alt="Fire" id="fireImg" class="fire-image-bg">
-                <svg class="ring-svg" viewBox="0 0 240 240">
-                    <circle class="ring-track" cx="120" cy="120" r="105" stroke-width="12"/>
-                    <circle id="svgOuter" class="ring-progress" cx="120" cy="120" r="105" stroke="var(--main-green)" stroke-width="12" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
-                    <circle id="svgInnerTrack" class="ring-track" cx="120" cy="120" r="85" stroke-width="12"/>
-                    <circle id="svgInnerFull" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="12" fill="none" style="opacity: 0; transition: opacity 0.3s;" />
-                    <circle id="svgInner" class="ring-progress" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="12" stroke-dasharray="534" stroke-dashoffset="534"/>
-                </svg>
-                <div class="ring-content">
-                    <p class="total-count" id="centerLargeText">0</p>
-                    <p class="goal-count" id="centerSmallText">TOTAL: 0 / 0</p>
+        <div id="friendsScreen" class="screen">
+            <div class="card">
+                <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
+                <p style="font-size: 12px; color: #888; margin-top: -10px;">(Preview mode. Add real friends later!)</p>
+                <div class="lb-item" onclick="showFriendProfile('PushupKing', 11200, true)">
+                    <div class="lb-rank">1</div>
+                    <div class="lb-name">PushupKing <span style="font-size: 14px;">🔥</span></div>
+                    <div class="lb-score">11,200</div>
+                </div>
+                <div class="lb-item" onclick="showFriendProfile('GymBro2026', 6100, false)">
+                    <div class="lb-rank">2</div>
+                    <div class="lb-name">GymBro2026</div>
+                    <div class="lb-score">6,100</div>
+                </div>
+                <div class="lb-item" onclick="showFriendProfile('SaraFitness', 3450, true)">
+                    <div class="lb-rank">3</div>
+                    <div class="lb-name">SaraFitness <span style="font-size: 14px;">🔥</span></div>
+                    <div class="lb-score">3,450</div>
                 </div>
             </div>
+        </div>
 
-            <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">query_stats</span> Daily Avg</div><div class="stat-value" id="dailyAvgText">0</div></div>
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--daily-red)">radio_button_checked</span> Goal</div><div class="stat-value" id="dailyProgressText">0 / 0</div></div>
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">calendar_today</span> Days Left</div><div class="stat-value" id="daysLeftText">0</div></div>
+        <div id="friendProfileScreen" class="screen">
+            <div class="card">
+                <h2 id="fpName">Friend Name</h2>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 30px; font-weight: bold; color: var(--main-green);" id="fpScore">0</div>
+                    <div style="font-size: 12px; color: #888;">Total Pushups</div>
+                </div>
+                <button class="primary-btn" onclick="alert('In the full cloud version, this will load their history.')"><span class="material-symbols-outlined icon">calendar_month</span> View Calendar</button>
+                <button class="danger-btn" style="background:transparent; border-color:#444; color:#ccc;" onclick="showFriendsScreen()">Back to Friends</button>
             </div>
-            <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
+        </div>
 
-            <div class="action-buttons" style="margin-top: 20px;">
-                <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
-                <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
-                <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
-                <div class="custom-container"><button class="pushup-btn custom-btn-main color-1" id="customBtn0" onclick="addCustom(0)">+ C1</button><button class="custom-settings-btn color-1" onclick="setCustomAmount(0)"><span class="material-symbols-outlined">edit</span></button></div>
-                <div class="custom-container"><button class="pushup-btn custom-btn-main color-2" id="customBtn1" onclick="addCustom(1)">+ C2</button><button class="custom-settings-btn color-2" onclick="setCustomAmount(1)"><span class="material-symbols-outlined">edit</span></button></div>
-                <div class="custom-container"><button class="pushup-btn custom-btn-main color-3" id="customBtn2" onclick="addCustom(2)">+ C3</button><button class="custom-settings-btn color-3" onclick="setCustomAmount(2)"><span class="material-symbols-outlined">edit</span></button></div>
+        <div id="leaderboardScreen" class="screen">
+            <div class="card">
+                <h2><span class="material-symbols-outlined icon">emoji_events</span> Global Toplist</h2>
+                <div class="lb-item"><div class="lb-rank">1</div><div class="lb-name">IronChest99</div><div class="lb-score">12,450</div></div>
+                <div class="lb-item"><div class="lb-rank">2</div><div class="lb-name">PushupKing <span style="font-size: 14px;">🔥</span></div><div class="lb-score">11,200</div></div>
+                <div class="lb-item lb-highlight"><div class="lb-rank">3</div><div class="lb-name" id="lbYourName">You</div><div class="lb-score" id="lbYourScore">0</div></div>
             </div>
-            <button class="undo-btn" onclick="undoLastAction()"><span class="material-symbols-outlined icon">undo</span> Undo Last Action</button>
         </div>
 
         <div id="setupScreen" class="screen">
@@ -174,222 +217,306 @@
                 <div id="endlessInputs" style="display:none;">
                     <label>Daily Goal (Optional):</label>
                     <input type="number" id="inputDailyGoal" class="input-field" placeholder="e.g. 50">
+                    <p style="font-size: 12px; color: #888;">No end dates, no total goal. Just build a daily habit.</p>
                 </div>
                 <button class="primary-btn" onclick="saveSettings()">Save Settings</button>
                 <button class="danger-btn" onclick="resetProgressData()">Reset Progress</button>
                 <button class="danger-btn" style="background:transparent; border:none; color:#888;" onclick="logOutUser()">Log Out</button>
             </div>
         </div>
-
+        
         <div id="calendarScreen" class="screen">
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">calendar_month</span> Activity Calendar</h2>
                 <div class="calendar-header">
                     <button class="icon-btn" onclick="changeMonth(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <h3 id="calendarMonthYear" style="margin:0; font-size:18px; color: #fff;">Month Year</h3>
+                    <h3 id="calendarMonthYear" style="margin:0; font-size:18px; color: #fff;">Month</h3>
                     <button class="icon-btn" onclick="changeMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
         </div>
-
+        
         <div id="chartScreen" class="screen">
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">bar_chart</span> Daily Breakdown</h2>
-                <div id="chartDateTitle" style="text-align:center; color:#888; font-size:14px; margin-bottom:5px;">Date</div>
-                <div id="chartDayTotal" style="text-align:center; color:var(--main-green); font-size:18px; font-weight:bold; margin-bottom:15px;">Total: 0</div>
+                <div class="day-total-text" id="chartDayTotal">Total: 0</div>
                 <div class="chart-container"><canvas id="historyChart"></canvas></div>
                 <button class="danger-btn" style="background:transparent; border-color:#444; color:#ccc;" onclick="showCalendarScreen()">Back to Calendar</button>
             </div>
         </div>
 
-        <div id="leaderboardScreen" class="screen">
-            <div class="card">
-                <h2><span class="material-symbols-outlined icon">emoji_events</span> Global Toplist</h2>
-                <div class="lb-item"><div class="lb-rank">1</div><div class="lb-name">IronChest99</div><div class="lb-score">12,450</div></div>
-                <div class="lb-item"><div class="lb-rank">2</div><div class="lb-name">PushupKing <span style="font-size:14px">🔥</span></div><div class="lb-score">11,200</div></div>
-                <div class="lb-item lb-highlight"><div class="lb-rank">3</div><div class="lb-name" id="lbYourName">You</div><div class="lb-score" id="lbYourScore">0</div></div>
+        <div id="dashboardScreen" class="screen dashboard-content">
+            <div class="ring-container" id="ringGlowContainer">
+                <svg class="ring-svg" viewBox="0 0 240 240">
+                    <circle class="ring-track" cx="120" cy="120" r="105" stroke-width="14"/>
+                    <circle id="svgOuter" class="ring-progress" cx="120" cy="120" r="105" stroke="var(--main-green)" stroke-width="14" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
+                    <circle id="svgInnerTrack" class="ring-track" cx="120" cy="120" r="85" stroke-width="14"/>
+                    <circle id="svgInnerFull" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="14" fill="none" style="opacity: 0; transition: opacity 0.3s;" />
+                    <circle id="svgInner" class="ring-progress" cx="120" cy="120" r="85" stroke="var(--daily-red)" stroke-width="14" stroke-dasharray="534" stroke-dashoffset="534"/>
+                </svg>
+                <div class="ring-content">
+                    <p class="total-count" id="centerLargeText">0</p>
+                    <p class="goal-count" id="centerSmallText">TOTAL: 0 / 0</p>
+                </div>
             </div>
-        </div>
 
-        <div id="friendsScreen" class="screen">
-            <div class="card">
-                <h2><span class="material-symbols-outlined icon">group</span> My Friends</h2>
-                <div class="lb-item" onclick="alert('In cloud version, this opens their profile!')"><div class="lb-rank">1</div><div class="lb-name">PushupKing <span style="font-size:14px">🔥</span></div><div class="lb-score">11,200</div></div>
-                <div class="lb-item"><div class="lb-rank">2</div><div class="lb-name">GymBro2026</div><div class="lb-score">6,100</div></div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px;">query_stats</span> Daily Avg</div>
+                    <div class="stat-value" id="dailyAvgText">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label"><span class="material-symbols-outlined daily-indicator" id="lapIndicator">radio_button_checked</span> Daily Goal</div>
+                    <div class="stat-value" id="dailyProgressText">0 / 0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px;">calendar_today</span> Days Left</div>
+                    <div class="stat-value" id="daysLeftText">0</div>
+                </div>
             </div>
+            
+            <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
+
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
+                <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
+                <button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
+                
+                <div class="custom-container"><button class="pushup-btn custom-btn-main color-1" id="customBtn0" onclick="addCustom(0)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(0)"><span class="material-symbols-outlined icon">edit</span></button></div>
+                <div class="custom-container"><button class="pushup-btn custom-btn-main color-2" id="customBtn1" onclick="addCustom(1)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(1)"><span class="material-symbols-outlined icon">edit</span></button></div>
+                <div class="custom-container"><button class="pushup-btn custom-btn-main color-3" id="customBtn2" onclick="addCustom(2)">+ Custom</button><button class="custom-settings-btn" onclick="setCustomAmount(2)"><span class="material-symbols-outlined icon">edit</span></button></div>
+            </div>
+            
+            <button class="undo-btn" onclick="undoLastAction()"><span class="material-symbols-outlined icon">undo</span> Undo Last Action</button>
         </div>
 
     </div>
 
     <script>
-        // DATA
-        let localUsername=localStorage.getItem('username')||""; let localPassword=localStorage.getItem('password')||"";
-        let totalPushups=parseInt(localStorage.getItem('totalPushups'))||0; let dailyPushupsDone=parseInt(localStorage.getItem('dailyPushupsDone'))||0;
-        let customAmounts=JSON.parse(localStorage.getItem('customAmounts'))||[25,30,50];
-        let pushupLog=[]; try{let d=localStorage.getItem('pushupLog');if(d)pushupLog=JSON.parse(d);}catch(e){}
-        let appMode=localStorage.getItem('appMode')||'challenge'; let hasCelebrated=localStorage.getItem('hasCelebrated')==='true';
-        let savedDailyGoalSetting=parseInt(localStorage.getItem('dailyGoalSetting'))||0; let savedTotalGoal=parseInt(localStorage.getItem('totalGoal'))||0;
-        let savedStartDate=localStorage.getItem('startDate')||""; let savedEndDate=localStorage.getItem('endDate')||"";
-        let calculatedDailyGoal=0,calculatedDaysLeft=0;
+        let localUsername = localStorage.getItem('username') || "";
+        let localPassword = localStorage.getItem('password') || "";
+        let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
+        let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
+        let customAmounts = JSON.parse(localStorage.getItem('customAmounts')) || [25, 30, 50];
+        let pushupLog = [];
+        try { let logData = localStorage.getItem('pushupLog'); if (logData) pushupLog = JSON.parse(logData); } catch (e) { pushupLog = []; }
         
-        function setSetupMode(m){
-            appMode=m; document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active')); document.getElementById('tab-'+m).classList.add('active');
-            document.getElementById('challengeInputs').style.display=m==='challenge'?'block':'none'; document.getElementById('endlessInputs').style.display=m==='endless'?'block':'none';
-        }
-        function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
-        function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+        let appMode = localStorage.getItem('appMode') || 'challenge'; 
+        let hasCelebrated = localStorage.getItem('hasCelebrated') === 'true';
 
-        function checkAppStart(){
-            if(!localUsername){hideAllScreens();document.getElementById('loginScreen').classList.add('active-screen');document.getElementById('mainHeader').style.display='none';}
-            else{document.getElementById('mainHeader').style.display='flex';document.getElementById('greetingTitle').innerText="@"+localUsername;
-            if(dailyPushupsDone>=calculatedDailyGoal&&calculatedDailyGoal>0){document.getElementById('greetingTitle').innerHTML="@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";}
-            checkOnboarding();}
-        }
-
-        function loginUser(){
-            let u=document.getElementById('inputUsername').value.trim(),p=document.getElementById('inputPassword').value.trim();
-            if(!u||!p){alert("Enter credentials!");return;}
-            if(!localUsername){localStorage.setItem('username',u);localStorage.setItem('password',p);localUsername=u;localPassword=p;checkAppStart();}
-            else{if(u===localUsername&&p===localPassword)checkAppStart();else alert("Wrong credentials!");}
-        }
-        function logOutUser(){localStorage.clear();location.reload();}
-
-        function checkAndResetNewDay(){
-            let t=new Date().toDateString(); let l=localStorage.getItem('lastLoginDate');
-            if(l!==t){dailyPushupsDone=0;localStorage.setItem('dailyPushupsDone',0);localStorage.setItem('lastLoginDate',t);}
+        let savedDailyGoalSetting = parseInt(localStorage.getItem('dailyGoalSetting')) || 0; 
+        let savedTotalGoal = parseInt(localStorage.getItem('totalGoal')) || 0;
+        let savedStartDate = localStorage.getItem('startDate') || "";
+        let savedEndDate = localStorage.getItem('endDate') || "";
+        
+        let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
+        const outerCircumference = 659.7, innerCircumference = 534;   
+        
+        function setSetupMode(mode) {
+            appMode = mode;
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-' + mode).classList.add('active');
+            document.getElementById('challengeInputs').style.display = mode === 'challenge' ? 'block' : 'none';
+            document.getElementById('endlessInputs').style.display = mode === 'endless' ? 'block' : 'none';
         }
 
-        function checkOnboarding(){if(!localStorage.getItem('appMode'))showSetupScreen();else{checkAndResetNewDay();calculateDatesAndGoals();showDashboard();}}
+        function hideAllScreens() { document.querySelectorAll('.screen').forEach(el => el.classList.remove('active-screen')); }
+        function getTodayString() { let d = new Date(); let tzOffset = d.getTimezoneOffset() * 60000; return (new Date(d - tzOffset)).toISOString().slice(0, 10); }
 
-        function showSetupScreen(){
-            hideAllScreens();document.getElementById('setupScreen').classList.add('active-screen');setSetupMode(appMode);
-            if(savedDailyGoalSetting>0)document.getElementById('inputDailyGoal').value=savedDailyGoalSetting;
-            if(savedTotalGoal>0)document.getElementById('inputTotalGoal').value=savedTotalGoal;
-            document.getElementById('inputStartDate').value=savedStartDate?savedStartDate:getTodayString();
-            if(savedEndDate)document.getElementById('inputEndDate').value=savedEndDate;
+        function checkAppStart() {
+            if (!localUsername) {
+                hideAllScreens(); document.getElementById('loginScreen').classList.add('active-screen'); document.getElementById('mainHeader').style.display = 'none';
+            } else {
+                document.getElementById('mainHeader').style.display = 'flex';
+                document.getElementById('greetingTitle').innerText = "@" + localUsername;
+                if(dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) { document.getElementById('greetingTitle').innerHTML = "@" + localUsername + " <span style='color:#ffaa00'>🔥</span>"; }
+                checkOnboarding();
+            }
         }
 
-        function showDashboard(){hideAllScreens();document.getElementById('dashboardScreen').classList.add('active-screen');setTimeout(updateScreen,50);}
-        function showLeaderboardScreen(){hideAllScreens();document.getElementById('leaderboardScreen').classList.add('active-screen');document.getElementById('lbYourName').innerText="You (@"+localUsername+")";document.getElementById('lbYourScore').innerText=totalPushups.toLocaleString('en-US');}
-        function showFriendsScreen(){hideAllScreens();document.getElementById('friendsScreen').classList.add('active-screen');}
+        function loginUser() {
+            let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
+            if(!u || !p) { alert("Please enter credentials!"); return; }
+            if (!localUsername) { localStorage.setItem('username', u); localStorage.setItem('password', p); localUsername = u; localPassword = p; checkAppStart(); } 
+            else { if (u === localUsername && p === localPassword) checkAppStart(); else alert("Wrong username or password!"); }
+        }
+        
+        function logOutUser() { localUsername = ""; localPassword = ""; localStorage.removeItem('username'); localStorage.removeItem('password'); checkAppStart(); }
 
-        function saveSettings(){
-            localStorage.setItem('appMode',appMode);
-            if(appMode==='challenge'){
-                let g=parseInt(document.getElementById('inputTotalGoal').value)||0,s=document.getElementById('inputStartDate').value,e=document.getElementById('inputEndDate').value;
-                if(!g||!s||!e){alert("Fill all fields!");return;} savedTotalGoal=g;savedStartDate=s;savedEndDate=e;
-            }else{savedDailyGoalSetting=parseInt(document.getElementById('inputDailyGoal').value)||0;savedTotalGoal=0;}
-            localStorage.setItem('dailyGoalSetting',savedDailyGoalSetting);localStorage.setItem('totalGoal',savedTotalGoal);localStorage.setItem('startDate',savedStartDate);localStorage.setItem('endDate',savedEndDate);
-            hasCelebrated=false;localStorage.setItem('hasCelebrated','false'); checkAndResetNewDay();calculateDatesAndGoals();showDashboard();
+        function checkAndResetNewDay() {
+            let todayString = new Date().toDateString(); let lastLoginDate = localStorage.getItem('lastLoginDate');
+            if (lastLoginDate !== todayString) { dailyPushupsDone = 0; localStorage.setItem('dailyPushupsDone', 0); localStorage.setItem('lastLoginDate', todayString); }
         }
 
-        function resetProgressData(){if(confirm("Delete progress?")){localStorage.removeItem('totalPushups');localStorage.removeItem('dailyPushupsDone');localStorage.removeItem('pushupLog');localStorage.removeItem('totalGoal');localStorage.removeItem('dailyGoalSetting');localStorage.removeItem('startDate');localStorage.removeItem('endDate');localStorage.removeItem('appMode');localStorage.removeItem('hasCelebrated');location.reload();}}
+        function checkOnboarding() {
+            if (!localStorage.getItem('appMode')) showSetupScreen(); 
+            else { checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard(); }
+        }
 
-        function calculateDatesAndGoals(){
-            if(appMode==='challenge'){
-                let start=new Date(savedStartDate),end=new Date(savedEndDate),today=new Date();start.setHours(0,0,0,0);end.setHours(0,0,0,0);today.setHours(0,0,0,0);
-                let totalDays=Math.round((end-start)/86400000)+1; calculatedDaysLeft=Math.max(Math.round((end-today)/86400000),0);
-                calculatedDailyGoal=totalDays>0?Math.ceil(savedTotalGoal/totalDays):0;
-            }else{calculatedDailyGoal=savedDailyGoalSetting;calculatedDaysLeft="∞";}
+        function showSetupScreen() {
+            hideAllScreens(); document.getElementById('setupScreen').classList.add('active-screen'); setSetupMode(appMode);
+            if (savedDailyGoalSetting > 0) document.getElementById('inputDailyGoal').value = savedDailyGoalSetting;
+            if (savedTotalGoal > 0) document.getElementById('inputTotalGoal').value = savedTotalGoal;
+            document.getElementById('inputStartDate').value = savedStartDate ? savedStartDate : getTodayString();
+            if (savedEndDate) document.getElementById('inputEndDate').value = savedEndDate;
+        }
+
+        function showLeaderboardScreen() {
+            hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
+            let fireHtml = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) ? " <span style='font-size: 14px;'>🔥</span>" : "";
+            document.getElementById('lbYourName').innerHTML = "You (@" + localUsername + ")" + fireHtml;
+            document.getElementById('lbYourScore').innerText = totalPushups.toLocaleString('en-US');
+        }
+        
+        function showFriendsScreen() { hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen'); }
+        function showFriendProfile(name, score, isOnFire) {
+            hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
+            document.getElementById('fpName').innerHTML = name + (isOnFire ? " <span style='font-size: 20px;'>🔥</span>" : "");
+            document.getElementById('fpScore').innerText = score.toLocaleString('en-US');
+        }
+
+        function showDashboard() { hideAllScreens(); document.getElementById('dashboardScreen').classList.add('active-screen'); setTimeout(updateScreen, 50); }
+
+        function saveSettings() {
+            localStorage.setItem('appMode', appMode);
+            if (appMode === 'challenge') {
+                let g = parseInt(document.getElementById('inputTotalGoal').value) || 0; let s = document.getElementById('inputStartDate').value; let e = document.getElementById('inputEndDate').value;
+                if(g === 0 || !s || !e) { alert("Please fill in all Challenge fields!"); return; }
+                savedTotalGoal = g; savedStartDate = s; savedEndDate = e;
+            } else {
+                let dg = parseInt(document.getElementById('inputDailyGoal').value) || 0;
+                savedDailyGoalSetting = dg; savedTotalGoal = 0; 
+            }
+            localStorage.setItem('dailyGoalSetting', savedDailyGoalSetting); localStorage.setItem('totalGoal', savedTotalGoal); localStorage.setItem('startDate', savedStartDate); localStorage.setItem('endDate', savedEndDate);
+            hasCelebrated = false; localStorage.setItem('hasCelebrated', 'false');
+            checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard();
+        }
+
+        function resetProgressData() {
+            if(confirm("Are you sure? This deletes your challenge and pushups, but keeps your login.")) { 
+                localStorage.removeItem('totalPushups'); localStorage.removeItem('dailyPushupsDone'); localStorage.removeItem('pushupLog'); localStorage.removeItem('totalGoal'); localStorage.removeItem('dailyGoalSetting'); localStorage.removeItem('startDate'); localStorage.removeItem('endDate'); localStorage.removeItem('appMode'); localStorage.removeItem('hasCelebrated'); location.reload(); 
+            }
+        }
+
+        function calculateDatesAndGoals() {
+            if (appMode === 'challenge') {
+                const start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date(); start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
+                const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1; calculatedDaysLeft = Math.round((end - today) / (1000 * 60 * 60 * 24));
+                if (calculatedDaysLeft < 0) calculatedDaysLeft = 0; calculatedDailyGoal = totalDays > 0 ? Math.ceil(savedTotalGoal / totalDays) : 0; 
+            } else {
+                calculatedDailyGoal = savedDailyGoalSetting; calculatedDaysLeft = "∞";
+            }
             
-            if(pushupLog.length>0){
-                let f=new Date(pushupLog[0].timestamp);f.setHours(0,0,0,0);let t=new Date();t.setHours(0,0,0,0);
-                let daysActive=Math.round((t-f)/86400000)+1; document.getElementById('dailyAvgText').innerText=Math.round(totalPushups/daysActive);
-            }else document.getElementById('dailyAvgText').innerText="0";
+            if(pushupLog.length > 0) {
+                let firstLogDate = new Date(pushupLog[0].timestamp); firstLogDate.setHours(0,0,0,0);
+                let today = new Date(); today.setHours(0,0,0,0);
+                let daysActive = Math.round((today - firstLogDate) / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('dailyAvgText').innerText = Math.round(totalPushups / daysActive);
+            } else { document.getElementById('dailyAvgText').innerText = "0"; }
         }
 
-        function triggerCelebration(){
-            let end=Date.now()+5000;
-            (function frame(){
-                confetti({particleCount:4,angle:60,spread:80,origin:{x:0},colors:['#39ff14','#ffffff','#ffaa00','#ff1144'],zIndex:10000});
-                confetti({particleCount:4,angle:120,spread:80,origin:{x:1},colors:['#39ff14','#ffffff','#ffaa00','#ff1144'],zIndex:10000});
-                if(Date.now()<end)requestAnimationFrame(frame);
+        function triggerCelebration() {
+            var duration = 5000; var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 80, origin: { x: 0 }, colors: ['#39ff14', '#ffffff', '#ffaa00', '#ff1144'], ticks: 300, decay: 0.94 });
+                confetti({ particleCount: 5, angle: 120, spread: 80, origin: { x: 1 }, colors: ['#39ff14', '#ffffff', '#ffaa00', '#ff1144'], ticks: 300, decay: 0.94 });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
-            let el=document.getElementById('celebrationOverlay'); el.style.display='flex'; el.classList.add('show');
-            hasCelebrated=true;localStorage.setItem('hasCelebrated','true');
-            setTimeout(()=>{el.classList.remove('show');setTimeout(()=>{el.style.display='none';},500)},5000);
+            let el = document.getElementById('celebrationOverlay'); el.classList.add('show');
+            hasCelebrated = true; localStorage.setItem('hasCelebrated', 'true');
+            setTimeout(() => { el.classList.remove('show'); }, 5000);
         }
 
-        function updateScreen(){
-            document.getElementById('centerLargeText').innerText=dailyPushupsDone;
-            document.getElementById('centerSmallText').innerText=`TOTAL: ${totalPushups.toLocaleString('en-US')} / ${(appMode==='challenge'&&savedTotalGoal>0)?savedTotalGoal.toLocaleString('en-US'):"∞"}`;
-            document.getElementById('dailyProgressText').innerText=`${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
-            document.getElementById('daysLeftText').innerText=calculatedDaysLeft;
-            for(let i=0;i<3;i++)document.getElementById('customBtn'+i).innerText=customAmounts[i]>0?"+ "+customAmounts[i]:"+ Custom";
-
-            let totalPct=(appMode==='challenge'&&savedTotalGoal>0)?Math.min(totalPushups/savedTotalGoal,1):1;
-            document.getElementById('svgOuter').style.strokeDashoffset=659.7-(totalPct*659.7);
+        function updateScreen() {
+            document.getElementById('centerLargeText').innerText = dailyPushupsDone;
+            let totalGoalText = (appMode === 'challenge' && savedTotalGoal > 0) ? savedTotalGoal.toLocaleString('en-US') : "∞";
+            document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${totalGoalText}`;
             
-            let dailyPct=calculatedDailyGoal>0?dailyPushupsDone/calculatedDailyGoal:0;
-            let laps=Math.floor(dailyPct),currPct=dailyPct%1;
+            if (calculatedDailyGoal > 0) document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal}`;
+            else document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ∞`;
             
-            if(laps===0||calculatedDailyGoal===0){
-                document.getElementById('svgInnerFull').style.opacity=0; document.getElementById('svgInnerTrack').setAttribute('stroke','#222'); document.getElementById('svgInner').setAttribute('stroke','var(--daily-red)');
-            }else{
-                document.getElementById('svgInnerFull').style.opacity=1; document.getElementById('svgInnerTrack').setAttribute('stroke','#222'); document.getElementById('svgInner').setAttribute('stroke','var(--lap-color)');
+            document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
+            for (let i = 0; i < 3; i++) { document.getElementById('customBtn'+i).innerText = customAmounts[i] > 0 ? "+ " + customAmounts[i] : "+ Custom"; }
+
+            let totalPercentage = (appMode === 'challenge' && savedTotalGoal > 0) ? (totalPushups / savedTotalGoal) : 1;
+            if (totalPercentage > 1) totalPercentage = 1;
+            document.getElementById('svgOuter').style.strokeDashoffset = outerCircumference - (totalPercentage * outerCircumference);
+
+            let dailyPercentage = calculatedDailyGoal > 0 ? (dailyPushupsDone / calculatedDailyGoal) : 0;
+            let laps = Math.floor(dailyPercentage); let currentLapPercentage = dailyPercentage % 1; 
+            let innerOffset = innerCircumference - (currentLapPercentage * innerCircumference);
+
+            if (laps === 0 || calculatedDailyGoal === 0) {
+                document.getElementById('svgInnerFull').style.opacity = 0; document.getElementById('svgInnerTrack').setAttribute('stroke', '#222');
+                document.getElementById('svgInner').setAttribute('stroke', 'var(--daily-red)'); document.getElementById('lapIndicator').style.color = 'var(--daily-red)';
+            } else {
+                document.getElementById('svgInnerFull').style.opacity = 1; document.getElementById('svgInnerTrack').setAttribute('stroke', '#222');
+                document.getElementById('svgInner').setAttribute('stroke', 'var(--lap-color)'); document.getElementById('lapIndicator').style.color = 'var(--lap-color)';
             }
-            document.getElementById('svgInner').style.strokeDashoffset=calculatedDailyGoal>0?(534-(currPct*534)):534;
+            document.getElementById('svgInner').style.strokeDashoffset = calculatedDailyGoal > 0 ? innerOffset : innerCircumference;
 
-            let isFire=(dailyPushupsDone>=calculatedDailyGoal&&calculatedDailyGoal>0);
-            document.getElementById('fireStatus').style.display=isFire?'flex':'none';
-            if(isFire){
-                document.getElementById('fireImg').classList.add('active');
-                document.getElementById('greetingTitle').innerHTML="@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
-            }else{
-                document.getElementById('fireImg').classList.remove('active');
-                document.getElementById('greetingTitle').innerHTML="@"+localUsername;
+            let isFire = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0);
+            document.getElementById('fireStatus').style.display = isFire ? 'flex' : 'none';
+            if(isFire) {
+                document.getElementById('ringGlowContainer').classList.add('is-on-fire');
+                document.getElementById('greetingTitle').innerHTML = "@" + localUsername + " <span style='color:#ffaa00'>🔥</span>";
+            } else {
+                document.getElementById('ringGlowContainer').classList.remove('is-on-fire');
+                document.getElementById('greetingTitle').innerHTML = "@" + localUsername;
             }
         }
 
-        function addPushups(amount){
-            checkAndResetNewDay(); let oldTotal=totalPushups;
-            totalPushups+=amount;dailyPushupsDone+=amount;
-            pushupLog.push({amount:amount,timestamp:Date.now()});localStorage.setItem('pushupLog',JSON.stringify(pushupLog));
-            localStorage.setItem('totalPushups',totalPushups);localStorage.setItem('dailyPushupsDone',dailyPushupsDone);
-            if(appMode==='challenge'&&savedTotalGoal>0&&totalPushups>=savedTotalGoal&&oldTotal<savedTotalGoal&&!hasCelebrated)triggerCelebration();
-            calculateDatesAndGoals();updateScreen();
+        function addPushups(amount) {
+            checkAndResetNewDay(); let oldTotal = totalPushups;
+            totalPushups += amount; dailyPushupsDone += amount; 
+            pushupLog.push({ amount: amount, timestamp: Date.now() }); localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
+            if (appMode === 'challenge' && savedTotalGoal > 0 && totalPushups >= savedTotalGoal && oldTotal < savedTotalGoal && !hasCelebrated) { triggerCelebration(); }
+            calculateDatesAndGoals(); updateScreen();
         }
 
-        function undoLastAction(){
-            if(pushupLog.length===0){alert("Nothing to undo!");return;}
-            let lastAmt=pushupLog.pop().amount; totalPushups=Math.max(0,totalPushups-lastAmt); dailyPushupsDone=Math.max(0,dailyPushupsDone-lastAmt);
-            if(appMode==='challenge'&&totalPushups<savedTotalGoal){hasCelebrated=false;localStorage.setItem('hasCelebrated','false');}
-            localStorage.setItem('totalPushups',totalPushups);localStorage.setItem('dailyPushupsDone',dailyPushupsDone);localStorage.setItem('pushupLog',JSON.stringify(pushupLog));
-            calculateDatesAndGoals();updateScreen();
+        function undoLastAction() {
+            if (pushupLog.length === 0) { alert("Nothing to undo!"); return; }
+            let lastLog = pushupLog.pop(); let lastAmount = lastLog.amount;
+            totalPushups -= lastAmount; dailyPushupsDone -= lastAmount;
+            if (totalPushups < 0) totalPushups = 0; if (dailyPushupsDone < 0) dailyPushupsDone = 0;
+            if (appMode === 'challenge' && totalPushups < savedTotalGoal) { hasCelebrated = false; localStorage.setItem('hasCelebrated', 'false'); }
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone); localStorage.setItem('pushupLog', JSON.stringify(pushupLog));
+            calculateDatesAndGoals(); updateScreen();
         }
 
-        function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p;localStorage.setItem('customAmounts',JSON.stringify(customAmounts));updateScreen();}}
-        function addCustom(index){if(customAmounts[index]===0)setCustomAmount(index);else addPushups(customAmounts[index]);}
+        function setCustomAmount(index) {
+            let input = prompt("Choose amount:", customAmounts[index]);
+            let parsedNumber = parseInt(input);
+            if (!isNaN(parsedNumber) && parsedNumber > 0) { customAmounts[index] = parsedNumber; localStorage.setItem('customAmounts', JSON.stringify(customAmounts)); updateScreen(); }
+        }
 
-        // KALENDER & DIAGRAM
-        let currMonth=new Date(), chartInst=null;
-        function showCalendarScreen(){hideAllScreens();document.getElementById('calendarScreen').classList.add('active-screen');currMonth=new Date();renderCalendar();}
-        function changeMonth(d){currMonth.setMonth(currMonth.getMonth()+d);renderCalendar();}
-        function renderCalendar(){
-            let y=currMonth.getFullYear(),m=currMonth.getMonth(); document.getElementById('calendarMonthYear').innerText=new Date(y,m).toLocaleString('en-US',{month:'long',year:'numeric'});
-            let f=new Date(y,m,1).getDay(),fEU=f===0?6:f-1,dim=new Date(y,m+1,0).getDate();
-            let h='<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
-            for(let i=0;i<fEU;i++)h+='<div class="calendar-cell cell-empty"></div>';
-            let dTot={}; pushupLog.forEach(l=>{let dt=new Date(l.timestamp);if(dt.getFullYear()===y&&dt.getMonth()===m){let day=dt.getDate();dTot[day]=(dTot[day]||0)+l.amount;}});
-            for(let d=1;d<=dim;d++){
-                let t=dTot[d]||0, th=t>0?`<div class="cell-total">${t}</div>`:'';
-                let isT=(d===new Date().getDate()&&m===new Date().getMonth()&&y===new Date().getFullYear());
-                let st=isT?'border:1px solid var(--daily-red);':'';
-                h+=`<div class="calendar-cell" style="${st}" onclick="showDailyChart(${y},${m},${d})"><div class="cell-date">${d}</div>${th}</div>`;
-            } document.getElementById('calendarGrid').innerHTML=h;
-        }
-        function showDailyChart(y,m,d){
-            hideAllScreens();document.getElementById('chartScreen').classList.add('active-screen');
-            let sd=new Date(y,m,d); document.getElementById('chartDateTitle').innerText=sd.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
-            let ts=sd.toDateString(), dLogs=pushupLog.filter(l=>new Date(l.timestamp).toDateString()===ts);
-            let hData=new Array(24).fill(0), tDay=0; dLogs.forEach(l=>{hData[new Date(l.timestamp).getHours()]+=l.amount;tDay+=l.amount;});
-            document.getElementById('chartDayTotal').innerText=`Total: ${tDay}`;
-            let ctx=document.getElementById('historyChart').getContext('2d'); if(chartInst)chartInst.destroy();
-            chartInst=new Chart(ctx,{type:'bar',data:{labels:['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],datasets:[{data:hData,backgroundColor:'#ff1144',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,grid:{color:'#333'},ticks:{color:'#888',stepSize:20}},x:{grid:{display:false},ticks:{color:'#888'}}},plugins:{legend:{display:false}}}});
-        }
+        function addCustom(index) { if (customAmounts[index] === 0) setCustomAmount(index); else addPushups(customAmounts[index]); }
         
-        window.onload=checkAppStart;
+        let currentMonthDate = new Date();
+        function showCalendarScreen() { hideAllScreens(); document.getElementById('calendarScreen').classList.add('active-screen'); currentMonthDate = new Date(); renderCalendar(); }
+        function changeMonth(dir) { currentMonthDate.setMonth(currentMonthDate.getMonth() + dir); renderCalendar(); }
+        function renderCalendar() {
+            const year = currentMonthDate.getFullYear(), month = currentMonthDate.getMonth(); document.getElementById('calendarMonthYear').innerText = new Date(year, month).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            let firstDay = new Date(year, month, 1).getDay(); let firstDayEU = firstDay === 0 ? 6 : firstDay - 1; const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let html = '<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
+            for (let i = 0; i < firstDayEU; i++) html += '<div class="calendar-cell cell-empty"></div>';
+            let dailyTotals = {}; pushupLog.forEach(log => { let d = new Date(log.timestamp); if (d.getFullYear() === year && d.getMonth() === month) { let day = d.getDate(); dailyTotals[day] = (dailyTotals[day] || 0) + log.amount; } });
+            for (let day = 1; day <= daysInMonth; day++) {
+                let total = dailyTotals[day] || 0; let totalHtml = total > 0 ? `<div class="cell-total">${total}</div>` : ''; let isToday = (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
+                let cellStyle = isToday ? 'border: 1px solid var(--daily-red);' : ''; html += `<div class="calendar-cell" style="${cellStyle}" onclick="showDailyChart(${year}, ${month}, ${day})"><div class="cell-date">${day}</div>${totalHtml}</div>`;
+            } document.getElementById('calendarGrid').innerHTML = html;
+        }
+        let historyChartInstance = null;
+        function showDailyChart(year, month, day) {
+            hideAllScreens(); document.getElementById('chartScreen').classList.add('active-screen'); let selectedDate = new Date(year, month, day); document.getElementById('chartDateTitle').innerText = selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            let targetDateString = selectedDate.toDateString(); let dayLogs = pushupLog.filter(log => new Date(log.timestamp).toDateString() === targetDateString);
+            let hourlyData = new Array(24).fill(0); let totalForDay = 0; dayLogs.forEach(log => { let hour = new Date(log.timestamp).getHours(); hourlyData[hour] += log.amount; totalForDay += log.amount; });
+            document.getElementById('chartDayTotal').innerText = "Total: " + totalForDay;
+            let ctx = document.getElementById('historyChart').getContext('2d'); if (historyChartInstance) historyChartInstance.destroy(); 
+            historyChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'], datasets: [{ data: hourlyData, backgroundColor: '#ff1144', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#888', stepSize: 20 } }, x: { grid: { display: false }, ticks: { color: '#888' } } }, plugins: { legend: { display: false } } } });
+        }
+        window.onload = function() { checkAppStart(); };
     </script>
 </body>
 </html>
