@@ -5,178 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PushUp Tracker</title>
     <style>
-        :root {
-            --main-green: #39ff14;
-            --daily-blue: #00f3ff;
-            --lap-color: #ffffff;
-            --dark-bg: #121212;
-            --darker-bg: #0a0a0a;
-        }
-        body {
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-        }
-        
+        :root { --main-green: #39ff14; --daily-blue: #00f3ff; --lap-color: #ffffff; --dark-bg: #121212; --darker-bg: #0a0a0a; }
+        body { background-color: var(--dark-bg); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 400px; }
         .screen { display: none; }
         .active-screen { display: block; }
-
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .header-title {
-            color: var(--main-green);
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0;
-        }
-        .settings-icon {
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #888;
-            padding: 0;
-        }
-
-        /* --- SETUP SCREEN --- */
-        .setup-card {
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: left;
-        }
-        .setup-card h2 {
-            margin-top: 0;
-            color: #fff;
-        }
-        .setup-card label {
-            display: block;
-            margin-bottom: 8px;
-            color: #888;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        /* Gjort kalenderfälten lite tydligare */
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background-color: var(--darker-bg);
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-            cursor: pointer;
-        }
-        /* Fix för att kalender-ikonen ska synas bättre i vissa webbläsare */
-        ::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-        }
-        .save-btn {
-            width: 100%;
-            background-color: var(--main-green);
-            color: var(--dark-bg);
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* --- DASHBOARD --- */
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title { color: var(--main-green); font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .settings-icon { font-size: 24px; cursor: pointer; background: none; border: none; color: #888; padding: 0; }
+        .setup-card { background-color: #1e1e1e; padding: 20px; border-radius: 15px; text-align: left; }
+        .setup-card h2 { margin-top: 0; color: #fff; }
+        .setup-card label { display: block; margin-bottom: 8px; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .input-field { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #333; background-color: var(--darker-bg); color: white; font-size: 16px; box-sizing: border-box; cursor: pointer; }
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .save-btn { width: 100%; background-color: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+        .reset-btn { width: 100%; background-color: transparent; color: #ff4500; border: 1px solid #ff4500; padding: 15px; font-size: 16px; border-radius: 10px; cursor: pointer; margin-top: 15px; }
         .dashboard-content { text-align: center; }
-        .circle-outer {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: conic-gradient(var(--main-green) 0%, #333 0%);
-            margin: 0 auto 30px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 25px rgba(57, 255, 20, 0.15);
-            transition: background 0.3s ease;
-        }
-        .circle-inner {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: conic-gradient(var(--daily-blue) 0%, var(--darker-bg) 0%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s ease;
-        }
-        .circle-mask {
-            width: 150px;
-            height: 150px;
-            background-color: var(--dark-bg);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .circle-outer { width: 220px; height: 220px; border-radius: 50%; background: conic-gradient(var(--main-green) 0%, #333 0%); margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px rgba(57, 255, 20, 0.15); transition: background 0.3s ease; }
+        .circle-inner { width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(var(--daily-blue) 0%, var(--darker-bg) 0%); display: flex; align-items: center; justify-content: center; transition: background 0.3s ease; }
+        .circle-mask { width: 150px; height: 150px; background-color: var(--dark-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .total-count { font-size: 36px; font-weight: bold; margin: 0; }
         .goal-count { color: #888; font-size: 12px; }
-        .stats-grid {
-            display: flex;
-            justify-content: space-between;
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
+        .stats-grid { display: flex; justify-content: space-between; background-color: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 30px; }
         .stat-box { text-align: center; flex: 1; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .stat-value { font-size: 18px; font-weight: bold; color: #fff; }
         .daily-indicator { color: var(--daily-blue); }
-
-        .fire-status {
-            color: #ff4500; font-weight: bold; font-size: 14px; display: none; margin-top: 5px; animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
+        .fire-status { color: #ff4500; font-weight: bold; font-size: 14px; display: none; margin-top: 5px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .pushup-btn {
-            background-color: #2a2a2a; color: var(--main-green); border: 2px solid var(--main-green);
-            padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: all 0.1s;
-        }
+        .pushup-btn { background-color: #2a2a2a; color: var(--main-green); border: 2px solid var(--main-green); padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: all 0.1s; }
         .pushup-btn:active { background-color: var(--main-green); color: var(--dark-bg); transform: scale(0.98); }
         .custom-container { display: flex; gap: 10px; }
         .custom-btn-main { flex-grow: 1; border-color: var(--daily-blue); color: var(--daily-blue); }
         .custom-btn-main:active { background-color: var(--daily-blue); color: var(--dark-bg); }
         .custom-settings-icon { width: 50px; font-size: 20px; border-color: var(--daily-blue); color: var(--daily-blue); padding: 0; display: flex; align-items: center; justify-content: center; }
+        .undo-btn { width: 100%; background: none; border: none; color: #888; font-size: 14px; margin-top: 20px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
-
     <div class="app-container">
-        
         <div class="header-bar">
             <h1 class="header-title">PushUp Pro</h1>
             <button class="settings-icon" onclick="showSetupScreen()">⚙️</button>
@@ -185,17 +53,15 @@
         <div id="setupScreen" class="screen">
             <div class="setup-card">
                 <h2>Your Challenge</h2>
-                
                 <label>Total Goal (Amount):</label>
                 <input type="number" id="inputTotalGoal" class="input-field" placeholder="e.g. 10000">
-
                 <label>Start Date:</label>
                 <input type="date" id="inputStartDate" class="input-field">
-
                 <label>End Date:</label>
                 <input type="date" id="inputEndDate" class="input-field">
-
+                
                 <button class="save-btn" onclick="saveSettings()">Save & Start 🚀</button>
+                <button class="reset-btn" onclick="resetAllData()">⚠️ Reset All Progress</button>
             </div>
         </div>
 
@@ -208,7 +74,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-label"><span class="daily-indicator" id="lapIndicator">●</span> Daily Goal</div>
@@ -220,7 +85,6 @@
                     <div class="stat-value" id="daysLeftText">0</div>
                 </div>
             </div>
-
             <div class="action-buttons">
                 <button class="pushup-btn" onclick="addPushups(10)">+ 10</button>
                 <button class="pushup-btn" onclick="addPushups(15)">+ 15</button>
@@ -230,46 +94,38 @@
                     <button class="pushup-btn custom-settings-icon" onclick="setCustomAmount()">🖌️</button>
                 </div>
             </div>
+            <button class="undo-btn" onclick="undoLastAction()">↩️ Undo Last Action</button>
         </div>
-
     </div>
 
     <script>
-        // --- 1. HÄMTA DATA ---
+        // Hämta data och historik för Ångra-knappen
         let totalPushups = parseInt(localStorage.getItem('totalPushups')) || 0;
         let dailyPushupsDone = parseInt(localStorage.getItem('dailyPushupsDone')) || 0;
         let customAmount = parseInt(localStorage.getItem('customAmount')) || 0;
+        let actionHistory = JSON.parse(localStorage.getItem('actionHistory')) || []; // Ny lista för historik
         
         let savedTotalGoal = parseInt(localStorage.getItem('totalGoal'));
         let savedStartDate = localStorage.getItem('startDate');
         let savedEndDate = localStorage.getItem('endDate');
+        let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
 
-        let calculatedDailyGoal = 0;
-        let calculatedDaysLeft = 0;
-
-        // --- NY DAG-LOGIK (Reset) ---
         function checkAndResetNewDay() {
-            // Hämta dagens datum som en enkel sträng, t.ex. "Wed Mar 04 2026"
             let todayString = new Date().toDateString();
             let lastLoginDate = localStorage.getItem('lastLoginDate');
-
-            // Om det är en ny dag (eller första gången man öppnar appen)
             if (lastLoginDate !== todayString) {
-                dailyPushupsDone = 0; // Nollställ dagens armhävningar
+                dailyPushupsDone = 0;
                 localStorage.setItem('dailyPushupsDone', 0);
-                localStorage.setItem('lastLoginDate', todayString); // Spara att vi loggat in idag
+                localStorage.setItem('lastLoginDate', todayString);
+                // Nollställ historiken vid ny dag så man inte ångrar gårdagens armhävningar
+                actionHistory = []; 
+                localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
             }
         }
 
-        // --- 2. SKÄRMAR & INSTÄLLNINGAR ---
         function checkOnboarding() {
-            if (!savedTotalGoal || !savedStartDate || !savedEndDate) {
-                showSetupScreen();
-            } else {
-                checkAndResetNewDay(); // Kolla om det är en ny dag innan vi visar dashboarden!
-                calculateDatesAndGoals();
-                showDashboard();
-            }
+            if (!savedTotalGoal || !savedStartDate || !savedEndDate) { showSetupScreen(); } 
+            else { checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard(); }
         }
 
         function showSetupScreen() {
@@ -290,69 +146,42 @@
             let goalInput = document.getElementById('inputTotalGoal').value;
             let startInput = document.getElementById('inputStartDate').value;
             let endInput = document.getElementById('inputEndDate').value;
-
-            if(!goalInput || !startInput || !endInput) {
-                alert("Please fill in all fields!"); // Översatt till engelska
-                return;
-            }
-
-            savedTotalGoal = parseInt(goalInput);
-            savedStartDate = startInput;
-            savedEndDate = endInput;
-
-            localStorage.setItem('totalGoal', savedTotalGoal);
-            localStorage.setItem('startDate', savedStartDate);
-            localStorage.setItem('endDate', savedEndDate);
-
-            checkAndResetNewDay();
-            calculateDatesAndGoals();
-            showDashboard();
+            if(!goalInput || !startInput || !endInput) { alert("Please fill in all fields!"); return; }
+            savedTotalGoal = parseInt(goalInput); savedStartDate = startInput; savedEndDate = endInput;
+            localStorage.setItem('totalGoal', savedTotalGoal); localStorage.setItem('startDate', savedStartDate); localStorage.setItem('endDate', savedEndDate);
+            checkAndResetNewDay(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // --- 3. MATEMATIK ---
-        function calculateDatesAndGoals() {
-            const start = new Date(savedStartDate);
-            const end = new Date(savedEndDate);
-            const today = new Date();
-            
-            start.setHours(0,0,0,0);
-            end.setHours(0,0,0,0);
-            today.setHours(0,0,0,0);
+        // Ny funktion för att nollställa allt
+        function resetAllData() {
+            if(confirm("Are you sure you want to delete all your progress and settings? This cannot be undone!")) {
+                localStorage.clear();
+                location.reload(); // Laddar om sidan helt och hållet
+            }
+        }
 
+        function calculateDatesAndGoals() {
+            const start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date();
+            start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
             const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            
             calculatedDaysLeft = Math.round((end - today) / (1000 * 60 * 60 * 24));
             if (calculatedDaysLeft < 0) calculatedDaysLeft = 0;
-
-            if (totalDays > 0) {
-                calculatedDailyGoal = Math.ceil(savedTotalGoal / totalDays);
-            } else {
-                calculatedDailyGoal = savedTotalGoal; 
-            }
+            calculatedDailyGoal = totalDays > 0 ? Math.ceil(savedTotalGoal / totalDays) : savedTotalGoal; 
         }
 
-        // --- 4. UPPDATERA & KLICK ---
         function updateScreen() {
             document.getElementById('currentTotal').innerText = totalPushups;
-            
-            let formattedGoal = savedTotalGoal.toLocaleString('en-US'); // Nu med kommatecken för engelska
-            document.getElementById('goalText').innerText = `TOTAL / ${formattedGoal}`;
-            
+            document.getElementById('goalText').innerText = `TOTAL / ${savedTotalGoal ? savedTotalGoal.toLocaleString('en-US') : 0}`;
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
-            
-            if (customAmount > 0) {
-                document.getElementById('customBtn').innerText = "+ " + customAmount;
-            }
+            if (customAmount > 0) document.getElementById('customBtn').innerText = "+ " + customAmount;
 
-            let totalPercentage = (totalPushups / savedTotalGoal) * 100;
+            let totalPercentage = savedTotalGoal ? (totalPushups / savedTotalGoal) * 100 : 0;
             if (totalPercentage > 100) totalPercentage = 100;
             document.getElementById('outerCircle').style.background = `conic-gradient(var(--main-green) ${totalPercentage}%, #333 0%)`;
 
             let dailyPercentage = calculatedDailyGoal > 0 ? (dailyPushupsDone / calculatedDailyGoal) * 100 : 0;
-            let laps = Math.floor(dailyPercentage / 100); 
-            let currentLapPercentage = dailyPercentage % 100;
-
+            let laps = Math.floor(dailyPercentage / 100), currentLapPercentage = dailyPercentage % 100;
             if (laps === 0) {
                 document.getElementById('innerCircle').style.background = `conic-gradient(var(--daily-blue) ${currentLapPercentage}%, var(--darker-bg) 0%)`;
                 document.getElementById('lapIndicator').style.color = 'var(--daily-blue)';
@@ -360,42 +189,54 @@
                 document.getElementById('innerCircle').style.background = `conic-gradient(var(--lap-color) ${currentLapPercentage}%, var(--daily-blue) 0%)`;
                 document.getElementById('lapIndicator').style.color = 'var(--lap-color)';
             }
-
-            if(dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) {
-                document.getElementById('fireStatus').style.display = 'block';
-            } else {
-                document.getElementById('fireStatus').style.display = 'none';
-            }
+            document.getElementById('fireStatus').style.display = (dailyPushupsDone >= calculatedDailyGoal && calculatedDailyGoal > 0) ? 'block' : 'none';
         }
 
         function addPushups(amount) {
-            // Säkerhetskoll om dygnet hunnit slå om medan appen var öppen
             checkAndResetNewDay(); 
+            totalPushups += amount; dailyPushupsDone += amount; 
+            
+            // Spara i historiken för Ångra-knappen
+            actionHistory.push(amount);
+            localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            
+            localStorage.setItem('totalPushups', totalPushups); localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
+            updateScreen();
+        }
 
-            totalPushups += amount;
-            dailyPushupsDone += amount; 
+        // Ny funktion för att ångra senaste klicket
+        function undoLastAction() {
+            if (actionHistory.length === 0) {
+                alert("Nothing to undo!");
+                return;
+            }
+            let lastAmount = actionHistory.pop(); // Tar bort och hämtar senaste siffran
+            totalPushups -= lastAmount;
+            dailyPushupsDone -= lastAmount;
+            
+            // Se till att vi inte hamnar på minus
+            if (totalPushups < 0) totalPushups = 0;
+            if (dailyPushupsDone < 0) dailyPushupsDone = 0;
+            
+            // Spara de nya siffrorna
             localStorage.setItem('totalPushups', totalPushups);
             localStorage.setItem('dailyPushupsDone', dailyPushupsDone);
+            localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
+            
             updateScreen();
         }
 
         function setCustomAmount() {
-            let input = prompt("Choose amount for Custom button:", customAmount > 0 ? customAmount : "30"); // Översatt
+            let input = prompt("Choose amount for Custom button:", customAmount > 0 ? customAmount : "30");
             let parsedNumber = parseInt(input);
-            if (!isNaN(parsedNumber) && parsedNumber > 0) {
-                customAmount = parsedNumber;
-                localStorage.setItem('customAmount', customAmount);
-                updateScreen();
-            }
+            if (!isNaN(parsedNumber) && parsedNumber > 0) { customAmount = parsedNumber; localStorage.setItem('customAmount', customAmount); updateScreen(); }
         }
 
         function addCustom() {
-            if (customAmount === 0) setCustomAmount();
-            else addPushups(customAmount);
+            if (customAmount === 0) setCustomAmount(); else addPushups(customAmount);
         }
 
         checkOnboarding(); 
     </script>
-
 </body>
 </html>
