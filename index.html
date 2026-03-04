@@ -295,56 +295,83 @@
         let calculatedDailyGoal = 0, calculatedDaysLeft = 0;
         const outerCircumference = 659.7, innerCircumference = 534;   
         
-        // --- NY REALISTISK ELD-MOTOR (Canvas Particles) ---
+        // --- Fire effect: flame-like particles (base, flicker, glow) ---
         const fireCanvas = document.getElementById('fireCanvas');
         const fireCtx = fireCanvas.getContext('2d');
         let fireParticles = [];
         let isFireAnimating = false;
+        let firePhase = 0;
 
         function createFireParticle() {
-            // Skapa partiklar längst ner i ringen (mitten av canvas, botten)
-            const x = fireCanvas.width / 2 + (Math.random() * 60 - 30); // Spridning i sidled
-            const y = fireCanvas.height - 40; // Startposition nerifrån
-            const size = Math.random() * 15 + 10; // Storlek
-            const speedY = Math.random() * 3 + 2; // Fart uppåt
-            const life = Math.random() * 0.6 + 0.4; // Livslängd
-            fireParticles.push({ x, y, size, speedY, life, maxLife: life });
+            const baseWidth = 50;
+            const x = fireCanvas.width / 2 + (Math.random() * baseWidth * 2 - baseWidth);
+            const y = fireCanvas.height - 35 + (Math.random() * 20);
+            const size = Math.random() * 18 + 12;
+            const speedY = Math.random() * 2.5 + 2.2;
+            const life = Math.random() * 0.5 + 0.5;
+            const flickerSpeed = Math.random() * 0.15 + 0.05;
+            const flickerAmp = Math.random() * 8 + 4;
+            fireParticles.push({
+                x, y, size, speedY, life, maxLife: life,
+                flickerSpeed, flickerAmp, phase: Math.random() * Math.PI * 2
+            });
         }
 
         function animateFire() {
             if (!isFireAnimating) return;
+            firePhase += 0.08;
             fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
-            
-            // Skapa nya partiklar konstant
-            if (fireParticles.length < 150) { for(let i=0; i<5; i++) createFireParticle(); }
+
+            if (fireParticles.length < 200) {
+                for (let i = 0; i < 6; i++) createFireParticle();
+            }
 
             for (let i = fireParticles.length - 1; i >= 0; i--) {
                 let p = fireParticles[i];
-                p.y -= p.speedY; // Flytta uppåt
-                p.x += Math.sin(p.life * 10) * 1.5; // Vobbla i sidled
-                p.life -= 0.01; // Minska liv
-                p.size -= 0.1; // Krymp
+                p.y -= p.speedY;
+                const flicker = Math.sin(p.phase + firePhase * 3) * p.flickerAmp
+                    + Math.sin(p.phase * 2 + firePhase * 5) * (p.flickerAmp * 0.5);
+                p.x += flicker * 0.15;
+                p.phase += p.flickerSpeed;
+                p.life -= 0.012;
+                p.size *= 0.985;
 
-                if (p.life <= 0 || p.size <= 0) { fireParticles.splice(i, 1); continue; }
+                if (p.life <= 0 || p.size <= 2) {
+                    fireParticles.splice(i, 1);
+                    continue;
+                }
 
-                // Färg baserat på liv: Vit -> Gul -> Orange -> Röd -> Rök
+                const lifeRatio = p.life / p.maxLife;
                 let color;
-                let lifeRatio = p.life / p.maxLife;
-                if (lifeRatio > 0.8) color = 'rgba(255, 255, 200, ' + lifeRatio + ')'; // Vit-gul (hetast)
-                else if (lifeRatio > 0.6) color = 'rgba(255, 200, 0, ' + lifeRatio + ')'; // Gul
-                else if (lifeRatio > 0.4) color = 'rgba(255, 120, 0, ' + lifeRatio + ')'; // Orange
-                else if (lifeRatio > 0.2) color = 'rgba(255, 50, 0, ' + lifeRatio + ')'; // Röd
-                else color = 'rgba(100, 100, 100, ' + lifeRatio + ')'; // Rök
+                if (lifeRatio > 0.85) color = 'rgba(255, 255, 220, 0.95)';
+                else if (lifeRatio > 0.7) color = 'rgba(255, 255, 180, 0.9)';
+                else if (lifeRatio > 0.55) color = 'rgba(255, 230, 100, ' + lifeRatio + ')';
+                else if (lifeRatio > 0.4) color = 'rgba(255, 160, 40, ' + lifeRatio + ')';
+                else if (lifeRatio > 0.25) color = 'rgba(255, 80, 20, ' + lifeRatio + ')';
+                else if (lifeRatio > 0.1) color = 'rgba(180, 40, 10, ' + (lifeRatio * 0.9) + ')';
+                else color = 'rgba(80, 30, 10, ' + lifeRatio + ')';
 
-                fireCtx.beginPath();
-                // Rita en mjuk cirkel (radial gradient för "glöd"-effekt)
-                let gradient = fireCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                const r = Math.max(2, p.size);
+                const gradient = fireCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
                 gradient.addColorStop(0, color);
+                gradient.addColorStop(0.4, color.replace(/[\d.]+\)$/, '0.4)'));
                 gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                fireCtx.beginPath();
                 fireCtx.fillStyle = gradient;
-                fireCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                fireCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
                 fireCtx.fill();
             }
+
+            const glowGrad = fireCtx.createRadialGradient(
+                fireCanvas.width / 2, fireCanvas.height - 20, 0,
+                fireCanvas.width / 2, fireCanvas.height - 20, 90
+            );
+            glowGrad.addColorStop(0, 'rgba(255, 120, 30, 0.25)');
+            glowGrad.addColorStop(0.5, 'rgba(255, 60, 10, 0.08)');
+            glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            fireCtx.fillStyle = glowGrad;
+            fireCtx.fillRect(0, 0, fireCanvas.width, fireCanvas.height);
+
             requestAnimationFrame(animateFire);
         }
 
