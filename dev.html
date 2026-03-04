@@ -35,7 +35,8 @@
         .card { background: var(--panel-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2a2a; text-align: left; position: relative;}
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-        .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; } .input-field:focus { border-color: var(--main-green); }
+        .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
+        .input-field:focus { border-color: var(--main-green); }
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; padding-right: 5px; }
         
         .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
@@ -105,14 +106,16 @@
         .celeb-icon { font-size: 120px; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
         @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } } 
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        #loadingOverlay { background: var(--dark-bg); display: flex; font-size: 20px; color: var(--main-green); font-weight: bold; gap: 10px;}
+        
+        /* RÄTTAD LOADING OVERLAY */
+        #loadingOverlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--dark-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--main-green); font-weight: bold; flex-direction: column; gap: 10px;}
         .spinner { border: 4px solid rgba(57, 255, 20, 0.3); border-top: 4px solid var(--main-green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     
-    <div id="loadingOverlay" class="fullscreen-overlay show" style="background: var(--dark-bg);">
+    <div id="loadingOverlay">
         <div class="spinner"></div>
         DEV Environment...
     </div>
@@ -316,7 +319,6 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- AVANCERAD STATISTIK (Streaks, Badges, PR, Weekly) ---
         function calculateAdvancedStats(logArr, dailyGoalReq) {
             if(!logArr || logArr.length === 0) return { streak: 0, pr: 0, weekly: 0 };
             
@@ -326,40 +328,32 @@
                 dailyTotals[d] = (dailyTotals[d] || 0) + l.amount;
             });
 
-            // PR
             let pr = Math.max(...Object.values(dailyTotals));
 
-            // Weekly (Måndag till Söndag)
             let curr = new Date();
             let first = curr.getDate() - curr.getDay() + (curr.getDay() === 0 ? -6 : 1); 
             let startOfWeek = new Date(curr.setDate(first)); startOfWeek.setHours(0,0,0,0);
             let weekly = 0;
             logArr.forEach(l => { if(l.timestamp >= startOfWeek.getTime()) weekly += l.amount; });
 
-            // Streak
             let streak = 0;
             let checkDate = new Date();
-            let req = dailyGoalReq > 0 ? dailyGoalReq : 1; // Om inget mål är satt, räcker 1 armhävning för streak
+            let req = dailyGoalReq > 0 ? dailyGoalReq : 1; 
             
-            // Kolla idag först
             if(dailyTotals[checkDate.toDateString()] >= req) {
                 streak++; checkDate.setDate(checkDate.getDate() - 1);
             } else if(!dailyTotals[checkDate.toDateString()]) {
-                // Har inte gjort idag än, kolla igår för att se om streaken lever
                 checkDate.setDate(checkDate.getDate() - 1);
             } else {
-                // Gjort lite idag men inte nått mål = Streak bruten
                 return { streak: 0, pr, weekly };
             }
 
-            // Kolla bakåt
             let checking = true;
             while(checking) {
                 if(dailyTotals[checkDate.toDateString()] >= req) {
                     streak++; checkDate.setDate(checkDate.getDate() - 1);
                 } else { checking = false; }
             }
-
             return { streak, pr, weekly };
         }
 
@@ -373,7 +367,6 @@
             return b;
         }
 
-        // --- CLOUD & LOGIN ---
         function saveToCloud() {
             if(!localUsername) return;
             db.collection(DB_COLLECTION).doc(localUsername).set({
@@ -399,7 +392,6 @@
                     savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
                     localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || new Date().toDateString());
                     
-                    // KOLLA EFTER INKOMMANDE PEpp (Nudges)
                     if(d.nudges && d.nudges.length > 0) {
                         triggerNudgeCelebration(d.nudges[0]);
                         await db.collection(DB_COLLECTION).doc(localUsername).update({ nudges: [] });
@@ -409,17 +401,17 @@
                     localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
                     savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
-            } catch(e) { alert("Cloud error."); return false; }
+            } catch(e) { return false; }
         }
 
         async function checkAppStart() {
             if (!localUsername) {
-                document.getElementById('loadingOverlay').classList.remove('show');
+                document.getElementById('loadingOverlay').style.display = 'none';
                 hideAllScreens(); document.getElementById('loginScreen').classList.add('active-screen'); document.getElementById('mainHeader').style.display = 'none';
             } else {
-                document.getElementById('loadingOverlay').classList.add('show');
+                document.getElementById('loadingOverlay').style.display = 'flex';
                 let success = await fetchMyCloudData();
-                document.getElementById('loadingOverlay').classList.remove('show');
+                document.getElementById('loadingOverlay').style.display = 'none';
                 if(success) {
                     document.getElementById('mainHeader').style.display = 'flex';
                     checkAndResetNewDay(); calculateDatesAndGoals();
@@ -461,7 +453,6 @@
             hasCelebrated = false; saveToCloud(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // --- FRIENDS & SÖK ---
         async function showFriendsScreen() {
             hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
             document.getElementById('searchResultArea').innerHTML = ""; document.getElementById('friendSearchInput').value = ""; 
@@ -483,7 +474,7 @@
                 
                 let html = ""; 
                 friendsData.forEach(d => {
-                    let dStats = calculateAdvancedStats(d.pushupLog || [], d.appMode==='challenge'?(d.totalGoal/30):d.dailyGoalSetting); // rough approx for goal
+                    let dStats = calculateAdvancedStats(d.pushupLog || [], d.appMode==='challenge'?(d.totalGoal/30):d.dailyGoalSetting); 
                     let streakHtml = dStats.streak > 2 ? `<span style='color:#ffaa00; font-size:12px; margin-left:5px;'>🔥 ${dStats.streak}</span>` : "";
                     html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-name">${d.username}${streakHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                 });
@@ -506,7 +497,6 @@
         function addFriend(name) { myFriends.push(name); saveToCloud(); showFriendsScreen(); }
         function removeFriend(name) { if(confirm("Remove " + name + "?")) { myFriends = myFriends.filter(f => f !== name); saveToCloud(); showLeaderboardScreen(); } }
 
-        // --- LEADERBOARD & FLIKAR ---
         let currentLbMode = 'all';
         async function showLeaderboardScreen() {
             hideAllScreens(); document.getElementById('leaderboardScreen').classList.add('active-screen');
@@ -514,7 +504,6 @@
             document.getElementById('friendsLeaderboardContainer').innerHTML = "Loading friends...";
             
             try {
-                // GLOBAL (Alltid Total)
                 let globalSnap = await db.collection(DB_COLLECTION).orderBy("totalPushups", "desc").limit(5).get();
                 let gHtml = ""; let gRank = 1;
                 globalSnap.forEach(doc => {
@@ -524,7 +513,6 @@
                     gRank++;
                 }); document.getElementById('globalLeaderboardContainer').innerHTML = gHtml;
 
-                // VÄNNER (Hämta all data en gång)
                 let allToFetch = [localUsername, ...myFriends];
                 let promises = allToFetch.map(u => db.collection(DB_COLLECTION).doc(u).get());
                 let docs = await Promise.all(promises);
@@ -541,19 +529,15 @@
             document.getElementById('tab-lb-' + mode).classList.add('active');
             
             let displayData = cachedUsersData.map(d => {
-                let stats = calculateAdvancedStats(d.pushupLog || [], d.dailyGoalSetting);
-                return { 
-                    name: d.username, 
-                    score: mode === 'week' ? stats.weekly : (d.totalPushups || 0),
-                    streak: stats.streak
-                };
+                let stats = calculateAdvancedStats(d.pushupLog || [], d.appMode==='challenge'?(d.totalGoal/30):d.dailyGoalSetting);
+                return { name: d.username, score: mode === 'week' ? stats.weekly : (d.totalPushups || 0), streak: stats.streak };
             });
 
             displayData.sort((a,b) => b.score - a.score);
 
             let fHtml = ""; let fRank = 1;
             displayData.forEach(d => {
-                if(mode === 'week' && d.score === 0) return; // Dölj nollor på veckan
+                if(mode === 'week' && d.score === 0) return; 
                 let isMe = d.name === localUsername; let hlClass = isMe ? "lb-highlight" : "";
                 let displayName = isMe ? "You (@" + d.name + ")" : d.name;
                 let streakHtml = d.streak > 2 ? `<span style='color:#ffaa00; font-size:12px; margin-left:5px;'>🔥 ${d.streak}</span>` : "";
@@ -564,7 +548,6 @@
             document.getElementById('friendsLeaderboardContainer').innerHTML = fHtml;
         }
 
-        // --- VÄNS PROFIL & NUDGE ---
         let currentFriendLog = [];
         async function openFriendProfile(friendUsername) {
             hideAllScreens(); document.getElementById('friendProfileScreen').classList.add('active-screen');
@@ -600,9 +583,7 @@
 
         async function sendNudge(friendName) {
             try {
-                await db.collection(DB_COLLECTION).doc(friendName).update({
-                    nudges: firebase.firestore.FieldValue.arrayUnion(localUsername)
-                });
+                await db.collection(DB_COLLECTION).doc(friendName).update({ nudges: firebase.firestore.FieldValue.arrayUnion(localUsername) });
                 vibrate(50);
             } catch(e) { console.log(e); }
         }
@@ -622,19 +603,20 @@
         let friendCurrMonth = new Date();
         function changeFriendMonth(d) { friendCurrMonth.setMonth(friendCurrMonth.getMonth() + d); renderFriendCalendar(); }
         function renderFriendCalendar() {
-            let y = friendCurrMonth.getFullYear(), m = friendCurrMonth.getMonth(); document.getElementById('friendCalendarMonthYear').innerText = new Date(y, m).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            let y = friendCurrMonth.getFullYear(), m = friendCurrMonth.getMonth();
+            document.getElementById('friendCalendarMonthYear').innerText = new Date(y, m).toLocaleString('en-US', { month: 'long', year: 'numeric' });
             let fDay = new Date(y, m, 1).getDay(), fEU = fDay === 0 ? 6 : fDay - 1, dim = new Date(y, m + 1, 0).getDate();
             let h = '<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
             for (let i = 0; i < fEU; i++) h += '<div class="calendar-cell cell-empty"></div>';
             let dTot = {}; currentFriendLog.forEach(l => { let dt = new Date(l.timestamp); if (dt.getFullYear() === y && dt.getMonth() === m) { let day = dt.getDate(); dTot[day] = (dTot[day] || 0) + l.amount; } });
             for (let d = 1; d <= dim; d++) {
                 let t = dTot[d] || 0, th = t > 0 ? `<div class="cell-total">${t}</div>` : '';
-                let isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear()); let st = isT ? 'border:1px solid var(--daily-red);' : '';
+                let isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
+                let st = isT ? 'border:1px solid var(--daily-red);' : '';
                 h += `<div class="calendar-cell" style="${st} cursor:default;"><div class="cell-date">${d}</div>${th}</div>`;
             } document.getElementById('friendCalendarGrid').innerHTML = h;
         }
 
-        // --- DASHBOARD LOGIK (Uppdaterad med Stats) ---
         function calculateDatesAndGoals() {
             if(appMode === 'challenge') {
                 let start = new Date(savedStartDate), end = new Date(savedEndDate), today = new Date(); start.setHours(0,0,0,0); end.setHours(0,0,0,0); today.setHours(0,0,0,0);
@@ -666,7 +648,6 @@
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
             
-            // Uppdatera nya stats
             if(myAdvancedStats.streak > 0) { document.getElementById('myStreakBadge').innerText = `🔥 ${myAdvancedStats.streak}`; document.getElementById('myStreakBadge').style.display = 'flex'; } else { document.getElementById('myStreakBadge').style.display = 'none'; }
             document.getElementById('myBadgesArea').innerHTML = getBadgesHTML(totalPushups);
             document.getElementById('myPrText').innerText = myAdvancedStats.pr;
