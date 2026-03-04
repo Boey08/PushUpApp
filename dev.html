@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pushup Days</title>
+    <title>Pushup Days (DEV)</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
@@ -35,10 +35,8 @@
         .card { background: var(--panel-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2a2a; text-align: left; }
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
         .card label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-        .sub-label { font-size: 11px; color: #666; margin-top: -6px; margin-bottom: 10px; display: block; }
-        .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; font-family: 'Segoe UI', Tahoma, sans-serif; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
+        .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
         .input-field:focus { border-color: var(--main-green); }
-        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; padding-right: 5px; }
         
         .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
         .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; }
@@ -47,7 +45,7 @@
         .mode-tab { flex: 1; padding: 12px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; border: 2px solid transparent; transition: 0.2s;}
         .mode-tab.active { background: rgba(57,255,20,.1); color: var(--main-green); border-color: var(--main-green); }
         
-        /* KOMPAKT DASHBOARD */
+        /* DASHBOARD KOMPAKT MED DUBBLA STATS-RADER */
         .dashboard-content { text-align: center; }
         .user-greeting { font-size: 15px; color: #aaa; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
@@ -61,7 +59,8 @@
         @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
+        /* Stats grid uppdaterad till 1fr 1fr */
+        .stats-grid { display: grid; gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
         .stat-value { font-size: 16px; font-weight: bold; }
@@ -92,7 +91,6 @@
         .cell-date { font-size: 12px; color: #ccc; font-weight: bold;} 
         .cell-total { font-size: 14px; color: var(--main-green); font-weight: 900; }
         .cell-empty { background: transparent; cursor: default; border: none; } .cell-empty:hover { background: transparent; }
-        .chart-container { width: 100%; height: 250px; margin-bottom: 20px; margin-top: 10px;}
         
         .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; } .celebration-overlay.show { display: flex; animation: fadeIn 0.5s; }
         .celeb-icon { font-size: 120px; color: #ffaa00; text-shadow: 0 0 50px #ffaa00; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); } @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } } @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -106,7 +104,7 @@
     
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        Connecting to Cloud...
+        DEV Environment...
     </div>
 
     <div id="celebrationOverlay" class="celebration-overlay">
@@ -120,11 +118,12 @@
         <div id="loginScreen" class="screen">
             <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
                 <h1 class="header-title" style="font-size: 42px;">Pushup Days</h1>
+                <p style="color: #ffaa00; font-weight: bold; font-size: 12px; margin-top: 5px; letter-spacing: 2px;">DEVELOPMENT MODE</p>
             </div>
             <div class="card">
                 <h2><span class="material-symbols-outlined icon">cloud_done</span> Cloud Login</h2>
                 <p style="font-size: 13px; color: #aaa; margin-top: -15px; margin-bottom: 20px; line-height: 1.5;">
-                    New user? Just make up a username and a password below to create your account automatically!
+                    New user? Just make up a username and a password below to create your test account!
                 </p>
                 <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="off">
                 <input type="password" id="inputPassword" class="input-field" placeholder="Password">
@@ -160,11 +159,16 @@
                     <p class="goal-count" id="centerSmallText">TOTAL: 0 / 0</p>
                 </div>
             </div>
-            <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">query_stats</span> Daily Avg</div><div class="stat-value" id="dailyAvgText">0</div></div>
+            
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 8px;">
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--daily-red)">radio_button_checked</span> Daily Goal</div><div class="stat-value" id="dailyProgressText">0 / 0</div></div>
                 <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px">calendar_today</span> Days Left</div><div class="stat-value" id="daysLeftText">0</div></div>
             </div>
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--c1)">emoji_events</span> Daily PR</div><div class="stat-value" id="myPrText">0</div></div>
+                <div class="stat-box"><div class="stat-label"><span class="material-symbols-outlined icon" style="font-size:14px; color:var(--lap-color)">date_range</span> This Week</div><div class="stat-value" id="myWeeklyText">0</div></div>
+            </div>
+            
             <div class="fire-status" id="fireStatus"><span class="material-symbols-outlined icon">local_fire_department</span> ON FIRE!</div>
             <div class="action-buttons">
                 <button class="pushup-btn" onclick="addPushups(10)">+ 10</button><button class="pushup-btn" onclick="addPushups(15)">+ 15</button><button class="pushup-btn" onclick="addPushups(20)">+ 20</button>
@@ -190,13 +194,19 @@
 
         <div id="friendProfileScreen" class="screen">
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h2 id="fpName" style="margin: 0; font-size: 22px;">Name</h2>
                     <div style="text-align: right;">
                         <div style="font-size: 24px; font-weight: 900; color: var(--main-green);" id="fpScore">0</div>
                         <div style="font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Total Pushups</div>
                     </div>
                 </div>
+                
+                <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 25px; padding: 12px;">
+                    <div class="stat-box"><div class="stat-label">Daily PR</div><div class="stat-value" id="fpPrText" style="color:var(--c1)">0</div></div>
+                    <div class="stat-box"><div class="stat-label">This Week</div><div class="stat-value" id="fpWeeklyText" style="color:var(--lap-color)">0</div></div>
+                </div>
+
                 <div class="calendar-header">
                     <button class="icon-btn" onclick="changeFriendMonth(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
                     <h3 id="friendCalendarMonthYear" style="margin:0;font-size:16px; color: #fff;">Month</h3>
@@ -256,16 +266,6 @@
             </div>
         </div>
         
-        <div id="chartScreen" class="screen">
-            <div class="card">
-                <h2><span class="material-symbols-outlined icon">bar_chart</span> Daily Breakdown</h2>
-                <div id="chartDateTitle" style="text-align:center;color:#888;margin-bottom:5px; font-size: 14px;">Date</div>
-                <div id="chartDayTotal" style="text-align:center;color:var(--main-green);font-size:22px;font-weight:900;margin-bottom:20px;">Total: 0</div>
-                <div class="chart-container"><canvas id="historyChart"></canvas></div>
-                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc;" onclick="showCalendarScreen()">Back to Calendar</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
@@ -280,11 +280,11 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
-        // RIKTIGA DATABASEN
-        const DB_COLLECTION = "users"; 
+        // --- DEV-DATABAS ---
+        const DB_COLLECTION = "users_dev"; 
 
-        let localUsername = localStorage.getItem('username') || "";
-        let localPassword = localStorage.getItem('password') || "";
+        let localUsername = localStorage.getItem('username_dev') || "";
+        let localPassword = localStorage.getItem('password_dev') || "";
         let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
         let myFriends = []; 
         let allDevUsers = []; 
@@ -296,6 +296,36 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
+        // --- NY FUNKTION: RÄKNA UT PR OCH VECKA ---
+        function getAdvancedStats(logArr) {
+            if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0 };
+            
+            let dailyTotals = {};
+            let weekly = 0;
+            
+            // Hitta måndag denna vecka (00:00:00)
+            let curr = new Date();
+            let day = curr.getDay();
+            let diff = curr.getDate() - day + (day === 0 ? -6 : 1); // Fix för söndag
+            let startOfWeek = new Date(curr.setDate(diff));
+            startOfWeek.setHours(0,0,0,0);
+            let startOfWeekTime = startOfWeek.getTime();
+
+            logArr.forEach(l => {
+                // Summera för PR
+                let dString = new Date(l.timestamp).toDateString();
+                dailyTotals[dString] = (dailyTotals[dString] || 0) + l.amount;
+                
+                // Summera för denna vecka
+                if(l.timestamp >= startOfWeekTime) {
+                    weekly += l.amount;
+                }
+            });
+
+            let pr = Math.max(...Object.values(dailyTotals), 0);
+            return { pr, weekly };
+        }
+
         function saveToCloud() {
             if(!localUsername) return;
             db.collection(DB_COLLECTION).doc(localUsername).set({
@@ -303,7 +333,7 @@
                 dailyPushupsDone: dailyPushupsDone, customAmounts: customAmounts, pushupLog: pushupLog,
                 friends: myFriends, appMode: appMode, dailyGoalSetting: savedDailyGoalSetting,
                 totalGoal: savedTotalGoal, startDate: savedStartDate, endDate: savedEndDate,
-                lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
+                lastLoginDate: localStorage.getItem('lastLoginDate_dev') || new Date().toDateString()
             }, { merge: true }); 
         }
 
@@ -319,13 +349,13 @@
                     myFriends = d.friends || []; appMode = d.appMode || 'challenge';
                     savedDailyGoalSetting = d.dailyGoalSetting || 0; savedTotalGoal = d.totalGoal || 0;
                     savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
-                    localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
+                    localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || new Date().toDateString());
                     return true;
                 } else {
-                    localStorage.setItem('lastLoginDate', new Date().toDateString());
+                    localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
                     savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
-            } catch(e) { return false; }
+            } catch(e) { alert("Cloud connection error."); return false; }
         }
 
         async function checkAppStart() {
@@ -347,14 +377,14 @@
         async function loginUser() {
             let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
             if(!u || !p) { alert("Enter credentials!"); return; }
-            localUsername = u; localPassword = p; localStorage.setItem('username', u); localStorage.setItem('password', p);
+            localUsername = u; localPassword = p; localStorage.setItem('username_dev', u); localStorage.setItem('password_dev', p);
             checkAppStart();
         }
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
 
         function checkAndResetNewDay() {
-            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate');
-            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate', t); saveToCloud(); }
+            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate_dev');
+            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate_dev', t); saveToCloud(); }
         }
 
         function setSetupMode(m) {
@@ -378,7 +408,6 @@
             hasCelebrated = false; saveToCloud(); calculateDatesAndGoals(); showDashboard();
         }
 
-        // --- LIVE SEARCH LOGIK ---
         async function showFriendsScreen() {
             hideAllScreens(); document.getElementById('friendsScreen').classList.add('active-screen');
             document.getElementById('searchResultArea').innerHTML = ""; 
@@ -500,6 +529,11 @@
                     document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
                     document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
                     
+                    // UPPDATERA VÄNNENS NYA STATS
+                    let fStats = getAdvancedStats(d.pushupLog || []);
+                    document.getElementById('fpPrText').innerText = fStats.pr;
+                    document.getElementById('fpWeeklyText').innerText = fStats.weekly;
+                    
                     if(myFriends.includes(d.username)) {
                         let remBtn = document.getElementById('removeFriendBtn');
                         remBtn.style.display = 'block';
@@ -534,11 +568,6 @@
                 let totalDays = Math.round((end-start)/86400000)+1; calculatedDaysLeft = Math.max(Math.round((end-today)/86400000),0);
                 calculatedDailyGoal = totalDays > 0 ? Math.ceil(savedTotalGoal/totalDays) : 0;
             } else { calculatedDailyGoal = savedDailyGoalSetting; calculatedDaysLeft = "∞"; }
-            
-            if(pushupLog.length > 0) {
-                let f = new Date(pushupLog[0].timestamp); f.setHours(0,0,0,0); let t = new Date(); t.setHours(0,0,0,0);
-                let daysActive = Math.round((t-f)/86400000)+1; document.getElementById('dailyAvgText').innerText = Math.round(totalPushups/daysActive);
-            } else { document.getElementById('dailyAvgText').innerText = "0"; }
         }
 
         function triggerCelebration() {
@@ -552,6 +581,12 @@
             document.getElementById('centerSmallText').innerText = `TOTAL: ${totalPushups.toLocaleString('en-US')} / ${(appMode==='challenge'&&savedTotalGoal>0)?savedTotalGoal.toLocaleString('en-US'):"∞"}`;
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
+            
+            // --- UPPDATERA DINA NYA STATS ---
+            let myStats = getAdvancedStats(pushupLog);
+            document.getElementById('myPrText').innerText = myStats.pr;
+            document.getElementById('myWeeklyText').innerText = myStats.weekly;
+
             for(let i=0;i<3;i++) document.getElementById('customBtn'+i).innerText = customAmounts[i]>0 ? "+ "+customAmounts[i] : "+ Custom";
 
             let totalPct = (appMode==='challenge'&&savedTotalGoal>0) ? Math.min(totalPushups/savedTotalGoal,1) : 1;
@@ -591,32 +626,6 @@
         function setCustomAmount(index){let i=prompt("Choose amount:",customAmounts[index]);let p=parseInt(i);if(!isNaN(p)&&p>0){customAmounts[index]=p; saveToCloud(); updateScreen();}}
         function addCustom(index){if(customAmounts[index]===0)setCustomAmount(index);else addPushups(customAmounts[index]);}
 
-        let currMonth=new Date(), chartInst=null;
-        function showCalendarScreen(){hideAllScreens();document.getElementById('calendarScreen').classList.add('active-screen');currMonth=new Date();renderCalendar();}
-        function changeMonth(d){currMonth.setMonth(currMonth.getMonth()+d);renderCalendar();}
-        function renderCalendar(){
-            let y=currMonth.getFullYear(),m=currMonth.getMonth(); document.getElementById('calendarMonthYear').innerText=new Date(y,m).toLocaleString('en-US',{month:'long',year:'numeric'});
-            let f=new Date(y,m,1).getDay(),fEU=f===0?6:f-1,dim=new Date(y,m+1,0).getDate();
-            let h='<div class="calendar-day-header">Mon</div><div class="calendar-day-header">Tue</div><div class="calendar-day-header">Wed</div><div class="calendar-day-header">Thu</div><div class="calendar-day-header">Fri</div><div class="calendar-day-header">Sat</div><div class="calendar-day-header">Sun</div>';
-            for(let i=0;i<fEU;i++)h+='<div class="calendar-cell cell-empty"></div>';
-            let dTot={}; pushupLog.forEach(l=>{let dt=new Date(l.timestamp);if(dt.getFullYear()===y&&dt.getMonth()===m){let day=dt.getDate();dTot[day]=(dTot[day]||0)+l.amount;}});
-            for(let d=1;d<=dim;d++){
-                let t=dTot[d]||0, th=t>0?`<div class="cell-total">${t}</div>`:'';
-                let isT=(d===new Date().getDate()&&m===new Date().getMonth()&&y===new Date().getFullYear());
-                let st=isT?'border:1px solid var(--daily-red);':'';
-                h+=`<div class="calendar-cell" style="${st}" onclick="showDailyChart(${y},${m},${d})"><div class="cell-date">${d}</div>${th}</div>`;
-            } document.getElementById('calendarGrid').innerHTML=h;
-        }
-        function showDailyChart(y,m,d){
-            hideAllScreens();document.getElementById('chartScreen').classList.add('active-screen');
-            let sd=new Date(y,m,d); document.getElementById('chartDateTitle').innerText=sd.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
-            let ts=sd.toDateString(), dLogs=pushupLog.filter(l=>new Date(l.timestamp).toDateString()===ts);
-            let hData=new Array(24).fill(0), tDay=0; dLogs.forEach(l=>{hData[new Date(l.timestamp).getHours()]+=l.amount;tDay+=l.amount;});
-            document.getElementById('chartDayTotal').innerText=`Total: ${tDay}`;
-            let ctx=document.getElementById('historyChart').getContext('2d'); if(chartInst)chartInst.destroy();
-            chartInst=new Chart(ctx,{type:'bar',data:{labels:['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],datasets:[{data:hData,backgroundColor:'#ff1144',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,grid:{color:'#333'},ticks:{color:'#888',stepSize:20}},x:{grid:{display:false},ticks:{color:'#888'}}},plugins:{legend:{display:false}}}});
-        }
-        
         window.onload=checkAppStart;
     </script>
 </body>
