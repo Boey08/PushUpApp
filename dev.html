@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Pushup Days (DEV)</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#121212">
+    <meta name="theme-color" content="#050505">
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,7 +20,23 @@
     
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
-        body { background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 15px 20px; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh;}
+        
+        /* FIX FÖR ATT TA BORT VITA KANTER PÅ IPHONE */
+        html { background-color: #050505; }
+        body { 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; 
+            /* env() ser till att appen respekterar flärpen och hem-strecket i botten */
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
+            display: flex; 
+            justify-content: center; 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+        
         .app-container { width: 100%; max-width: 400px; }
         .screen { display: none; animation: fadeIn 0.3s ease; } .active-screen { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -39,13 +55,12 @@
         .input-field:focus { border-color: var(--main-green); }
         
         .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
-        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; transition: 0.2s; } .danger-btn:active { transform: scale(0.98); }
+        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; transition: 0.2s;} .danger-btn:active { transform: scale(0.98); }
         
         .mode-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .mode-tab { flex: 1; padding: 12px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; border: 2px solid transparent; transition: 0.2s;}
         .mode-tab.active { background: rgba(57,255,20,.1); color: var(--main-green); border-color: var(--main-green); }
         
-        /* DASHBOARD */
         .dashboard-content { text-align: center; }
         .user-greeting { font-size: 15px; color: #aaa; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
@@ -282,9 +297,7 @@
                     <p style="font-size: 12px; color: #888;">No end dates, no total goal. Just build a daily habit.</p>
                 </div>
                 <button class="primary-btn" onclick="saveSettings()"><span class="material-symbols-outlined icon">save</span> Save</button>
-                
                 <button class="danger-btn" style="background:rgba(255,69,0,0.1); border-color:rgba(255,69,0,0.3); color:#ff4500;" onclick="resetData()">Reset Progress</button>
-                
                 <button class="danger-btn" style="background:transparent;border:none;color:#888;" onclick="logOutUser()">Log Out</button>
             </div>
         </div>
@@ -419,18 +432,11 @@
         }
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
 
-        // --- NY FUNKTION FÖR ATT NOLLSTÄLLA DATA ---
         function resetData() {
             if(confirm("⚠️ ARE YOU SURE?\n\nThis will permanently delete all your logged pushups, daily PR, and weekly stats. Your friends and settings will remain.")) {
-                totalPushups = 0;
-                dailyPushupsDone = 0;
-                pushupLog = [];
-                hasCelebrated = false;
-                saveToCloud();
-                calculateDatesAndGoals();
-                updateScreen();
-                alert("Progress reset to zero.");
-                showDashboard();
+                totalPushups = 0; dailyPushupsDone = 0; pushupLog = []; hasCelebrated = false;
+                saveToCloud(); calculateDatesAndGoals(); updateScreen();
+                alert("Progress reset to zero."); showDashboard();
             }
         }
 
