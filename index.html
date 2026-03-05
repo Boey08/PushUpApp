@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pushup Days (DEV)</title>
+    <title>Pushup Days</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
@@ -154,7 +154,7 @@
     
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        DEV Environment...
+        Connecting to Cloud...
     </div>
 
     <div id="celebrationOverlay" class="celebration-overlay">
@@ -168,16 +168,15 @@
         <div id="loginScreen" class="screen">
             <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
                 <h1 class="header-title" style="font-size: 42px;">Pushup Days</h1>
-                <p style="color: #ffaa00; font-weight: bold; font-size: 12px; margin-top: 5px; letter-spacing: 2px;">DEVELOPMENT MODE</p>
             </div>
             <div class="card">
-                <h2><span class="material-symbols-outlined icon">cloud_done</span> Cloud Login</h2>
+                <h2><span class="material-symbols-outlined icon">login</span> Login</h2>
                 <p style="font-size: 13px; color: #aaa; margin-top: -15px; margin-bottom: 20px; line-height: 1.5;">
-                    New user? Just make up a username and a password below to create your test account!
+                    New user? Just make up a username and a password below to create your account automatically!
                 </p>
                 <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="off">
                 <input type="password" id="inputPassword" class="input-field" placeholder="Password">
-                <button class="primary-btn" onclick="loginUser()">Enter App</button>
+                <button class="primary-btn" onclick="loginUser()">Enter</button>
             </div>
         </div>
 
@@ -360,10 +359,11 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
-        const DB_COLLECTION = "users_dev"; 
+        // RIKTIGA DATABASEN FÖR LIVE-VERSIONEN
+        const DB_COLLECTION = "users"; 
 
-        let localUsername = localStorage.getItem('username_dev') || "";
-        let localPassword = localStorage.getItem('password_dev') || "";
+        let localUsername = localStorage.getItem('username') || "";
+        let localPassword = localStorage.getItem('password') || "";
         let totalPushups = 0, dailyPushupsDone = 0, customAmounts = [25,30,50], pushupLog = [];
         let myFriends = []; 
         let allDevUsers = []; 
@@ -449,7 +449,7 @@
                 dailyPushupsDone: dailyPushupsDone, customAmounts: customAmounts, pushupLog: pushupLog,
                 friends: myFriends, appMode: appMode, dailyGoalSetting: savedDailyGoalSetting,
                 totalGoal: savedTotalGoal, startDate: savedStartDate, endDate: savedEndDate,
-                lastLoginDate: localStorage.getItem('lastLoginDate_dev') || new Date().toDateString()
+                lastLoginDate: localStorage.getItem('lastLoginDate') || new Date().toDateString()
             }, { merge: true }); 
         }
 
@@ -477,14 +477,14 @@
                     myFriends = d.friends || []; appMode = d.appMode || 'challenge';
                     savedDailyGoalSetting = d.dailyGoalSetting || 0; savedTotalGoal = d.totalGoal || 0;
                     savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
-                    localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || new Date().toDateString());
+                    localStorage.setItem('lastLoginDate', d.lastLoginDate || new Date().toDateString());
                     
                     // Sparar ner rätt siffra i tysthet om den blivit osynkad
                     if(needsHeal) { saveToCloud(); }
                     
                     return true;
                 } else {
-                    localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
+                    localStorage.setItem('lastLoginDate', new Date().toDateString());
                     savedStartDate = getTodayString(); saveToCloud(); return true;
                 }
             } catch(e) { return false; }
@@ -509,7 +509,7 @@
         async function loginUser() {
             let u = document.getElementById('inputUsername').value.trim(), p = document.getElementById('inputPassword').value.trim();
             if(!u || !p) { alert("Enter credentials!"); return; }
-            localUsername = u; localPassword = p; localStorage.setItem('username_dev', u); localStorage.setItem('password_dev', p);
+            localUsername = u; localPassword = p; localStorage.setItem('username', u); localStorage.setItem('password', p);
             checkAppStart();
         }
         function logOutUser() { localUsername = ""; localPassword = ""; localStorage.clear(); location.reload(); }
@@ -523,8 +523,8 @@
         }
 
         function checkAndResetNewDay() {
-            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate_dev');
-            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate_dev', t); saveToCloud(); }
+            let t = new Date().toDateString(); let l = localStorage.getItem('lastLoginDate');
+            if(l !== t) { dailyPushupsDone = 0; localStorage.setItem('lastLoginDate', t); saveToCloud(); }
         }
 
         function setSetupMode(m) {
@@ -772,7 +772,7 @@
 
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
             document.getElementById('fireStatus').style.visibility = isFire ? 'visible' : 'hidden';
-            if(isFire){ document.getElementById('ringGlowContainer').classList.add('is-on-fire'); } else { document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); }
+            if(isFire) { document.getElementById('ringGlowContainer').classList.add('is-on-fire'); } else { document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); }
         }
 
         function addPushups(amount){
