@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#000000">
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,21 +21,20 @@
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
         
-        /* FIX FÖR ATT FÅ GRADIENTEN ÖVER HELA SKÄRMEN UTAN SKARVAR */
         html {
-            background-color: #050505;
-            background-image: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
-            background-attachment: fixed; /* Låser bakgrunden som en tapet */
+            background-color: #000000;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            background-attachment: fixed;
             min-height: 100vh;
         }
 
         body { 
-            background: transparent; /* Låter html-bakgrunden lysa igenom */
+            background: transparent;
             color: #ffffff; 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; 
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
-            box-sizing: border-box; /* Ser till att padding inte förstör höjden */
+            box-sizing: border-box;
             display: flex; 
             justify-content: center; 
             overflow-x: hidden; 
@@ -68,7 +67,7 @@
         .mode-tab.active { background: rgba(57,255,20,.1); color: var(--main-green); border-color: var(--main-green); }
         
         .dashboard-content { text-align: center; }
-        .user-greeting { font-size: 15px; color: #aaa; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .user-greeting { font-size: 18px; color: #fff; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
         .ring-svg { transform: rotate(-90deg); position: absolute; width: 100%; height: 100%; z-index: 5; overflow: visible; }
         .ring-track { fill: none; stroke: #222; }
@@ -95,6 +94,24 @@
         } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
+        /* NY STREAK BADGE DESIGN */
+        .streak-badge {
+            background: rgba(255, 170, 0, 0.15);
+            color: #ffaa00;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 170, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 900;
+            margin-left: 6px;
+            vertical-align: middle;
+            text-shadow: none;
+            letter-spacing: 0.5px;
+        }
+
         .stats-grid { display: grid; gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; font-weight: bold; letter-spacing: 1px;}
@@ -111,7 +128,7 @@
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
         .lb-item:hover { transform: scale(1.02); border-color: #444; background: #333; }
         .lb-rank { font-size: 22px; font-weight: 900; color: #666; width: 35px; }
-        .lb-name { flex-grow: 1; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+        .lb-name { flex-grow: 1; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 0px; }
         .lb-score { color: var(--main-green); font-weight: 900; font-size: 18px; }
         .lb-highlight { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--main-green); }
         .lb-highlight .lb-rank { color: var(--main-green); }
@@ -359,8 +376,22 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        function getAdvancedStats(logArr) {
-            if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0 };
+        // --- HJÄLPFUNKTION: Hämta Daily Goal beroende på Mode (även för vänner) ---
+        function getDailyGoalValue(mode, dTotal, dStart, dEnd, dSetting) {
+            if(mode === 'challenge') {
+                if(!dStart || !dEnd || !dTotal) return 0;
+                let s = new Date(dStart), e = new Date(dEnd);
+                s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+                let days = Math.round((e-s)/86400000)+1;
+                return days > 0 ? Math.ceil(dTotal/days) : 0;
+            }
+            return dSetting || 0;
+        }
+
+        // --- UPPDATERAD ADVANCED STATS MED STREAKS ---
+        function getAdvancedStats(logArr, dailyGoalReq) {
+            let req = dailyGoalReq > 0 ? dailyGoalReq : 1; // Måste göra minst 1 för att få streak om mål är 0
+            if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0, streak: 0 };
             
             let dailyTotals = {};
             let weekly = 0;
@@ -379,7 +410,43 @@
             });
 
             let pr = Math.max(...Object.values(dailyTotals), 0);
-            return { pr, weekly };
+
+            // STREAK LOGIK
+            let historicalStreak = 0;
+            let checkDate = new Date();
+            checkDate.setDate(checkDate.getDate() - 1); // Börja kolla igår
+
+            let checking = true;
+            while(checking) {
+                let dStr = checkDate.toDateString();
+                if (dailyTotals[dStr] >= req) {
+                    historicalStreak++;
+                    checkDate.setDate(checkDate.getDate() - 1); // Backa en dag
+                } else {
+                    checking = false;
+                }
+            }
+
+            // Kolla idag
+            let todayStr = new Date().toDateString();
+            let todayMet = (dailyTotals[todayStr] >= req);
+            
+            // Om man inte nådde målet igår, och inte idag heller = 0.
+            // Om man nått det idag blir det historical + 1. 
+            // Annars (man nådde igår men inte idag) är streaken "historisk" och väntar på att du ska nå målet idag för att inte brytas ikväll.
+            let streak = todayMet ? historicalStreak + 1 : historicalStreak;
+            if(historicalStreak === 0 && !todayMet) streak = 0;
+
+            return { pr, weekly, streak };
+        }
+
+        // --- SKAPA HTML FÖR ELD-IKONER ---
+        function getStreakBadgeHTML(streak) {
+            if (streak < 2) return "";
+            let fires = "🔥";
+            if (streak >= 7) fires = "🔥🔥";
+            if (streak >= 14) fires = "🔥🔥🔥";
+            return `<span class="streak-badge">${fires} ${streak}</span>`;
         }
 
         function saveToCloud() {
@@ -491,11 +558,14 @@
                 let docs = await Promise.all(promises);
                 let friendsData = docs.filter(d => d.exists).map(d => d.data());
                 friendsData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
+                
                 let html = ""; let rank = 1;
                 friendsData.forEach(d => {
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                    let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
-                    html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-rank">${rank}</div><div class="lb-name">${d.username}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
+                    let dStats = getAdvancedStats(d.pushupLog || [], dGoal);
+                    let badgeHtml = getStreakBadgeHTML(dStats.streak);
+                    
+                    html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-rank">${rank}</div><div class="lb-name">${d.username}${badgeHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     rank++;
                 });
                 container.innerHTML = html;
@@ -506,14 +576,8 @@
             let q = document.getElementById('friendSearchInput').value.trim().toLowerCase();
             let res = document.getElementById('searchResultArea');
             if(q.length === 0) { res.innerHTML = ""; return; }
-
             let matches = allDevUsers.filter(u => u.toLowerCase().includes(q) && u !== localUsername && !myFriends.includes(u));
-
-            if(matches.length === 0) {
-                res.innerHTML = "<p style='color:#888; font-size:12px; margin: 5px 0;'>No new athletes found.</p>";
-                return;
-            }
-
+            if(matches.length === 0) { res.innerHTML = "<p style='color:#888; font-size:12px; margin: 5px 0;'>No new athletes found.</p>"; return; }
             let html = "";
             matches.slice(0, 5).forEach(m => {
                 html += `<div class="lb-item" style="border: 1px solid var(--main-green); padding: 10px; margin-bottom: 5px;">
@@ -534,8 +598,7 @@
         function removeFriend(name) {
             if(confirm("Are you sure you want to remove " + name + " from your friends?")) {
                 myFriends = myFriends.filter(f => f !== name);
-                saveToCloud();
-                showLeaderboardScreen();
+                saveToCloud(); showLeaderboardScreen();
             }
         }
 
@@ -550,10 +613,9 @@
                 let gHtml = ""; let gRank = 1;
                 globalSnap.forEach(doc => {
                     let d = doc.data(); let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0; let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     gRank++;
                 });
                 globalContainer.innerHTML = gHtml;
@@ -567,10 +629,14 @@
                 let fHtml = ""; let fRank = 1;
                 usersData.forEach(d => {
                     let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0; let fireHtml = isFire ? " <span style='font-size:16px;'>🔥</span>" : "";
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
+                    
+                    let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
+                    let dStats = getAdvancedStats(d.pushupLog || [], dGoal);
+                    let badgeHtml = getStreakBadgeHTML(dStats.streak);
+
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${fireHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
                     fRank++;
                 });
                 friendsContainer.innerHTML = fHtml;
@@ -590,10 +656,14 @@
                 if(docSnap.exists) {
                     let d = docSnap.data();
                     let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                    document.getElementById('fpName').innerHTML = d.username + (isFire ? " <span style='font-size:24px;'>🔥</span>" : "");
                     document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
                     
-                    let fStats = getAdvancedStats(d.pushupLog || []);
+                    let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
+                    let fStats = getAdvancedStats(d.pushupLog || [], dGoal);
+                    let badgeHtml = getStreakBadgeHTML(fStats.streak);
+                    
+                    document.getElementById('fpName').innerHTML = d.username + badgeHtml;
+                    
                     document.getElementById('fpPrText').innerText = fStats.pr;
                     document.getElementById('fpWeeklyText').innerText = fStats.weekly;
                     
@@ -645,9 +715,15 @@
             
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
-            let myStats = getAdvancedStats(pushupLog);
+            
+            // HÄMTA STATS OCH STREAK
+            let myStats = getAdvancedStats(pushupLog, calculatedDailyGoal);
             document.getElementById('myPrText').innerText = myStats.pr;
             document.getElementById('myWeeklyText').innerText = myStats.weekly;
+            
+            // UPPDATERA NAMN MED BADGE
+            let badgeHtml = getStreakBadgeHTML(myStats.streak);
+            document.getElementById('greetingTitle').innerHTML = `@${localUsername} ${badgeHtml}`;
 
             for(let i=0;i<3;i++) document.getElementById('customBtn'+i).innerText = customAmounts[i]>0 ? "+ "+customAmounts[i] : "+ Custom";
 
@@ -664,14 +740,8 @@
             document.getElementById('svgInner').style.strokeDashoffset = calculatedDailyGoal>0 ? (534-(currPct*534)) : 534;
 
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
-            
             document.getElementById('fireStatus').style.visibility = isFire ? 'visible' : 'hidden';
-            
-            if(isFire){
-                document.getElementById('ringGlowContainer').classList.add('is-on-fire'); document.getElementById('greetingTitle').innerHTML = "@"+localUsername+" <span style='color:#ffaa00'>🔥</span>";
-            } else {
-                document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); document.getElementById('greetingTitle').innerHTML = "@"+localUsername;
-            }
+            if(isFire) { document.getElementById('ringGlowContainer').classList.add('is-on-fire'); } else { document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); }
         }
 
         function addPushups(amount){
