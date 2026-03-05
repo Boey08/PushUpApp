@@ -94,7 +94,6 @@
         } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        /* NY STREAK BADGE DESIGN */
         .streak-badge {
             background: rgba(255, 170, 0, 0.15);
             color: #ffaa00;
@@ -376,7 +375,6 @@
         function hideAllScreens(){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));}
         function getTodayString(){let d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 
-        // --- HJÄLPFUNKTION: Hämta Daily Goal beroende på Mode (även för vänner) ---
         function getDailyGoalValue(mode, dTotal, dStart, dEnd, dSetting) {
             if(mode === 'challenge') {
                 if(!dStart || !dEnd || !dTotal) return 0;
@@ -388,9 +386,9 @@
             return dSetting || 0;
         }
 
-        // --- UPPDATERAD ADVANCED STATS MED STREAKS ---
+        // --- SJÄLVLÄKANDE STATISTIK & STREAKS ---
         function getAdvancedStats(logArr, dailyGoalReq) {
-            let req = dailyGoalReq > 0 ? dailyGoalReq : 1; // Måste göra minst 1 för att få streak om mål är 0
+            let req = dailyGoalReq > 0 ? dailyGoalReq : 1; 
             if(!logArr || logArr.length === 0) return { pr: 0, weekly: 0, streak: 0 };
             
             let dailyTotals = {};
@@ -411,38 +409,33 @@
 
             let pr = Math.max(...Object.values(dailyTotals), 0);
 
-            // STREAK LOGIK
+            // STREAK UTRÄKNING
             let historicalStreak = 0;
             let checkDate = new Date();
-            checkDate.setDate(checkDate.getDate() - 1); // Börja kolla igår
+            checkDate.setDate(checkDate.getDate() - 1); // Börja igår
 
             let checking = true;
             while(checking) {
                 let dStr = checkDate.toDateString();
                 if (dailyTotals[dStr] >= req) {
                     historicalStreak++;
-                    checkDate.setDate(checkDate.getDate() - 1); // Backa en dag
+                    checkDate.setDate(checkDate.getDate() - 1); 
                 } else {
                     checking = false;
                 }
             }
 
-            // Kolla idag
             let todayStr = new Date().toDateString();
             let todayMet = (dailyTotals[todayStr] >= req);
             
-            // Om man inte nådde målet igår, och inte idag heller = 0.
-            // Om man nått det idag blir det historical + 1. 
-            // Annars (man nådde igår men inte idag) är streaken "historisk" och väntar på att du ska nå målet idag för att inte brytas ikväll.
             let streak = todayMet ? historicalStreak + 1 : historicalStreak;
             if(historicalStreak === 0 && !todayMet) streak = 0;
 
             return { pr, weekly, streak };
         }
 
-        // --- SKAPA HTML FÖR ELD-IKONER ---
         function getStreakBadgeHTML(streak) {
-            if (streak < 2) return "";
+            if (streak < 2) return ""; // Visas bara om du har 2 dagar eller mer
             let fires = "🔥";
             if (streak >= 7) fires = "🔥🔥";
             if (streak >= 14) fires = "🔥🔥🔥";
@@ -467,12 +460,28 @@
                 if(docSnap.exists) {
                     let d = docSnap.data();
                     if(d.password !== localPassword) { alert("Wrong password!"); logOutUser(); return false; }
-                    totalPushups = d.totalPushups || 0; dailyPushupsDone = d.dailyPushupsDone || 0;
-                    customAmounts = d.customAmounts || [25,30,50]; pushupLog = d.pushupLog || [];
+                    
+                    pushupLog = d.pushupLog || [];
+                    
+                    // SJÄLVLÄKNING: Appen räknar ut totalen manuellt varje gång
+                    let trueTotal = pushupLog.reduce((sum, l) => sum + l.amount, 0);
+                    let todayStr = new Date().toDateString();
+                    let trueDaily = pushupLog.filter(l => new Date(l.timestamp).toDateString() === todayStr).reduce((sum, l) => sum + l.amount, 0);
+                    
+                    let needsHeal = (trueTotal !== (d.totalPushups || 0)) || (trueDaily !== (d.dailyPushupsDone || 0));
+                    
+                    totalPushups = trueTotal;
+                    dailyPushupsDone = trueDaily;
+                    
+                    customAmounts = d.customAmounts || [25,30,50]; 
                     myFriends = d.friends || []; appMode = d.appMode || 'challenge';
                     savedDailyGoalSetting = d.dailyGoalSetting || 0; savedTotalGoal = d.totalGoal || 0;
                     savedStartDate = d.startDate || getTodayString(); savedEndDate = d.endDate || "";
                     localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || new Date().toDateString());
+                    
+                    // Sparar ner rätt siffra i tysthet om den blivit osynkad
+                    if(needsHeal) { saveToCloud(); }
+                    
                     return true;
                 } else {
                     localStorage.setItem('lastLoginDate_dev', new Date().toDateString());
@@ -557,15 +566,20 @@
                 let promises = myFriends.map(f => db.collection(DB_COLLECTION).doc(f).get());
                 let docs = await Promise.all(promises);
                 let friendsData = docs.filter(d => d.exists).map(d => d.data());
-                friendsData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
+                
+                let displayData = friendsData.map(d => {
+                    d.trueTotal = (d.pushupLog || []).reduce((sum, l) => sum + l.amount, 0);
+                    return d;
+                });
+                displayData.sort((a,b) => b.trueTotal - a.trueTotal);
                 
                 let html = ""; let rank = 1;
-                friendsData.forEach(d => {
+                displayData.forEach(d => {
                     let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
                     let dStats = getAdvancedStats(d.pushupLog || [], dGoal);
                     let badgeHtml = getStreakBadgeHTML(dStats.streak);
                     
-                    html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-rank">${rank}</div><div class="lb-name">${d.username}${badgeHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    html += `<div class="lb-item" onclick="openFriendProfile('${d.username}')"><div class="lb-rank">${rank}</div><div class="lb-name">${d.username}${badgeHtml}</div><div class="lb-score">${d.trueTotal.toLocaleString('en-US')}</div></div>`;
                     rank++;
                 });
                 container.innerHTML = html;
@@ -576,8 +590,14 @@
             let q = document.getElementById('friendSearchInput').value.trim().toLowerCase();
             let res = document.getElementById('searchResultArea');
             if(q.length === 0) { res.innerHTML = ""; return; }
+
             let matches = allDevUsers.filter(u => u.toLowerCase().includes(q) && u !== localUsername && !myFriends.includes(u));
-            if(matches.length === 0) { res.innerHTML = "<p style='color:#888; font-size:12px; margin: 5px 0;'>No new athletes found.</p>"; return; }
+
+            if(matches.length === 0) {
+                res.innerHTML = "<p style='color:#888; font-size:12px; margin: 5px 0;'>No new athletes found.</p>";
+                return;
+            }
+
             let html = "";
             matches.slice(0, 5).forEach(m => {
                 html += `<div class="lb-item" style="border: 1px solid var(--main-green); padding: 10px; margin-bottom: 5px;">
@@ -598,7 +618,8 @@
         function removeFriend(name) {
             if(confirm("Are you sure you want to remove " + name + " from your friends?")) {
                 myFriends = myFriends.filter(f => f !== name);
-                saveToCloud(); showLeaderboardScreen();
+                saveToCloud();
+                showLeaderboardScreen();
             }
         }
 
@@ -612,10 +633,17 @@
                 let globalSnap = await db.collection(DB_COLLECTION).orderBy("totalPushups", "desc").limit(5).get();
                 let gHtml = ""; let gRank = 1;
                 globalSnap.forEach(doc => {
-                    let d = doc.data(); let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
+                    let d = doc.data(); 
+                    let trueTotal = (d.pushupLog || []).reduce((sum, l) => sum + l.amount, 0);
+                    let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
+                    
+                    let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
+                    let dStats = getAdvancedStats(d.pushupLog || [], dGoal);
+                    let badgeHtml = getStreakBadgeHTML(dStats.streak);
+
                     let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${trueTotal.toLocaleString('en-US')}</div></div>`;
                     gRank++;
                 });
                 globalContainer.innerHTML = gHtml;
@@ -623,20 +651,24 @@
                 let allToFetch = [localUsername, ...myFriends];
                 let promises = allToFetch.map(u => db.collection(DB_COLLECTION).doc(u).get());
                 let docs = await Promise.all(promises);
-                let usersData = docs.filter(d => d.exists).map(d => d.data());
-                usersData.sort((a,b) => (b.totalPushups || 0) - (a.totalPushups || 0));
+                
+                let usersData = docs.filter(d => d.exists).map(d => {
+                    let data = d.data();
+                    data.trueTotal = (data.pushupLog || []).reduce((sum, l) => sum + l.amount, 0);
+                    return data;
+                });
+                usersData.sort((a,b) => b.trueTotal - a.trueTotal);
 
                 let fHtml = ""; let fRank = 1;
                 usersData.forEach(d => {
                     let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
-                    let displayName = isMe ? "You (@" + d.username + ")" : d.username;
-                    
                     let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
                     let dStats = getAdvancedStats(d.pushupLog || [], dGoal);
                     let badgeHtml = getStreakBadgeHTML(dStats.streak);
 
+                    let displayName = isMe ? "You (@" + d.username + ")" : d.username;
                     let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
-                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${(d.totalPushups||0).toLocaleString('en-US')}</div></div>`;
+                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${d.trueTotal.toLocaleString('en-US')}</div></div>`;
                     fRank++;
                 });
                 friendsContainer.innerHTML = fHtml;
@@ -655,8 +687,8 @@
                 let docSnap = await db.collection(DB_COLLECTION).doc(friendUsername).get();
                 if(docSnap.exists) {
                     let d = docSnap.data();
-                    let isFire = d.dailyPushupsDone >= d.dailyGoalSetting && d.dailyGoalSetting > 0;
-                    document.getElementById('fpScore').innerText = (d.totalPushups||0).toLocaleString('en-US');
+                    let trueTotal = (d.pushupLog || []).reduce((sum, l) => sum + l.amount, 0);
+                    document.getElementById('fpScore').innerText = trueTotal.toLocaleString('en-US');
                     
                     let dGoal = getDailyGoalValue(d.appMode, d.totalGoal, d.startDate, d.endDate, d.dailyGoalSetting);
                     let fStats = getAdvancedStats(d.pushupLog || [], dGoal);
@@ -716,12 +748,11 @@
             document.getElementById('dailyProgressText').innerText = `${dailyPushupsDone} / ${calculatedDailyGoal>0?calculatedDailyGoal:"∞"}`;
             document.getElementById('daysLeftText').innerText = calculatedDaysLeft;
             
-            // HÄMTA STATS OCH STREAK
             let myStats = getAdvancedStats(pushupLog, calculatedDailyGoal);
             document.getElementById('myPrText').innerText = myStats.pr;
             document.getElementById('myWeeklyText').innerText = myStats.weekly;
             
-            // UPPDATERA NAMN MED BADGE
+            // STREAK BADGE PÅ DASHBOARD
             let badgeHtml = getStreakBadgeHTML(myStats.streak);
             document.getElementById('greetingTitle').innerHTML = `@${localUsername} ${badgeHtml}`;
 
@@ -741,7 +772,7 @@
 
             let isFire = (dailyPushupsDone>=calculatedDailyGoal && calculatedDailyGoal>0);
             document.getElementById('fireStatus').style.visibility = isFire ? 'visible' : 'hidden';
-            if(isFire) { document.getElementById('ringGlowContainer').classList.add('is-on-fire'); } else { document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); }
+            if(isFire){ document.getElementById('ringGlowContainer').classList.add('is-on-fire'); } else { document.getElementById('ringGlowContainer').classList.remove('is-on-fire'); }
         }
 
         function addPushups(amount){
