@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0a0a0a">
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,15 +21,21 @@
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
         
-        /* OLED BLACK FIX */
-        html { background-color: #000000; }
+        /* FIX FÖR ATT FÅ GRADIENTEN ÖVER HELA SKÄRMEN UTAN SKARVAR */
+        html {
+            background-color: #050505;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            background-attachment: fixed; /* Låser bakgrunden som en tapet */
+            min-height: 100vh;
+        }
+
         body { 
-            /* Gradienten går nu ner till absolut svart i kanterna */
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); 
+            background: transparent; /* Låter html-bakgrunden lysa igenom */
             color: #ffffff; 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; 
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
+            box-sizing: border-box; /* Ser till att padding inte förstör höjden */
             display: flex; 
             justify-content: center; 
             overflow-x: hidden; 
