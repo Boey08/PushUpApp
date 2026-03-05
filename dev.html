@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#050505">
+    <meta name="theme-color" content="#000000">
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,14 +21,14 @@
     <style>
         :root { --main-green: #39ff14; --daily-red: #ff1144; --lap-color: #ffaa00; --dark-bg: #121212; --darker-bg: #0a0a0a; --panel-bg: #1e1e1e; --c1: #00f3ff; --c2: #bf00ff; --c3: #ccff00; }
         
-        /* FIX FÖR ATT TA BORT VITA KANTER PÅ IPHONE */
-        html { background-color: #050505; }
+        /* OLED BLACK FIX */
+        html { background-color: #000000; }
         body { 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); 
+            /* Gradienten går nu ner till absolut svart i kanterna */
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); 
             color: #ffffff; 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; 
-            /* env() ser till att appen respekterar flärpen och hem-strecket i botten */
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
             display: flex; 
             justify-content: center; 
