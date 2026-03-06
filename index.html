@@ -147,7 +147,7 @@
             <div class="card">
                 <h2>Login or Create a User</h2>
                 <p style="font-size: 13px; color: #aaa; margin-top: -15px; margin-bottom: 20px; line-height: 1.5;">
-                    Just make up a username and a password below to create your test account! No email needed
+                    Just make up a username and a password below to create your account! No email needed.
                 </p>
                 <form onsubmit="event.preventDefault(); loginUser();">
                     <input type="text" id="inputUsername" class="input-field" placeholder="Username" autocomplete="username">
@@ -366,9 +366,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
-        // LIVE DATABAS!
+        // RIKTIGA LIVE DATABASEN
         const DB_COLLECTION = "users"; 
 
+        // RIKTIGA LIVE LOCALSTORAGE KEYS
         let localUsername = localStorage.getItem('username') || "";
         let localPassword = localStorage.getItem('password') || "";
         let myFriends = []; 
@@ -468,6 +469,7 @@
             return `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${rank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${score.toLocaleString('en-US')}</div></div>`;
         }
 
+        // GLOBAL SWITCHER MED SKYDD MOT KRASCH
         function setGlobalEx(ex) {
             activeEx = ex;
             document.getElementById('glob-toggle-pushups').classList.remove('active');
@@ -579,6 +581,7 @@
             } catch(e) { return false; }
         }
 
+        // HÄMTA ALLA ANVÄNDARE FÖR SÖKNING I BAKGRUNDEN
         function preloadUsersForSearch() {
             db.collection(DB_COLLECTION).get().then(snap => {
                 allDevUsers = snap.docs.map(doc => doc.data().username).filter(u => u);
@@ -600,6 +603,7 @@
                 calcGoals(); 
                 preloadUsersForSearch();
                 
+                // LOGIK FÖR NY ANVÄNDARE: Tvinga dem till inställningar!
                 let ex = dbState[activeEx];
                 if (ex.tGoal === 0 && ex.dGoal === 0) {
                     showSetupScreen();
@@ -765,28 +769,57 @@
             document.getElementById('friendsLeaderboardContainer').innerHTML = "Loading...";
             
             try {
-                let allDocs = await db.collection(DB_COLLECTION).get(); 
-                let allData = allDocs.docs.map(d => { 
-                    let dt = d.data();
-                    let ext = extractExData(dt, activeEx); 
-                    return { name: dt.username, ext, t: ext.log.reduce((s,l) => s + l.amount, 0) };
-                }).sort((a,b) => b.t - a.t);
+                // BUG FIX: Sorterar på rätt field baserat på vilken övning som är aktiv
+                let sortField = activeEx === 'pushups' ? 'totalPushups' : 'totalLunges';
+                let globalSnap = await db.collection(DB_COLLECTION).orderBy(sortField, "desc").limit(5).get();
                 
-                let gHtml = "";
-                allData.slice(0,5).forEach((d, i) => {
-                    gHtml += getLbHtml(i+1, d.name, d.t, d.name === localUsername, 0);
+                let gHtml = ""; let gRank = 1;
+                globalSnap.forEach(doc => {
+                    let d = doc.data(); 
+                    // Extraherar rätt logs för global-listan baserat på aktiv övning
+                    let ext = extractExData(d, activeEx);
+                    let trueTotal = ext.log.reduce((sum, l) => sum + l.amount, 0);
+                    let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
+                    
+                    let dGoal = getDailyGoalVal(ext.mode, ext.tGoal, ext.start, ext.end, ext.dGoal);
+                    let dStats = getAdvancedStats(ext.log, dGoal);
+                    let badgeHtml = getStreakBadgeHTML(dStats.streak);
+
+                    let displayName = isMe ? `You (${d.username})` : d.username;
+                    let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
+                    gHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${gRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${trueTotal.toLocaleString('en-US')}</div></div>`;
+                    gRank++;
                 });
                 document.getElementById('globalLeaderboardContainer').innerHTML = gHtml;
+
+                let allToFetch = [localUsername, ...myFriends];
+                let promises = allToFetch.map(u => db.collection(DB_COLLECTION).doc(u).get());
+                let docs = await Promise.all(promises);
                 
-                let fData = allData.filter(d => d.name === localUsername || myFriends.includes(d.name));
-                let fHtml = "";
-                fData.forEach((d, i) => {
+                let usersData = docs.filter(d => d.exists).map(d => {
+                    let data = d.data();
+                    let ext = extractExData(data, activeEx);
+                    data.trueTotal = ext.log.reduce((sum, l) => sum + l.amount, 0);
+                    data.ext = ext;
+                    return data;
+                });
+                usersData.sort((a,b) => b.trueTotal - a.trueTotal);
+
+                let fHtml = ""; let fRank = 1;
+                usersData.forEach(d => {
+                    let isMe = d.username === localUsername; let hlClass = isMe ? "lb-highlight" : "";
                     let dGoal = getDailyGoalVal(d.ext.mode, d.ext.tGoal, d.ext.start, d.ext.end, d.ext.dGoal);
-                    let streak = getAdvancedStats(d.ext.log, dGoal).streak;
-                    fHtml += getLbHtml(i+1, d.name, d.t, d.name === localUsername, streak);
+                    let dStats = getAdvancedStats(d.ext.log, dGoal);
+                    let badgeHtml = getStreakBadgeHTML(dStats.streak);
+
+                    let displayName = isMe ? `You (${d.username})` : d.username;
+                    let onClick = isMe ? "showDashboard()" : `openFriendProfile('${d.username}')`;
+                    fHtml += `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${fRank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${d.trueTotal.toLocaleString('en-US')}</div></div>`;
+                    fRank++;
                 });
                 document.getElementById('friendsLeaderboardContainer').innerHTML = fHtml;
-            } catch(e) {}
+
+            } catch(e) { document.getElementById('globalLeaderboardContainer').innerHTML = "Error loading."; }
         }
 
         async function openFriendProfile(u) {
