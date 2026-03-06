@@ -376,10 +376,9 @@
         let chartInst = null;
         let currentScreen = 'dashboard';
         let activeEx = 'pushups';
+        let currentChartIsMe = true; 
 
-        let currentChartIsMe = true;
-
-        // THE BRAIN: Separerar all data för Pushups och Lunges
+        // THE BRAIN: Datahantering
         let dbState = {
             pushups: { total: 0, daily: 0, log: [], custom: [25, 30, 50], mode: 'challenge', dGoal: 0, tGoal: 0, start: '', end: '' },
             lunges: { total: 0, daily: 0, log: [], custom: [20, 40, 60], mode: 'challenge', dGoal: 0, tGoal: 0, start: '', end: '' }
@@ -404,7 +403,6 @@
             return set || 0;
         }
 
-        // Streak och Stats beräkning
         function getAdvancedStats(logArr, dailyGoalReq) {
             let req = dailyGoalReq > 0 ? dailyGoalReq : 1; 
             if (!logArr || logArr.length === 0) return { pr: 0, weekly: 0, streak: 0 };
@@ -467,7 +465,7 @@
             return `<div class="lb-item ${hlClass}" onclick="${onClick}"><div class="lb-rank">${rank}</div><div class="lb-name">${displayName}${badgeHtml}</div><div class="lb-score">${score.toLocaleString('en-US')}</div></div>`;
         }
 
-        // --- GLOBAL EXERCISE SWITCHER ---
+        // GLOBAL SWITCHER MED SKYDD MOT KRASCH
         function setGlobalEx(ex) {
             activeEx = ex;
             document.getElementById('glob-toggle-pushups').classList.remove('active');
@@ -480,13 +478,9 @@
             else if(currentScreen === 'calendar') { showCalendarScreen(true); }
             else if(currentScreen === 'friend') { openFriendProfile(activeFriend); }
             else if(currentScreen === 'friends') { showFriendsScreen(); }
-            // FIX: If toggling while viewing a chart, safely return to correct profile/calendar
             else if(currentScreen === 'chart') {
-                if (currentChartIsMe) {
-                    showCalendarScreen(true);
-                } else {
-                    openFriendProfile(activeFriend);
-                }
+                if (currentChartIsMe) { showCalendarScreen(true); } 
+                else { openFriendProfile(activeFriend); }
             }
         }
 
@@ -522,7 +516,6 @@
                 friends: myFriends, 
                 lastLoginDate: localStorage.getItem('lastLoginDate_dev') || new Date().toDateString(),
                 
-                // Pushups data
                 totalPushups: dbState.pushups.total, 
                 dailyPushupsDone: dbState.pushups.daily, 
                 pushupLog: dbState.pushups.log, 
@@ -533,7 +526,6 @@
                 startDate: dbState.pushups.start, 
                 endDate: dbState.pushups.end,
                 
-                // Lunges data
                 totalLunges: dbState.lunges.total, 
                 dailyLungesDone: dbState.lunges.daily, 
                 lungeLog: dbState.lunges.log, 
@@ -573,7 +565,6 @@
                     myFriends = d.friends || []; 
                     localStorage.setItem('lastLoginDate_dev', d.lastLoginDate || todayStr);
                     
-                    // Självläkning
                     if(dbState.pushups.total !== (d.totalPushups || 0) || dbState.lunges.total !== (d.totalLunges || 0)) {
                         saveToCloud();
                     }
@@ -584,6 +575,13 @@
                     return true; 
                 }
             } catch(e) { return false; }
+        }
+
+        // HÄMTA ALLA ANVÄNDARE FÖR SÖKNING I BAKGRUNDEN
+        function preloadUsersForSearch() {
+            db.collection(DB_COLLECTION).get().then(snap => {
+                allDevUsers = snap.docs.map(doc => doc.data().username).filter(u => u);
+            }).catch(e => {});
         }
 
         async function checkAppStart() {
@@ -599,7 +597,15 @@
                 
                 checkAndResetNewDay();
                 calcGoals(); 
-                showDashboard(); 
+                preloadUsersForSearch();
+                
+                // LOGIK FÖR NY ANVÄNDARE: Tvinga dem till inställningar!
+                let ex = dbState[activeEx];
+                if (ex.tGoal === 0 && ex.dGoal === 0) {
+                    showSetupScreen();
+                } else {
+                    showDashboard(); 
+                }
             }
         }
 
@@ -710,8 +716,6 @@
             }
             c.innerHTML = "Loading your friends...";
             
-            try { allDevUsers = (await db.collection(DB_COLLECTION).get()).docs.map(doc => doc.data().username); } catch(e){}
-            
             try {
                 let docs = await Promise.all(myFriends.map(f => db.collection(DB_COLLECTION).doc(f).get())); 
                 let dData = docs.filter(d => d.exists).map(d => { 
@@ -734,9 +738,11 @@
             let res = document.getElementById('searchResultArea'); 
             if(!q) return res.innerHTML = ""; 
             
-            let m = allDevUsers.filter(u => u.toLowerCase().includes(q) && u !== localUsername && !myFriends.includes(u)); 
+            // Säker sökning på förinläst lista
+            let m = allDevUsers.filter(u => u && u.toLowerCase().includes(q) && u !== localUsername && !myFriends.includes(u)); 
+            
             if(m.length === 0) {
-                res.innerHTML = "<p style='color:#888;font-size:12px;margin: 5px 0;'>No users found.</p>";
+                res.innerHTML = "<p style='color:#888;font-size:12px;margin: 5px 0;'>No new athletes found.</p>";
                 return;
             }
             
@@ -795,7 +801,9 @@
                 let d = (await db.collection(DB_COLLECTION).doc(u).get()).data(); 
                 currentFriendData = extractExData(d, activeEx);
                 
-                document.getElementById('fpScore').innerText = currentFriendData.total.toLocaleString(); 
+                // RÄKNA UT TOTALEN DIREKT INNAN DEN VISAS
+                currentFriendData.total = currentFriendData.log.reduce((sum, l) => sum + l.amount, 0);
+                document.getElementById('fpScore').innerText = currentFriendData.total.toLocaleString('en-US'); 
                 
                 let dGoal = getDailyGoalVal(currentFriendData.mode, currentFriendData.tGoal, currentFriendData.start, currentFriendData.end, currentFriendData.dGoal);
                 let st = getAdvancedStats(currentFriendData.log, dGoal); 
@@ -807,7 +815,7 @@
                 
                 viewMonth = new Date(); 
                 renderCal(false); 
-            } catch(e) {}
+            } catch(e) { document.getElementById('fpName').innerHTML = "Error"; }
         }
 
         function changeCalMonth(d, isMe) { viewMonth.setMonth(viewMonth.getMonth() + d); renderCal(isMe); }
@@ -838,9 +846,14 @@
                 let isToday = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
                 let st = isToday ? 'border:1px solid var(--daily-red);' : '';
                 
-                // FIX: LÅT VÄNNERS KALENDER KLICKAS PÅ
+                // KLICKA PÅ VÄNNERS KALENDER FIXAT!
                 let totalHtml = dTot[d] ? `<div class="cell-total">${dTot[d]}</div>` : '';
-                h += `<div class="calendar-cell" style="${st} cursor:pointer;" onclick="showDailyChart(${y},${m},${d}, ${isMe})"><div class="cell-date">${d}</div>${totalHtml}</div>`;
+                let clickEv = `onclick="showDailyChart(${y},${m},${d}, ${isMe})"`;
+                let styleStr = dTot[d] ? `${st} cursor:pointer;` : `${st} cursor:default;`;
+                
+                h += `<div class="calendar-cell" style="${styleStr}" ${dTot[d]?clickEv:''}>
+                        <div class="cell-date">${d}</div>${totalHtml}
+                      </div>`;
             }
             
             document.getElementById(isMe ? 'myMonthYear' : 'fpMonthYear').innerText = new Date(y,m).toLocaleString('en-US',{month:'long',year:'numeric'}); 
@@ -857,14 +870,13 @@
 
         function showDailyChart(y, m, d, isMe) { 
             currentScreen = 'chart'; 
-            currentChartIsMe = isMe; // Sparar för toggle-logik
+            currentChartIsMe = isMe; // Spara historiken för var vi var
             hideAllScreens(); 
             document.getElementById('chartScreen').classList.add('active-screen'); 
             
             let sd = new Date(y,m,d);
             let ts = sd.toDateString();
             
-            // Hämta loggen baserat på vems kalender vi tryckte på
             let activeLog = isMe ? dbState[activeEx].log : currentFriendData.log;
             let dLogs = activeLog.filter(l => new Date(l.timestamp).toDateString() === ts);
             
@@ -898,15 +910,15 @@
                 }
             }); 
 
-            // FIX: BACK KNAPP LOGIK FÖR GRAF
+            // KNAPPEN VET VAR DEN SKA TILLBAKA
             let backBtn = document.getElementById('chartBackButton');
             if(isMe) {
                 backBtn.onclick = function() { showCalendarScreen(true); };
             } else {
                 backBtn.onclick = function() { 
+                    currentScreen = 'friend';
                     hideAllScreens(); 
                     document.getElementById('friendProfileScreen').classList.add('active-screen');
-                    currentScreen = 'friend';
                 };
             }
         }
