@@ -31,86 +31,23 @@
             --c3: #ccff00; 
         }
         
-        html {
-            background-color: #000000;
-            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-        }
-
-        body { 
-            background: transparent;
-            color: #ffffff; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; 
-            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
-            box-sizing: border-box;
-            display: flex; 
-            justify-content: center; 
-            overflow-x: hidden; 
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-        }
+        html { background-color: #000000; background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); background-attachment: fixed; min-height: 100vh; }
+        body { background: transparent; color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; box-sizing: border-box; display: flex; justify-content: center; overflow-x: hidden; min-height: 100vh; min-height: -webkit-fill-available; }
         
         .app-container { width: 100%; max-width: 400px; }
-        .screen { display: none; animation: fadeIn 0.3s ease; } 
-        .active-screen { display: block !important; }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        
+        .screen { display: none; animation: fadeIn 0.3s ease; } .active-screen { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .icon { vertical-align: middle; font-size: 20px; }
         
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .brand-area { cursor: pointer; transition: transform 0.2s; } 
-        .brand-area:active { transform: scale(0.95); }
-        .header-title { 
-            font-size: 26px; 
-            font-weight: 900; 
-            font-style: italic; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            background: linear-gradient(135deg, var(--main-green) 20%, var(--c1) 80%); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin: 0; 
-            filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); 
-        }
-        
+        .brand-area { cursor: pointer; transition: transform 0.2s; } .brand-area:active { transform: scale(0.95); }
+        .header-title { font-size: 26px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, var(--main-green) 20%, var(--c1) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); }
         .header-icons { display: flex; gap: 12px; }
-        .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; } 
-        .icon-btn:hover { color: #fff; }
+        .icon-btn { font-size: 26px; cursor: pointer; background: none; border: none; color: #888; padding: 0; transition: color 0.2s; } .icon-btn:hover { color: #fff; }
 
-        /* NY GLOBAL EXERCISE TOGGLE */
-        .ex-toggle { 
-            display: flex; 
-            background: var(--darker-bg); 
-            border-radius: 12px; 
-            padding: 4px; 
-            margin-bottom: 15px; 
-            border: 1px solid #333; 
-        }
-        .ex-toggle-btn { 
-            flex: 1; 
-            padding: 10px; 
-            text-align: center; 
-            font-size: 14px; 
-            font-weight: bold; 
-            color: #888; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 5px; 
-        }
-        .ex-toggle-btn.active { 
-            background: #2a2a2a; 
-            color: var(--main-green); 
-        }
+        .ex-toggle { display: flex; background: var(--darker-bg); border-radius: 12px; padding: 4px; margin-bottom: 15px; border: 1px solid #333; }
+        .ex-toggle-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: bold; color: #888; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .ex-toggle-btn.active { background: #2a2a2a; color: var(--main-green); }
         
         .card { background: var(--panel-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2a2a; text-align: left; }
         .card h2 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 25px; }
@@ -118,10 +55,8 @@
         .input-field { width: 100%; height: 52px; padding: 12px 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #333; background: var(--darker-bg); color: #fff; font-size: 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; } 
         .input-field:focus { border-color: var(--main-green); }
         
-        .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} 
-        .primary-btn:active { transform: scale(0.98); }
-        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; transition: 0.2s;} 
-        .danger-btn:active { transform: scale(0.98); }
+        .primary-btn { width: 100%; background: var(--main-green); color: var(--dark-bg); border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.1s;} .primary-btn:active { transform: scale(0.98); }
+        .danger-btn { width: 100%; background: rgba(255,69,0,.1); color:#ff4500; border:1px solid rgba(255,69,0,.3); padding:15px; font-size:14px; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:bold; transition: 0.2s;} .danger-btn:active { transform: scale(0.98); }
         
         .mode-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .mode-tab { flex: 1; padding: 12px; text-align: center; background: #2a2a2a; color: #888; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; border: 2px solid transparent; transition: 0.2s;}
@@ -139,43 +74,13 @@
         .total-count { font-size: 36px; font-weight: bold; margin: 0; text-shadow: 0 2px 10px rgba(255,17,68,.3); } 
         .goal-count { color: #888; font-size: 11px; margin-top: 4px; letter-spacing: 1px;}
         
-        @keyframes smoothFireGlow { 
-            0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 
-            50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } 
-        }
+        @keyframes smoothFireGlow { 0%, 100% { filter: drop-shadow(0 0 10px #ff1144) drop-shadow(0 0 20px #ff5500); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px #ffaa00) drop-shadow(0 0 40px #ff1144); transform: scale(1.02); } }
         .is-on-fire { animation: smoothFireGlow 1.5s infinite ease-in-out !important; }
         
-        .fire-status { 
-            color: #ffaa00; 
-            font-weight: bold; 
-            font-size: 13px; 
-            display: flex; 
-            visibility: hidden; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            text-shadow: 0 0 10px #ff1144; 
-            margin-bottom: 12px; 
-            animation: pulse 1s infinite; 
-        } 
+        .fire-status { color: #ffaa00; font-weight: bold; font-size: 13px; display: flex; visibility: hidden; align-items: center; justify-content: center; gap: 4px; text-shadow: 0 0 10px #ff1144; margin-bottom: 12px; animation: pulse 1s infinite; } 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        .streak-badge {
-            background: rgba(255, 170, 0, 0.15);
-            color: #ffaa00;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            border: 1px solid rgba(255, 170, 0, 0.4);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 900;
-            margin-left: 6px;
-            vertical-align: middle;
-            text-shadow: none;
-            letter-spacing: 0.5px;
-        }
+        .streak-badge { background: rgba(255, 170, 0, 0.15); color: #ffaa00; padding: 2px 8px; border-radius: 12px; font-size: 12px; border: 1px solid rgba(255, 170, 0, 0.4); display: inline-flex; align-items: center; gap: 4px; font-weight: 900; margin-left: 6px; vertical-align: middle; text-shadow: none; letter-spacing: 0.5px; }
 
         .stats-grid { display: grid; gap: 8px; background: var(--panel-bg); padding: 12px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.3); border: 1px solid #2a2a2a;}
         .stat-box { text-align: center; }
@@ -183,19 +88,14 @@
         .stat-value { font-size: 16px; font-weight: bold; }
         
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; margin-bottom: 15px; }
-        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 14px; font-size: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} 
-        .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
+        .pushup-btn { background: #2a2a2a; color: var(--main-green); border: 2px solid rgba(57,255,20,.3); padding: 14px; font-size: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);} .pushup-btn:active { transform: scale(0.95); background: rgba(57,255,20,0.1); }
         
-        .custom-container { display: flex; gap: 6px; } 
-        .custom-btn-main { flex-grow: 1; }
+        .custom-container { display: flex; gap: 6px; } .custom-btn-main { flex-grow: 1; }
         .custom-settings-btn { width: 45px; border-radius: 14px; background: #2a2a2a; cursor: pointer; border: 1px solid #444; color: #888; display: flex; align-items: center; justify-content: center; }
         
-        .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } 
-        .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } 
-        .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
+        .color-1 { color: var(--c1); border-color: rgba(0,243,255,.3); } .color-2 { color: var(--c2); border-color: rgba(191,0,255,.3); } .color-3 { color: var(--c3); border-color: rgba(204,255,0,.3); }
         
-        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 10px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} 
-        .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .undo-btn { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #aaa; padding: 10px; font-size: 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;} .undo-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
         
         .search-box { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
         .lb-item { display: flex; align-items: center; background: #2a2a2a; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s, background 0.2s; border: 1px solid transparent;}
@@ -209,20 +109,16 @@
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; } 
         .calendar-day-header { text-align: center; font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;}
-        .calendar-cell { background: #2a2a2a; border-radius: 8px; padding: 8px 4px; text-align: center; cursor: pointer; min-height: 45px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; transition: 0.2s;}
+        .calendar-cell { background: #2a2a2a; border-radius: 8px; padding: 8px 4px; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; transition: 0.2s;}
         .calendar-cell:hover { background: #333; }
         .cell-date { font-size: 12px; color: #ccc; font-weight: bold;} 
         .cell-total { font-size: 14px; color: var(--main-green); font-weight: 900; }
-        .cell-empty { background: transparent; cursor: default; border: none; } 
-        .cell-empty:hover { background: transparent; }
+        .cell-empty { background: transparent; cursor: default; border: none; } .cell-empty:hover { background: transparent; }
         
         .chart-container { width: 100%; height: 250px; margin-bottom: 20px; margin-top: 10px;}
         
-        .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; } 
-        .celebration-overlay.show { display: flex; animation: fadeIn 0.5s; }
-        .celeb-icon { font-size: 120px; color: #ffaa00; text-shadow: 0 0 50px #ffaa00; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
-        @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } } 
-        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18,18,18,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; } .celebration-overlay.show { display: flex; animation: fadeIn 0.5s; }
+        .celeb-icon { font-size: 120px; color: #ffaa00; text-shadow: 0 0 50px #ffaa00; margin-bottom: 20px; animation: floatTrophy 2s infinite ease-in-out, popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); } @keyframes floatTrophy { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } } @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
         #loadingOverlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--dark-bg); z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--main-green); font-weight: bold; flex-direction: column; gap: 10px;}
         .spinner { border: 4px solid rgba(57, 255, 20, 0.3); border-top: 4px solid var(--main-green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
@@ -451,7 +347,7 @@
                 <div id="chartDateTitle" style="text-align:center;color:#888;margin-bottom:5px; font-size: 14px;">Date</div>
                 <div id="chartDayTotal" style="text-align:center;color:var(--main-green);font-size:22px;font-weight:900;margin-bottom:20px;">Total: 0</div>
                 <div class="chart-container"><canvas id="historyChart"></canvas></div>
-                <button class="danger-btn" style="background:transparent;border-color:#444;color:#ccc;" onclick="showCalendarScreen(true)">Back to Calendar</button>
+                <button id="chartBackButton" class="danger-btn" style="background:transparent;border-color:#444;color:#ccc;">Back</button>
             </div>
         </div>
 
@@ -480,6 +376,8 @@
         let chartInst = null;
         let currentScreen = 'dashboard';
         let activeEx = 'pushups';
+
+        let currentChartIsMe = true;
 
         // THE BRAIN: Separerar all data för Pushups och Lunges
         let dbState = {
@@ -582,6 +480,14 @@
             else if(currentScreen === 'calendar') { showCalendarScreen(true); }
             else if(currentScreen === 'friend') { openFriendProfile(activeFriend); }
             else if(currentScreen === 'friends') { showFriendsScreen(); }
+            // FIX: If toggling while viewing a chart, safely return to correct profile/calendar
+            else if(currentScreen === 'chart') {
+                if (currentChartIsMe) {
+                    showCalendarScreen(true);
+                } else {
+                    openFriendProfile(activeFriend);
+                }
+            }
         }
 
         function extractExData(d, exType) {
@@ -691,12 +597,7 @@
                 document.getElementById('mainHeader').style.display = 'flex'; 
                 document.getElementById('globalExToggle').style.display = 'flex';
                 
-                if (localStorage.getItem('lastLoginDate_dev') !== new Date().toDateString()) { 
-                    dbState.pushups.daily = 0; 
-                    dbState.lunges.daily = 0; 
-                    localStorage.setItem('lastLoginDate_dev', new Date().toDateString()); 
-                    saveToCloud(); 
-                } 
+                checkAndResetNewDay();
                 calcGoals(); 
                 showDashboard(); 
             }
@@ -936,9 +837,10 @@
             for(let d = 1; d <= dim; d++) {
                 let isToday = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
                 let st = isToday ? 'border:1px solid var(--daily-red);' : '';
-                let onClick = isMe ? `onclick="showDailyChart(${y},${m},${d})"` : 'cursor:default;';
+                
+                // FIX: LÅT VÄNNERS KALENDER KLICKAS PÅ
                 let totalHtml = dTot[d] ? `<div class="cell-total">${dTot[d]}</div>` : '';
-                h += `<div class="calendar-cell" style="${st}" ${onClick}><div class="cell-date">${d}</div>${totalHtml}</div>`;
+                h += `<div class="calendar-cell" style="${st} cursor:pointer;" onclick="showDailyChart(${y},${m},${d}, ${isMe})"><div class="cell-date">${d}</div>${totalHtml}</div>`;
             }
             
             document.getElementById(isMe ? 'myMonthYear' : 'fpMonthYear').innerText = new Date(y,m).toLocaleString('en-US',{month:'long',year:'numeric'}); 
@@ -953,14 +855,19 @@
             renderCal(isMe); 
         }
 
-        function showDailyChart(y,m,d) { 
+        function showDailyChart(y, m, d, isMe) { 
             currentScreen = 'chart'; 
+            currentChartIsMe = isMe; // Sparar för toggle-logik
             hideAllScreens(); 
             document.getElementById('chartScreen').classList.add('active-screen'); 
             
             let sd = new Date(y,m,d);
             let ts = sd.toDateString();
-            let dLogs = dbState[activeEx].log.filter(l => new Date(l.timestamp).toDateString() === ts);
+            
+            // Hämta loggen baserat på vems kalender vi tryckte på
+            let activeLog = isMe ? dbState[activeEx].log : currentFriendData.log;
+            let dLogs = activeLog.filter(l => new Date(l.timestamp).toDateString() === ts);
+            
             let hData = new Array(24).fill(0);
             let tDay = 0; 
             
@@ -990,6 +897,18 @@
                     plugins: {legend:{display:false}}
                 }
             }); 
+
+            // FIX: BACK KNAPP LOGIK FÖR GRAF
+            let backBtn = document.getElementById('chartBackButton');
+            if(isMe) {
+                backBtn.onclick = function() { showCalendarScreen(true); };
+            } else {
+                backBtn.onclick = function() { 
+                    hideAllScreens(); 
+                    document.getElementById('friendProfileScreen').classList.add('active-screen');
+                    currentScreen = 'friend';
+                };
+            }
         }
 
         function triggerCelebration() {
